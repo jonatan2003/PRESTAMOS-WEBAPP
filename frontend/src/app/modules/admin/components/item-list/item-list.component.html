@@ -1,0 +1,365 @@
+
+            <!-- Page header -->
+           
+            <div class="container-fluid">
+                <ul class="full-box list-unstyled page-nav-tabs">
+                    <li>
+                        <a routerLink="/admin/item-new"><i class="fas fa-plus fa-fw"></i> &nbsp; AGREGAR ITEM</a>
+                    </li>
+                    <li>
+                        <a class="active" routerLink="/admin/item-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; LISTA DE ITEMS</a>
+                    </li>
+                    <li>
+                        <a routerLink="/admin/item-search"><i class="fas fa-search fa-fw"></i> &nbsp; BUSCAR ITEM</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!--CONTENT-->
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-md-6">
+              <div class="form-group">
+                  <label for="selectCategoria">Seleccione una categoría </label>
+                  <select class="form-control" id="selectCategoria" (change)="onCategoriaSelected($event)">
+                      <option value="0" selected disabled>Seleccionar categoría</option>
+                      <option value="1">Vehículo</option>
+                      <option value="2">Electrodoméstico</option>
+                  </select>
+              </div>
+      </div>
+    </div>
+				<div *ngIf="categoriaSeleccionada === 1"  class="table-responsive">
+          <table *ngIf="!loading && listArticulosVehiculos.length > 0" class="table table-dark table-sm">
+            <!-- Tabla para Vehículos -->
+            <thead>
+                <tr class="text-center roboto-medium">
+                    <th scope="col">CARROCERIA</th>
+                    <th scope="col">MARCA</th>
+                    <th scope="col">MODELO</th>
+                    <th scope="col">COLOR</th>
+                    <th scope="col">NUMERO SERIE</th>
+                    <th scope="col">NUMERO MOTOR</th>
+                    <th scope="col">PLACA</th>
+                    <th scope="col">DESCRIPCION</th>
+                    <th scope="col">ESTADO</th>
+                    <th scope="col">ACTUALIZAR</th>
+                    <th scope="col">ELIMINAR</th>
+                    <!-- <th scope="col">IMPRIMIR</th> -->
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let articulo of listArticulosVehiculos" class="text-center">
+                
+                  
+                  <td>{{ articulo.Vehiculo?.carroceria }}</td>
+                  <td>{{ articulo.Vehiculo?.marca }}</td>
+                  <td>{{ articulo.Vehiculo?.modelo }}</td>
+                  <td>{{ articulo.Vehiculo?.color }}</td>
+                  <td>{{ articulo.Vehiculo?.numero_serie }}</td>
+                  <td>{{ articulo.Vehiculo?.numero_motor }}</td>
+                  <td>{{ articulo.Vehiculo?.placa }}</td>
+                  <td>{{ articulo.Vehiculo?.descripcion }}</td>
+                  <td>{{ articulo.estado }}</td>
+
+                    <td>
+                        <button type="button" (click)="setSelectedArticulo(articulo)" class="btn btn-primary"  >
+                            <i class="fas fa-sync-alt"></i>
+                         </button>
+                    </td>
+                    <td>
+                        <form action="">
+                            <button (click)="deleteArticulo(articulo.id!)" type="button" class="btn btn-warning">
+                                <i class="far fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </td>
+                    <!-- <td> <button type="button" class="btn btn-danger" (click)="onImprimir()"><i class="fas fa-file-pdf"></i></button></td> -->
+                </tr>
+            </tbody>
+        </table>
+
+      </div>
+
+				<div   *ngIf="categoriaSeleccionada === 2"class="table-responsive">
+
+        <table *ngIf="!loading && listArticulosElectrodomesticos.length > 0" class="table table-dark table-sm">
+          <!-- Tabla para Electrodomésticos -->
+          <thead>
+              <tr class="text-center roboto-medium">
+                <th scope="col">DESCRIPCION</th>
+                  <th scope="col">MARCA</th>
+                  <th scope="col">MODELO</th>
+                  <th scope="col">COLOR</th>
+                  <th scope="col">NUMERO SERIE</th>
+                  <th scope="col">ESTADO</th>
+                  <th scope="col">ACTUALIZAR</th>
+                  <th scope="col">ELIMINAR</th>
+                  <!-- <th scope="col">IMPRIMIR</th> -->
+              </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let articulo of listArticulosElectrodomesticos" class="text-center">
+              <td>{{ articulo.Electrodomestico?.descripcion }}</td>
+           <td>{{ articulo.Electrodomestico?.marca }}</td>
+         <td>{{ articulo.Electrodomestico?.modelo }}</td>
+          <td>{{ articulo.Electrodomestico?.color }}</td>
+         <td>{{ articulo.Electrodomestico?.numero_serie }}</td>
+         <td>{{ articulo.estado }}</td>
+                  <td>
+                    <button type="button" (click)="setSelectedArticulo(articulo)" class="btn btn-primary" >
+                        <i class="fas fa-sync-alt"></i>
+                     </button>
+                  </td>
+                  <td>
+                      <form action="">
+                          <button (click)="deleteArticulo(articulo.id!)" type="button" class="btn btn-warning">
+                              <i class="far fa-trash-alt"></i>
+                          </button>
+                      </form>
+                  </td>
+                  <!-- <td> <button type="button" class="btn btn-danger" (click)="onImprimir()"><i class="fas fa-file-pdf"></i></button></td> -->
+              </tr>
+          </tbody>
+      </table>
+
+				</div>
+
+				<nav  *ngIf="categoriaSeleccionada === 1 || categoriaSeleccionada === 2" aria-label="Page navigation example">
+					<ul class="pagination justify-content-center">
+					  <li class="page-item" [class.disabled]="currentPage === 1">
+						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage - 1)" tabindex="-1">Atras</a>
+					  </li>
+					  <li class="page-item" *ngFor="let page of getPages()">
+						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(page)">{{ page }}</a>
+					  </li>
+					  <li class="page-item" [class.disabled]="currentPage === totalPages">
+						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
+					  </li>
+					</ul>
+				  </nav>
+
+         
+			</div>
+
+
+
+            		
+			<!-- MODAL Articulo -->
+<div class="modal fade" id="ModalArticulo" #modalArticulo tabindex="-1" role="dialog" aria-labelledby="ModalArticulo" aria-hidden="true" >
+
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="ModalArticulo">ACTUALIZAR ARTICULO</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" id="cerrarModalArticulo" (click)="guardar()">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					
+					<div *ngIf="categoriaSeleccionada === 1">
+                        <form [formGroup]="formVehiculo" (ngSubmit)="updateVehiculo()" action="" class="form-neon" autocomplete="off">
+                          <fieldset>
+                            <div class="container-fluid">
+                              <div class="row">
+                                <div class="col-12 col-md-4">
+                                  <div class="form-group">
+                                    <label for="marcaVehiculo" class="bmd-label-floating">Marca</label>
+                                    <input formControlName="marca" type="text" class="form-control" maxlength="20">
+                                    <div class="alert alert-danger mt-2"
+                                      [hidden]="formVehiculo.get('marca').valid || formVehiculo.get('marca').pristine">
+                                      <span *ngIf="formVehiculo.get('marca').errors?.['required']" class="text-danger">Este campo es
+                                        requerido</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                  <div class="form-group">
+                                    <label for="modeloVehiculo" class="bmd-label-floating">Modelo</label>
+                                    <input formControlName="modelo" type="text" class="form-control" maxlength="20">
+                                    <div class="alert alert-danger mt-2"
+                                      [hidden]="formVehiculo.get('modelo').valid || formVehiculo.get('modelo').pristine">
+                                      <span *ngIf="formVehiculo.get('modelo').errors?.['required']" class="text-danger">Este campo es
+                                        requerido</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                  <div class="form-group">
+                                    <label for="colorVehiculo" class="bmd-label-floating">Color</label>
+                                    <input formControlName="color" type="text" class="form-control"
+                                      maxlength="20">
+                                    <div class="alert alert-danger mt-2"
+                                      [hidden]="formVehiculo.get('color').valid || formVehiculo.get('color').pristine">
+                                      <span *ngIf="formVehiculo.get('color').errors?.['required']" class="text-danger">Este campo es
+                                        requerido</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                  <div class="form-group">
+                                    <label for="numeroSerieVehiculo" class="bmd-label-floating">Número de Serie</label>
+                                    <input formControlName="numero_serie" type="text" class="form-control" maxlength="30">
+                                    <div class="alert alert-danger mt-2"
+                                      [hidden]="formVehiculo.get('numero_serie').valid || formVehiculo.get('numero_serie').pristine">
+                                      <span *ngIf="formVehiculo.get('numero_serie').errors?.['required']" class="text-danger">Este campo es
+                                        requerido</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md-2">
+                                  <div class="form-group">
+                                    <label for="numeroMotorVehiculo" class="bmd-label-floating">Número de Motor</label>
+                                    <input formControlName="numero_motor" type="text" class="form-control" maxlength="30">
+                                    <div class="alert alert-danger mt-2"
+                                      [hidden]="formVehiculo.get('numero_motor').valid || formVehiculo.get('numero_motor').pristine">
+                                      <span *ngIf="formVehiculo.get('numero_motor').errors?.['required']" class="text-danger">Este campo es
+                                        requerido</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                  <div class="form-group">
+                                    <label for="placaVehiculo" class="bmd-label-floating">Placa</label>
+                                    <input formControlName="placa" type="text" class="form-control" maxlength="10">
+                                    <div class="alert alert-danger mt-2"
+                                      [hidden]="formVehiculo.get('placa').valid || formVehiculo.get('placa').pristine">
+                                      <span *ngIf="formVehiculo.get('placa').errors?.['required']" class="text-danger">Este campo es
+                                        requerido</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                  <div class="form-group">
+                                    <label for="carroceriaVehiculo" class="bmd-label-floating">Carrocería</label>
+                                    <input formControlName="carroceria" type="text" class="form-control" maxlength="20" >
+                                    <div class="alert alert-danger mt-2"
+                                      [hidden]="formVehiculo.get('carroceria').valid || formVehiculo.get('carroceria').pristine">
+                                      <span *ngIf="formVehiculo.get('carroceria').errors?.['required']" class="text-danger">Este campo es
+                                        requerido</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                  <div class="form-group">
+                                    <label for="descripcionVehiculo" class="bmd-label-floating">Descripción</label>
+                                    <input formControlName="descripcion" type="text" class="form-control" maxlength="50">
+                                    <div class="alert alert-danger mt-2"
+                                      [hidden]="formVehiculo.get('descripcion').valid || formVehiculo.get('descripcion').pristine">
+                                      <span *ngIf="formVehiculo.get('descripcion').errors?.['required']" class="text-danger">Este campo es
+                                        requerido</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </fieldset>
+                          <br>
+                          <p class="text-center" style="margin-top: 40px;">
+                           
+                            <button [disabled]="formVehiculo.untouched || formVehiculo.invalid" type="submit" class="btn btn-raised btn-info btn-sm" >
+                                <i class="far fa-save"></i> &nbsp; GUARDAR
+                              </button>	
+                          </p>
+                        </form>
+                      </div>
+  
+
+                      <!-- FORMULARIO PARA ELECTRODOMESTICO -->
+
+
+                      <div *ngIf="categoriaSeleccionada === 2">
+                        <form [formGroup]="formElectrodomestico" (ngSubmit)="updateElectrodomestico()" action="" class="form-neon"
+                          autocomplete="off">
+                          <fieldset>
+                            <div class="container-fluid">
+                              <div class="row">
+                    
+                                <div class="col-12 col-md-5">
+                                  <div class="form-group">
+                                    <label for="marcaElectrodomestico" class="bmd-label-floating">Marca</label>
+                                    <input formControlName="marca" type="text" class="form-control" maxlength="20">
+                                    <div class="alert alert-danger mt-2"
+                                      [hidden]="formElectrodomestico.get('marca').valid || formElectrodomestico.get('marca').pristine">
+                                      <span *ngIf="formElectrodomestico.get('marca').errors?.['required']" class="text-danger">Este campo es
+                                        requerido</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md-5">
+                                  <div class="form-group">
+                                    <label for="modeloElectrodomestico" class="bmd-label-floating">Modelo</label>
+                                    <input formControlName="modelo" type="text" class="form-control" maxlength="20">
+                                    <div class="alert alert-danger mt-2"
+                                      [hidden]="formElectrodomestico.get('modelo').valid || formElectrodomestico.get('modelo').pristine">
+                                      <span *ngIf="formElectrodomestico.get('modelo').errors?.['required']" class="text-danger">Este campo
+                                        es requerido</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md-5">
+                                  <div class="form-group">
+                                    <label for="colorElectrodomestico" class="bmd-label-floating">Color</label>
+                                    <input formControlName="color" type="text" class="form-control"   maxlength="20">
+                                    <div class="alert alert-danger mt-2"
+                                      [hidden]="formElectrodomestico.get('color').valid || formElectrodomestico.get('color').pristine">
+                                      <span *ngIf="formElectrodomestico.get('color').errors?.['required']" class="text-danger">Este campo es
+                                        requerido</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md-7">
+                                  <div class="form-group">
+                                    <label for="numeroSerieElectrodomestico" class="bmd-label-floating">Número de Serie</label>
+                                    <input formControlName="numero_serie" type="text" class="form-control" maxlength="20">
+                                    <div class="alert alert-danger mt-2"
+                                      [hidden]="formElectrodomestico.get('numero_serie').valid || formElectrodomestico.get('numero_serie').pristine">
+                                      <span *ngIf="formElectrodomestico.get('numero_serie').errors?.['required']" class="text-danger">Este
+                                        campo es requerido</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                  <div class="form-group">
+                                    <label for="descripcionElectrodomestico" class="bmd-label-floating"
+                                      >Descripción</label>
+                                    <input formControlName="descripcion" type="text" class="form-control" maxlength="20">
+                                    <div class="alert alert-danger mt-2"
+                                      [hidden]="formElectrodomestico.get('descripcion').valid || formElectrodomestico.get('descripcion').pristine">
+                                      <span *ngIf="formElectrodomestico.get('descripcion').errors?.['required']" class="text-danger">Este
+                                        campo es requerido</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </fieldset>
+                          <br>
+                          <p class="text-center" style="margin-top: 40px;">
+                           
+                            <button [disabled]="formElectrodomestico.untouched || formElectrodomestico.invalid" type="submit" class="btn btn-raised btn-info btn-sm" (click)="guardar()">
+                                <i class="far fa-save"></i> &nbsp; GUARDAR
+                              </button>		
+                          </p>
+                        </form>
+                    
+                      </div>
+
+
+
+
+
+
+				</div>
+				<br>
+				
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="guardar()">Cerrar</button>
+			</div>
+		</div>
+	</div>
+	</div>

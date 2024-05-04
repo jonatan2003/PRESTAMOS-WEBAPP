@@ -1,0 +1,102 @@
+
+			<!-- Page header -->
+			
+
+			<div class="container-fluid">
+				<ul class="full-box list-unstyled page-nav-tabs">
+					<li>
+						<a class="active" routerLink="/admin/client-new"><i class="fas fa-plus fa-fw"></i> &nbsp; AGREGAR CLIENTE</a>
+					</li>
+					<li>
+						<a routerLink="/admin/client-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; LISTA DE CLIENTES</a>
+					</li>
+					<li>
+						<a routerLink="/admin/client-search"><i class="fas fa-search fa-fw"></i> &nbsp; BUSCAR CLIENTE</a>
+					</li>
+				</ul>
+			</div>
+
+			<!-- Content here-->
+			<div class="container-fluid">
+
+              <form class="form-neon" [formGroup]="form" (ngSubmit)="addCliente()">
+                <fieldset>
+                  <legend><i class="fas fa-user"></i> &nbsp; Información básica</legend>
+                  <div class="container-fluid">
+                    <div class="row">
+                      <div class="col-12 col-md-6">
+                        <div class="form-group">
+                          <label for="cliente_dni" class="bmd-label-floating">DNI</label>
+                          <input formControlName="dni" type="text" class="form-control mt-2" pattern="[0-9]*" maxlength="8" minlength="8">
+                          <div class="alert alert-danger mt-2"[hidden]="form.get('dni').valid || form.get('dni').pristine">
+                          <span *ngIf="form.get('dni').errors?.['required']" class="text-danger">Este campo es requerido</span>
+                          <span *ngIf="form.get('dni').errors?.['minlength']" class="text-danger">El DNI debe tener exactamente 8 dígitos</span>
+                          <br>
+                          <span *ngIf="form.get('dni').errors?.['maxlenght']" class="text-danger">El DNI debe tener exactamente 8 dígitos</span>
+                          <br>
+                          <span *ngIf="form.get('dni').errors?.['pattern']" class="text-danger">El DNI solo puede contener números</span>
+                        </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <div class="form-group">
+                          <label for="cliente_nombre" class="bmd-label-floating">Nombre</label>
+                          <input formControlName="nombre" type="text" class="form-control mt-2" maxlength="30">
+                          <div class="alert alert-danger mt-2"[hidden]="form.get('nombre').valid || form.get('nombre').pristine">
+                          <span *ngIf="form.get('nombre').errors?.['required']" class="text-danger">Este campo es requerido</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <div class="form-group">
+                          <label for="cliente_apellido" class="bmd-label-floating">Apellido</label>
+                          <input formControlName="apellido" type="text" class="form-control mt-2" maxlength="25">
+                          <div class="alert alert-danger mt-2"[hidden]="form.get('apellido').valid || form.get('apellido').pristine">
+                          <span *ngIf="form.get('apellido').errors?.['required']" class="text-danger">Este campo es requerido</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <div class="form-group">
+                          <label for="cliente_telefono" class="bmd-label-floating">Teléfono</label>
+                          <input formControlName="telefono" type="text" class="form-control mt-2" maxlength="9" minlength="9">
+                          <div class="alert alert-danger mt-2"[hidden]="form.get('telefono').valid || form.get('telefono').pristine">
+                            <span *ngIf="form.get('telefono').errors?.['required']" class="text-danger">Este campo es requerido</span>
+                            <span *ngIf="form.get('telefono').errors?.['minlength']" class="text-danger">El Telefono debe tener exactamente 9 dígitos</span>
+                            <br>
+                            <span *ngIf="form.get('telefono').errors?.['maxlenght']" class="text-danger">El Telefono debe tener exactamente 9 dígitos</span>
+                            <br>
+                            <span *ngIf="form.get('telefono').errors?.['pattern']" class="text-danger">El Telefono solo puede contener números</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <div class="form-group">
+                          <label for="cliente_direccion" class="bmd-label-floating">Dirección</label>
+                          <input formControlName="direccion" type="text" class="form-control mt-2" maxlength="50">
+                          <div class="alert alert-danger mt-2"[hidden]="form.get('direccion').valid || form.get('direccion').pristine">
+                          <span *ngIf="form.get('direccion').errors?.['required']" class="text-danger">Este campo es requerido</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <div class="form-group">
+                          <label for="cliente_rubro" class="bmd-label-floating">Rubro</label>
+                          <input formControlName="rubro" type="text" class="form-control mt-2" maxlength="50">
+                          <div class="alert alert-danger mt-2"[hidden]="form.get('rubro').valid || form.get('rubro').pristine">
+                          <span *ngIf="form.get('rubro').errors?.['required']" class="text-danger">Este campo es requerido</span>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+					</fieldset>
+					<br><br><br>
+					<p class="text-center" style="margin-top: 40px;">
+						<button type="reset" class="btn btn-raised btn-secondary btn-sm"><i class="fas fa-paint-roller"></i> &nbsp; LIMPIAR</button>
+						&nbsp; &nbsp;
+						<button [disabled]="form.invalid" type="submit" class="btn btn-raised btn-info btn-sm"><i class="far fa-save"></i> &nbsp; GUARDAR</button>
+					</p>
+				</form>
+			</div>

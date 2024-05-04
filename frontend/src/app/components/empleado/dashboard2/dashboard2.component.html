@@ -1,0 +1,87 @@
+
+<section class="full-box nav-lateral">
+  <div class="full-box nav-lateral-bg show-nav-lateral"></div>
+  <div class="full-box nav-lateral-content">
+    <figure class="full-box nav-lateral-avatar">
+      <i class="far fa-times-circle show-nav-lateral"></i>
+      <img src="../../../assets/img/dashboard/empleadoperfil.png" class="img-fluid" alt="Avatar">
+      <figcaption class="roboto-medium text-center" *ngIf="empleado">
+        Empleado: {{ empleado.nombre }} DNI: {{ empleado.dni }} <br><small class="roboto-condensed-light">DON GATO EMPEÑOS</small>
+      </figcaption>
+    </figure>
+    <div class="full-box nav-lateral-bar"></div>
+    <nav class="full-box nav-lateral-menu">
+      <ul>
+        <li>
+          <a routerLink="/empleado"><i class="fab fa-dashcube fa-fw"></i> &nbsp; Dashboard</a>
+        </li>
+
+
+        <!-- <li>
+          <a href="#" class="nav-btn-submenu"><i class="fas fa-pallet fa-fw"></i> &nbsp; Items <i class="fas fa-chevron-down"></i></a>
+          <ul>
+            <li>
+              <a routerLink="item-new"><i class="fas fa-plus fa-fw"></i> &nbsp; Agregar item</a>
+            </li>
+            <li>
+              <a routerLink="item-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; Lista de items</a>
+            </li>
+            <li>
+              <a routerLink="item-search"><i class="fas fa-search fa-fw"></i> &nbsp; Buscar item</a>
+            </li>
+          </ul>
+        </li> -->
+
+        <li>
+          <a href="#" class="nav-btn-submenu"><i class="fas fa-file-invoice-dollar fa-fw"></i> &nbsp; Préstamos <i class="fas fa-chevron-down"></i></a>
+          <ul>
+            <li>
+              <a routerLink="prestamos-new"><i class="fas fa-plus fa-fw"></i> &nbsp; Nuevo préstamo</a>
+            </li>
+            <li>
+              <a routerLink="prestamos-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; Lista de préstamos</a>
+            </li>
+            <li>
+              <a routerLink="prestamos-search"><i class="fas fa-search-dollar fa-fw"></i> &nbsp; Buscar préstamos</a>
+            </li>
+            <li>
+              <a routerLink="prestamos-pending"><i class="fas fa-hand-holding-usd fa-fw"></i> &nbsp; Préstamos pendientes</a>
+            </li>
+          </ul>
+        </li>
+
+        <li>
+          <a routerLink="pagos-list"><i class="fas fa-money-bill-alt"></i> &nbsp; Pagos</a>
+        </li>
+        
+        <li>
+          <a routerLink="prestamos-finished"><i class="fas fa-stopwatch"></i> &nbsp; Prestamos Vencidos</a>
+        </li>
+
+
+        <li>
+          <a href="#" class="nav-btn-submenu"><i class="fas fa-shopping-cart fa-fw"></i> &nbsp; Ventas <i class="fas fa-chevron-down"></i></a>
+          <ul>
+            <li>
+              <a routerLink="venta-new"><i class="fas fa-plus fa-fw"></i> &nbsp; Nuevo Ventas</a>
+            </li>
+            <li>
+              <a routerLink="venta-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; Lista de Ventas</a>
+            </li>
+            <li>
+              <a routerLink="venta-search"><i class="fas fa-search-dollar fa-fw"></i> &nbsp; Buscar Ventas</a>
+            </li>
+            <li>
+              <a routerLink="venta-pending"><i class="fas fa-hand-holding-usd fa-fw"></i> &nbsp; Ventas pendientes</a>
+            </li>
+          </ul>
+        </li>
+      
+
+        <li>
+          <a routerLink="empresa"><i class="fas fa-store-alt fa-fw"></i> &nbsp; Empresa</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</section>

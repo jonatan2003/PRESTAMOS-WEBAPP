@@ -1,0 +1,45 @@
+
+			<!-- Page header -->
+			
+
+			<div class="container-fluid">
+				<ul class="full-box list-unstyled page-nav-tabs">
+					<li>
+						<a class="active" routerLink="/admin/categoria-new"><i class="fas fa-plus fa-fw"></i> &nbsp; AGREGAR CATEGORIA</a>
+					</li>
+					<li>
+						<a routerLink="/admin/categoria-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; LISTA DE CATEGORIAS</a>
+					</li>
+					<li>
+						<a routerLink="/admin/categoria-search"><i class="fas fa-search fa-fw"></i> &nbsp; BUSCAR CATEGORIA</a>
+					</li>
+				</ul>
+			</div>
+
+			<!-- Content here-->
+			<div class="container-fluid">
+				<form [formGroup]="form" (ngSubmit)="addCategoria()" action="" class="form-neon" autocomplete="off">
+					<fieldset>
+						<legend><i class="fas fa-user"></i> &nbsp; Información básica</legend>
+						<div class="container-fluid">
+							<div class="row">
+								<div class="col-12 col-md-6">
+									<div class="form-group">
+										<label for="nombre" class="bmd-label-floating">Nombre</label>
+										<input formControlName="nombre"  id="nombre" type="text" class="form-control"  maxlength="50">
+										<div class="alert alert-danger mt-2"[hidden]="form.get('nombre').valid || form.get('nombre').pristine">
+											<span *ngIf="form.get('nombre').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</fieldset>
+					<br><br><br>
+					<p class="text-center" style="margin-top: 40px;">
+						<button type="reset" class="btn btn-raised btn-secondary btn-sm"><i class="fas fa-paint-roller"></i> &nbsp; LIMPIAR</button>
+						&nbsp; &nbsp;
+						<button [disabled]="form.invalid" type="submit" class="btn btn-raised btn-info btn-sm"><i class="far fa-save"></i> &nbsp; GUARDAR</button>
+					</p>
+				</form>
+			</div>

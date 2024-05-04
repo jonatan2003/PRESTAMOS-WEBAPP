@@ -1,0 +1,98 @@
+
+			<!-- Page header -->
+		
+
+			<div class="container-fluid">
+				<ul class="full-box list-unstyled page-nav-tabs">
+					<li>
+						<a routerLink="/admin/user-new"><i class="fas fa-plus fa-fw"></i> &nbsp; NUEVO USUARIO</a>
+					</li>
+					<li>
+						<a routerLink="/admin/user-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; LISTA DE USUARIOS</a>
+					</li>
+					<li>
+						<a routerLink="/admin/user-search"><i class="fas fa-search fa-fw"></i> &nbsp; BUSCAR USUARIO</a>
+					</li>
+				</ul>
+			</div>
+
+			<!-- Content -->
+			<div class="container-fluid">
+				<form [formGroup]="form" (ngSubmit)="updateUsuario()" action="" class="form-neon" autocomplete="off">
+
+					<fieldset>
+						<legend><i class="fas fa-user-lock"></i> &nbsp; AGREGAR USUARIO</legend>
+						<div class="row justify-content-center ">
+							<div class="row">
+								<div class="col-12 col-md-12">
+									<div class="form-group">
+										<label for="usuario" class="bmd-label-floating">USUARIO</label>
+										<input formControlName="usuario" type="text" class="form-control"
+											 maxlength="20">
+										<div class="alert alert-danger mt-2"
+											[hidden]="form.get('usuario').valid || form.get('usuario').pristine">
+											<span *ngIf="form.get('usuario').errors?.['required']" class="text-danger">Este campo es
+												requerido</span>
+										</div>
+									</div>
+								</div>
+								<div class="col-12 col-md-12 ">
+									<div class="form-group">
+										<label for="password_actual" class="bmd-label-floating">CONTRASEÑA ACTUAL</label>
+										<input class="text-center" formControlName="password_actual" type="password" class="form-control" maxlength="10">
+										<div class="alert alert-danger mt-2"
+											[hidden]="form.get('password_actual').valid || form.get('password_actual').pristine">
+											<span *ngIf="form.get('password_actual').errors?.['required']" class="text-danger">Este campo
+												es requerido</span>
+										</div>
+									</div>
+								</div>
+								<div class="col-12 col-md-12 ">
+									<div class="form-group">
+										<label for="password_nueva" class="bmd-label-floating">CONTRASEÑA NUEVA</label>
+										<input class="text-center" formControlName="password_nueva" type="password" class="form-control" maxlength="10">
+										<div class="alert alert-danger mt-2"
+											[hidden]="form.get('password_nueva').valid || form.get('password_nueva').pristine">
+											<span *ngIf="form.get('password_nueva').errors?.['required']" class="text-danger">Este campo
+												es requerido</span>
+										</div>
+									</div>
+								</div>
+								
+							</div>
+						</div>
+					</fieldset>
+					<br><br><br>
+					<fieldset>
+						
+					
+						<div class="container-fluid ">
+							<div class="row justify-content-center ">
+								<div class="col-md-6">
+									
+							
+									<div class="form-group">
+										<select formControlName="permiso" class="form-control">
+											
+											<option value="empleado" selected="" disabled="" >EMPLEADO</option>
+											
+										</select>
+									</div>
+									<legend><i class="fas fa-medal"></i> &nbsp; Nivel de privilegio</legend>
+									<p><span class="badge badge-info">Admin</span> Permisos para registrar, actualizar y
+										eliminar</p>
+									<p><span class="badge badge-success">Empleado</span> Permisos para registrar y actualizar</p>
+								</div>
+							</div>
+						</div>
+					</fieldset>
+					<p class="text-center" style="margin-top: 40px;">
+						
+						
+						&nbsp; &nbsp;
+						<button [disabled]="form.invalid " type="submit" class="btn btn-raised btn-info btn-sm"><i
+								class="far fa-save"></i> &nbsp; GUARDAR</button>
+					</p>
+				</form>
+			</div>
+

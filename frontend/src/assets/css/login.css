@@ -1,0 +1,17 @@
+.contenedor {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  /* Estilos específicos para tamaños de pantalla más pequeños */
+  @media (max-width: 768px) {
+    .contenedor {
+      padding: 0 15px;
+    }
+    .contenedor1 {
+      width: 100%;
+    }
+    /* Resto de tus estilos para tamaños de pantalla pequeños */
+  }

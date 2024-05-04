@@ -1,0 +1,153 @@
+<!-- Page header -->
+
+
+<div class="container-fluid">
+	<ul class="full-box list-unstyled page-nav-tabs">
+		<li>
+			<a class="active" routerLink="/admin/user-new"><i class="fas fa-plus fa-fw"></i> &nbsp; NUEVO USUARIO</a>
+		</li>
+		<li>
+			<a routerLink="/admin/user-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; LISTA DE USUARIOS</a>
+		</li>
+		<li>
+			<a routerLink="/admin/user-search"><i class="fas fa-search fa-fw"></i> &nbsp; BUSCAR USUARIO</a>
+		</li>
+	</ul>
+</div>
+
+<!-- Content -->
+<div class="container-fluid justify-content-center ">
+	<form [formGroup]="form" (ngSubmit)="addUsuario()" action="" class="form-neon" autocomplete="off">
+
+		<fieldset>
+			<legend><i class="fas fa-user-lock"></i> &nbsp; AGREGAR USUARIO</legend>
+			<div class="row justify-content-center ">
+				<div class="row">
+					<div class="col-12 col-md-12">
+						<div class="form-group">
+							<label for="usuario" class="bmd-label-floating">USUARIO</label>
+							<input formControlName="usuario" id="usuario"  type="text" class="form-control"
+								 maxlength="20">
+							<div class="alert alert-danger mt-2"
+								[hidden]="form.get('usuario').valid || form.get('usuario').pristine">
+								<span *ngIf="form.get('usuario').errors?.['required']" class="text-danger">Este campo es
+									requerido</span>
+							</div>
+						</div>
+					</div>
+					<div class="col-12 col-md-12 ">
+						<div class="form-group">
+							<label for="password" class="bmd-label-floating">CONTRASEÑA</label>
+							<input class="text-center" formControlName="password" id="password"  type="password" class="form-control" maxlength="10">
+							<div class="alert alert-danger mt-2"
+								[hidden]="form.get('password').valid || form.get('password').pristine">
+								<span *ngIf="form.get('password').errors?.['required']" class="text-danger">Este campo
+									es requerido</span>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+		</fieldset>
+		<br><br><br>
+		<fieldset>
+			<div class="row justify-content-center"> 
+			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalEmpleado"><i class="fas fa-user"></i> &nbsp; Agregar empleado</button>
+			
+					<input style="display: none;" formControlName="id_empleado" id="id_empleado">
+		</div>
+		<div class="row justify-content-center"> 
+			<label  class="text-center" > <h2> EMPLEADO: {{ empleadoSeleccionado ? empleadoSeleccionado.nombre : '' }} </h2></label>
+
+		</div>
+			<div class="container-fluid ">
+				<div class="row justify-content-center ">
+					<div class="col-md-6">
+						
+				
+						<div class="form-group">
+							<select formControlName="permiso" id="permiso"  class="form-control">
+								<option value="" selected="" disabled="">Seleccione una opción</option>
+								<option value="admin">ADMIN</option>
+								<option value="empleado">EMPLEADO</option>
+								
+							</select>
+						</div>
+						<legend><i class="fas fa-medal"></i> &nbsp; Nivel de privilegio</legend>
+						<p><span class="badge badge-info">Admin</span> Permisos para registrar, actualizar y
+							eliminar</p>
+						<p><span class="badge badge-success">Empleado</span> Permisos para registrar y actualizar</p>
+					</div>
+				</div>
+			</div>
+		</fieldset>
+		<p class="text-center" style="margin-top: 40px;">
+			<button type="reset" class="btn btn-raised btn-secondary btn-sm"><i class="fas fa-paint-roller"></i> &nbsp;
+				LIMPIAR</button>
+			&nbsp; &nbsp;
+			<button [disabled]="!form.get('id_empleado').value || !empleadoSeleccionado || form.invalid " type="submit" class="btn btn-raised btn-info btn-sm"><i
+					class="far fa-save"></i> &nbsp; GUARDAR</button>
+		</p>
+	</form>
+</div>
+
+
+<!-- MODAL EMPLEADO -->
+<div class="modal fade" id="ModalEmpleado" tabindex="-1" role="dialog" aria-labelledby="ModalCliente" aria-hidden="true" >
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="ModalCliente">Agregar empleado</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<div class="form-group">
+						<label for="agregar_cliente" class="bmd-label-floating">DNI, Nombre, Apellido, Telefono</label>
+						<input type="text" class="form-control" name="agregar_cliente" id="agregar_cliente" maxlength="30"  [(ngModel)]="terminoBusqueda">
+					</div>
+					<form  (submit)="buscarEmpleados()">
+					  <div class="container-fluid">
+					   <div class="row justify-content-md-center">
+	
+							<div class="col-12">
+							 <p class="text-center" style="margin-top: 40px;">
+							<button type="submit" class="btn btn-raised btn-info"><i class="fas fa-search"></i> &nbsp; BUSCAR</button>
+						   </p>
+						  </div>
+						   </div>
+						 </div>
+					  </form>
+				</div>
+				<br>
+				<div class="container-fluid">
+					<div class="table-responsive">
+						<table class="table table-hover table-bordered table-sm">
+							<tbody>
+								<tr class="text-center" *ngFor="let empleado of empleados">
+									<td>{{ empleado.nombre }}</td>
+									<td>{{ empleado.apellidos }}</td>
+									<!-- <td>{{ empleado.dni }}</td> -->
+									<td>{{ empleado.telefono }}</td>
+									<td>
+										<form action="">
+											<button type="button" class="btn btn-primary" (click)="seleccionarEmpleado(empleado)" data-dismiss="modal"><i class="fas fa-user-plus"></i></button>
+										</form>
+									</td>
+								</tr>
+	
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+	</div>
+	</div>
+	

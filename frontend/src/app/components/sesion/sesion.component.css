@@ -1,0 +1,220 @@
+html {
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+.container {
+  background: linear-gradient(to right, #434445, #19202b);
+  max-width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center; /* Centrar horizontalmente */
+  align-items: center; /* Centrar verticalmente */
+  flex-wrap: wrap; /* Permitir que los elementos se envuelvan cuando no haya suficiente espacio */
+}
+
+.container > div {
+  flex: 1 1 300; /* Cada contenedor ocupa como mínimo 300px, pero puede crecer */
+  margin: 20px;
+  text-align: center;
+}
+
+.img {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%; /* Usar 50% para un círculo perfecto */
+  margin-top: 2em; /* Ajusta este valor según necesites */
+}
+
+.login {
+  width: 200px;
+  height: 200px;
+  border-radius: 30%;
+}
+
+.mat-card {
+  padding: 30px;
+  border-radius: 12px;
+}
+
+h1 {
+  color: aliceblue;
+  font-size: 4vw; /* Tamaño de fuente relativo */
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  margin-top: 10px  ; /* Ajusta este valor según necesites */
+}
+
+.button {
+  background: #474a4c;
+  padding: 10px 30px; /* Mejor usar padding horizontal */
+  border-radius: 12px;
+  color: aliceblue;
+  border: solid #474a4c;
+  margin-left: 35px; /* Ajusta este valor según necesites */
+}
+
+.inputs,
+.labels {
+  border-radius: 20px;
+}
+
+/* Media queries para adaptar el diseño en pantallas más pequeñas */
+@media only screen and (max-width: 768px) {
+  .container > div {
+    max-width: 100%;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  h1 {
+    font-size: 6vw; /* Aumentamos el tamaño de fuente en pantallas más pequeñas */
+  }
+
+  .button {
+    padding: 10px 15px; /* Reducimos el padding horizontal de los botones */
+  }
+}
+
+
+
+
+/* MEDIA QUERY PARA DISPOSITIVOS MÓVILES */
+@media only screen and (max-width: 767px) {
+  html,
+  body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(35, 6, 201);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container {
+    background: linear-gradient(to right, #434445, #1c272f);
+    width: 100%;
+    max-width: 100%;
+    min-height: 100%;
+    padding: 20px; /* Añadimos un padding para separar el contenido del borde */
+    box-sizing: border-box; /* Aseguramos que el padding no afecte el tamaño total */
+  }
+
+  .container > div {
+    flex: 1 1 100%; /* Cada contenedor ocupa todo el ancho disponible */
+    text-align: center;
+    padding: 20px; /* Añadimos espacio entre los elementos */
+  }
+
+  .container-1 {
+    display: none; /* Ocultamos el primer contenedor en dispositivos móviles */
+  }
+
+  .container-2 {
+    padding-top: 40%; /* Ajustamos el espacio superior */
+    margin: 0;
+  }
+
+  .mat-card {
+    border-radius: 12px;
+    padding: 20px; /* Añadimos espacio interno */
+  }
+
+  .text-center {
+    padding-bottom: 30px; /* Añadimos espacio inferior */
+  }
+
+  .login {
+    margin-left: auto; /* Centramos el elemento en dispositivos móviles */
+    margin-right: auto;
+  }
+}
+
+
+/* MEDIA QUERY PARA TABLETS */
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+  html,
+  body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: rgb(35, 6, 201);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container {
+    background: linear-gradient(to right, #434445, #1c272f);
+    width: 100%;
+    max-width: 100%;
+    min-height: 100%;
+    padding: 20px; /* Añadimos un padding para separar el contenido del borde */
+    box-sizing: border-box; /* Aseguramos que el padding no afecte el tamaño total */
+  }
+
+  .container > div {
+    flex: 1 1 100%; /* Cada contenedor ocupa todo el ancho disponible */
+    text-align: center;
+    padding: 20px; /* Añadimos espacio entre los elementos */
+  }
+
+  .container-1 {
+    display: none; /* Ocultamos el primer contenedor en tablets */
+  }
+
+  .container-2 {
+    padding-top: 40%; /* Ajustamos el espacio superior */
+    margin: 0;
+  }
+
+  .mat-card {
+    border-radius: 12px;
+    padding: 20px; /* Añadimos espacio interno */
+  }
+
+  .text-center {
+    padding-bottom: 30px; /* Añadimos espacio inferior */
+  }
+
+  .login {
+    margin-left: auto; /* Centramos el elemento en tablets */
+    margin-right: auto;
+  }
+}
+

@@ -1,0 +1,6 @@
+
+    /* Establece el ancho máximo del modal */
+    .modal-dialog {
+        max-width: 60%; /* Puedes ajustar este valor según tus necesidades */
+        margin: 1.75rem auto; /* Esto centrará el modal horizontalmente */
+    }

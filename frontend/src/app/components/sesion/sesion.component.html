@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title> Login</title>
+    <link rel="stylesheet" href="../sesion/sesion.component.css">
+
+
+</head>
+
+<body >
+
+<div class="container">
+
+    <div class="container-1">
+
+<h1>Bienvenidos</h1>
+<div class="imagen"> <img src="../../../assets/img/login/gato.png" alt="" class="img"> </div>
+    </div>
+
+    <div class="container-2">
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="form">
+
+        <mat-card class="mat-card">
+
+          <mat-card-header class="text-center" >
+            <mat-card-title  class="mat-card-title" ><img src="../../../assets/img/login/Login.png" alt="Login" class="login"></mat-card-title>
+          </mat-card-header>
+
+          <mat-card-content class="mat-card-content">
+
+            <mat-form-field appearance="fill" class="form-group">
+              <mat-label class="labels">Ingrese su usuario</mat-label>
+              <input matInput formControlName="usuario"  class="inputs">
+
+            </mat-form-field>
+
+          </mat-card-content>
+
+            <mat-card-content class="mat-card-content">
+
+            <mat-form-field appearance="fill" class="form-group">
+              <mat-label>Ingrese la contraseña</mat-label>
+              <input matInput type="password" formControlName="password" >
+            </mat-form-field>
+
+          </mat-card-content>
+
+          <mat-card-actions class="mat-card-actions">
+            <button  type="submit" class="button">Iniciar Sesión</button>
+          </mat-card-actions>
+        </mat-card>
+      </form>
+
+
+
+
+  </div>
+
+</div>
+</body>
+
+</html>

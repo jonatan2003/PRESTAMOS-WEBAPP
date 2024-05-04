@@ -1,0 +1,147 @@
+
+<section class="full-box nav-lateral">
+  <div class="full-box nav-lateral-bg show-nav-lateral"></div>
+  <div class="full-box nav-lateral-content">
+    <figure class="full-box nav-lateral-avatar">
+      <i class="far fa-times-circle show-nav-lateral"></i>
+      <img src="../../../assets/img/dashboard/empleadoperfil.png" class="img-fluid" alt="Avatar">
+      <figcaption class="roboto-medium text-center" *ngIf="empleado">
+        Admin: {{ empleado.nombre }} DNI: {{ empleado.dni }} <br><small class="roboto-condensed-light">DON GATO EMPEÑOS</small>
+      </figcaption>
+    </figure>
+    <div class="full-box nav-lateral-bar"></div>
+    <nav class="full-box nav-lateral-menu">
+      <ul>
+        <li>
+          <a routerLink="/admin"><i class="fab fa-dashcube fa-fw"></i> &nbsp; Dashboard</a>
+        </li>
+
+        <li>
+          <a href="/admin/empleado-new" class="nav-btn-submenu"><i class="fas fa-user-tie fa-fw"></i>  &nbsp; Empleado <i class="fas fa-chevron-down"></i></a>
+          <ul>
+            <li>
+              <a routerLink="empleado-new"><i class="fas fa-plus fa-fw"></i> &nbsp; Agregar Empleado</a>
+            </li>
+            <li>
+              <a routerLink="empleado-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; Lista de Empleado</a>
+            </li>
+            <li>
+              <a routerLink="empleado-search"><i class="fas fa-search fa-fw"></i> &nbsp; Buscar Empleado</a>
+            </li>
+          </ul>
+        </li>
+
+        <li>
+          <a href="client-new" class="nav-btn-submenu"><i class="fas fa-users fa-fw"></i> &nbsp; Clientes <i class="fas fa-chevron-down"></i></a>
+          <ul>
+            <li>
+              <a routerLink="client-new"><i class="fas fa-plus fa-fw"></i> &nbsp; Agregar Cliente</a>
+            </li>
+            <li>
+              <a routerLink="client-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; Lista de clientes</a>
+            </li>
+            <li>
+              <a routerLink="client-search"><i class="fas fa-search fa-fw"></i> &nbsp; Buscar cliente</a>
+            </li>
+          </ul>
+        </li>
+
+        <li>
+          <a href="#" class="nav-btn-submenu"><i class="fas fa-book fa-fw"></i>&nbsp; Categoria <i class="fas fa-chevron-down"></i></a>
+          <ul>
+            <li>
+              <a routerLink="categoria-new"><i class="fas fa-plus fa-fw"></i> &nbsp; Agregar Categoria</a>
+            </li>
+            <li>
+              <a routerLink="categoria-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; Lista de Categoria</a>
+            </li>
+            <li>
+              <a routerLink="categoria-search"><i class="fas fa-search fa-fw"></i> &nbsp; Buscar Categoria</a>
+            </li>
+          </ul>
+        </li>
+
+
+
+        <li>
+          <a href="#" class="nav-btn-submenu"><i class="fas fa-pallet fa-fw"></i> &nbsp; Items <i class="fas fa-chevron-down"></i></a>
+          <ul>
+            <li>
+              <a routerLink="item-new"><i class="fas fa-plus fa-fw"></i> &nbsp; Agregar item</a>
+            </li>
+            <li>
+              <a routerLink="item-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; Lista de items</a>
+            </li>
+            <li>
+              <a routerLink="item-search"><i class="fas fa-search fa-fw"></i> &nbsp; Buscar item</a>
+            </li>
+          </ul>
+        </li>
+
+        <li>
+          <a href="#" class="nav-btn-submenu"><i class="fas fa-file-invoice-dollar fa-fw"></i> &nbsp; Préstamos <i class="fas fa-chevron-down"></i></a>
+          <ul>
+            <li>
+              <a routerLink="reservation-new"><i class="fas fa-plus fa-fw"></i> &nbsp; Nuevo préstamo</a>
+            </li>
+            <li>
+              <a routerLink="reservation-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; Lista de préstamos</a>
+            </li>
+            <li>
+              <a routerLink="reservation-search"><i class="fas fa-search-dollar fa-fw"></i> &nbsp; Buscar préstamos</a>
+            </li>
+            <li>
+              <a routerLink="reservation-pending"><i class="fas fa-hand-holding-usd fa-fw"></i> &nbsp; Préstamos Pendientes</a>
+            </li>
+            <li>
+              <a  routerLink="reservation-finished"><i class="fas fa-hand-holding-usd fa-fw"></i> &nbsp; Préstamos Vencidos</a>
+          </li>
+          </ul>
+        </li>
+
+        <li>
+          <a routerLink="pagos-list"><i class="fas fa-money-bill-alt"></i> &nbsp; Pagos</a>
+        </li>
+
+        <li>
+          <a href="#" class="nav-btn-submenu"><i class="fas fa-shopping-cart fa-fw"></i> &nbsp; Ventas <i class="fas fa-chevron-down"></i></a>
+          <ul>
+            <!-- <li>
+              <a routerLink="venta-new"><i class="fas fa-plus fa-fw"></i> &nbsp; Nuevo Ventas</a>
+            </li> -->
+            <li>
+              <a routerLink="venta-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; Lista de Ventas</a>
+            </li>
+            <!-- <li>
+              <a routerLink="venta-search"><i class="fas fa-search-dollar fa-fw"></i> &nbsp; Buscar Ventas</a>
+            </li>
+            <li>
+              <a routerLink="venta-pending"><i class="fas fa-hand-holding-usd fa-fw"></i> &nbsp; Ventas pendientes</a>
+            </li> -->
+          </ul>
+        </li>
+
+
+
+        <li>
+          <a href="#" class="nav-btn-submenu"><i class="fas  fa-user-secret fa-fw"></i> &nbsp; Usuarios <i class="fas fa-chevron-down"></i></a>
+          <ul>
+            <li>
+              <a routerLink="user-new"><i class="fas fa-plus fa-fw"></i> &nbsp; Nuevo usuario</a>
+            </li>
+            <li>
+              <a routerLink="user-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; Lista de usuarios</a>
+            </li>
+            <li>
+              <a routerLink="user-search"><i class="fas fa-search fa-fw"></i> &nbsp; Buscar usuario</a>
+            </li>
+          </ul>
+        </li>
+
+        <li>
+          <a routerLink="company"><i class="fas fa-store-alt fa-fw"></i> &nbsp; Empresa</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</section>

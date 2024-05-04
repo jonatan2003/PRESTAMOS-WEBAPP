@@ -1,0 +1,107 @@
+
+			<!-- Page header -->
+		
+			<div class="container-fluid">
+				<ul class="full-box list-unstyled page-nav-tabs">
+					<li>
+						<a routerLink="/admin/venta-new"><i class="fas fa-plus fa-fw"></i> &nbsp; AGREGAR VENTA</a>
+					</li>
+					<li>
+						<a routerLink="/admin/venta-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; LISTA DE VENTA</a>
+					</li>
+					<li>
+						<a class="active" routerLink="/admin/venta-search"><i class="fas fa-search fa-fw"></i> &nbsp; BUSCAR VENTA</a>
+					</li>
+          <li>
+            <a routerLink="/admin/venta-pending"><i class="fas fa-hand-holding-usd fa-fw"></i> &nbsp; VENTAS PENDIENTES</a>
+        </li>
+				</ul>
+			</div>
+
+			<!-- Content here-->
+			<div class="container-fluid">
+				<form (submit)="buscarVentas()"  class="form-neon">
+					<div class="container-fluid">
+						<div class="row justify-content-md-center">
+							<div class="col-12 col-md-6">
+								<div class="form-group">
+									<label for="inputSearch" class="bmd-label-floating">¿Qué venta estas buscando?</label>
+									<input type="text" class="form-control" name="busqueda-" id="inputSearch" maxlength="30" [(ngModel)]="terminoBusqueda">
+								</div>
+							</div>
+							<div class="col-12">
+								<p class="text-center" style="margin-top: 40px;">
+									<button type="submit" class="btn btn-raised btn-info"><i class="fas fa-search"></i> &nbsp; BUSCAR</button>
+								</p>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+
+
+			<div class="container-fluid mt-3"  *ngIf="ventas.length > 0">
+				<form (submit)="eliminarBusqueda()">
+					<input type="hidden" name="eliminar-busqueda" value="eliminar">
+					<div class="container-fluid">
+						<div class="row justify-content-md-center">
+							<div class="col-12 col-md-6">
+								<p class="text-center" style="font-size: 20px;">
+									Resultados de la busqueda <strong>“{{ terminoBusqueda }}”</strong>
+								</p>
+							</div>
+							<div class="col-12">
+								<p class="text-center" style="margin-top: 20px;">
+									<button type="submit" class="btn btn-raised btn-danger"><i class="far fa-trash-alt"></i> &nbsp; ELIMINAR BÚSQUEDA</button>
+								</p>
+							</div>
+						</div>
+					</div>
+				</form>
+			<!-- </div> -->
+
+
+			<!-- <div class="container-fluid"> -->
+				<div class="table-responsive">
+					<table class="table table-dark table-sm">
+						<thead>
+							<tr class="text-center roboto-medium">
+								<th scope="col">EMPLEADO</th>
+								<th scope="col">CLIENTE</th>
+								<th scope="col">FECHA VENTA</th>
+                <th scope="col">MONTO TOTAL</th>
+								<th scope="col">TIPO PAGO</th>
+								<th scope="col">ACTUALIZAR</th>
+								<th scope="col">ELIMINAR</th>
+
+							</tr>
+						</thead>
+						<tbody>
+							<tr *ngFor="let ventas of ventas" class="text-center" >
+								<td>{{ ventas.Empleado?.nombre }}</td>
+								<td>{{ ventas.Cliente?.nombre }}</td>
+								<td>{{ ventas.fecha_venta }}</td>
+                <td>{{ ventas.total }}</td>
+								<td>{{ ventas.tipo_pago }}</td>
+
+								<td><button class="btn btn-primary" (click)="actualizarVentas(ventas)"><i class="fas fa-sync-alt"></i></button></td>
+						    <td><button class="btn btn-danger" (click)="deleteVenta(ventas.id!)"><i class="far fa-trash-alt"></i></button></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<nav aria-label="Page navigation example">
+					<ul class="pagination justify-content-center">
+						<li class="page-item disabled">
+							<a class="page-link" href="#" tabindex="-1">Previous</a>
+						</li>
+						<li class="page-item"><a class="page-link" href="#">1</a></li>
+						<li class="page-item"><a class="page-link" href="#">2</a></li>
+						<li class="page-item"><a class="page-link" href="#">3</a></li>
+						<li class="page-item">
+							<a class="page-link" href="#">Next</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+

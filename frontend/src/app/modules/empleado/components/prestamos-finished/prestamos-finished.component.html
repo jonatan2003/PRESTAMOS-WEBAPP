@@ -1,0 +1,105 @@
+
+            <!-- Page header -->
+            
+            <div class="container-fluid">
+                <ul class="full-box list-unstyled page-nav-tabs">
+                    <li>
+                        <a routerLink="/empleados/prestamos-new"><i class="fas fa-plus fa-fw"></i> &nbsp; NUEVO PRÉSTAMO</a>
+                    </li>
+                    <li>
+                        <a class="active" routerLink="/empleados/prestamos-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; LISTA DE PRÉSTAMOS VENCIDOS</a>
+                    </li>
+                    <li>
+                        <a routerLink="/empleados/prestamos-search"><i class="fas fa-search-dollar fa-fw"></i> &nbsp; BUSCAR PRÉSTAMOS</a>
+                    </li>
+                    <li>
+                        <a routerLink="/empleados/prestamos-pending"><i class="fas fa-hand-holding-usd fa-fw"></i> &nbsp; PRÉSTAMOS PENDIENTES</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!--CONTENT-->
+
+			 <div class="container-fluid">
+				<div *ngIf="!loading" class="table-responsive">
+					<table *ngIf="listPrestamos.length > 0"  class="table table-dark table-sm">
+						<thead>
+							<tr class="text-center roboto-medium">
+								<th  scope="col">CLIENTE</th>
+               					 <th  scope="col">EMPLEADO</th>
+								<th  scope="col">ARTICULO</th>
+								<th  scope="col">FECHA DE PRÉSTAMO</th>
+								<th  scope="col">FECHA DE DEVOLUCION</th>
+								<th  scope="col">MONTO PRESTAMO</th>
+               					 <th  scope="col">MONTO PAGO</th>
+								<th  scope="col">OBSERVACION</th>
+								<th  scope="col">ENVIAR A VENTAS</th>
+								<th scope="col">ACTUALIZAR</th>
+								<th  scope="col">PAGOS</th>
+								<th  scope="col">ELIMINAR</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr *ngFor="let prestamos of listPrestamos; let i = index"  class="text-center" >
+								<td>{{ prestamos.Cliente?.nombre }}</td>
+								<td>{{ prestamos.Empleado?.nombre }}</td>
+
+								<td>
+									<span>
+										{{ prestamos.Articulo ?
+											(prestamos.Articulo.Vehiculo ?
+												prestamos.Articulo.Vehiculo.descripcion :
+												(prestamos.Articulo.Electrodomestico ?
+													prestamos.Articulo.Electrodomestico.descripcion :
+													'No hay descripción disponible')) :
+											'No hay descripción disponible' }}
+									</span>
+								</td>
+                                <td>{{ prestamos.fecha_prestamo }}</td>
+				                <td>{{ prestamos.fecha_devolucion}}</td>
+			                	<td>{{ prestamos.monto_prestamo }}</td>
+                                <td>{{ prestamos.monto_pago}}</td>
+								<td>{{ prestamos.observacion }}</td>
+								<td>
+									<button type="button" class="btn btn-danger" (click)="onImprimirFila(i)">
+										<i class="fas fa-file-pdf"></i>
+									</button>
+								</td>
+								<td>
+									<a routerLink="/admin/reservation/{{ prestamos.id }}"  class="btn btn-success">
+	  									<i class="fas fa-sync-alt"></i>
+									</a>
+								</td>
+								<td>
+									<a routerLink="/admin/payment" class="btn btn-info">
+	  									<i class="fas fa-dollar-sign"></i>
+									</a>
+								</td>
+								<td>
+									<form action="">
+										<button type="button" class="btn btn-warning">
+		  									<i class="far fa-trash-alt"></i>
+										</button>
+									</form>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<nav aria-label="Page navigation example">
+					<ul class="pagination justify-content-center">
+						<li class="page-item disabled">
+							<a class="page-link" href="#" tabindex="-1">Previous</a>
+						</li>
+						<li class="page-item"><a class="page-link" href="#">1</a></li>
+						<li class="page-item"><a class="page-link" href="#">2</a></li>
+						<li class="page-item"><a class="page-link" href="#">3</a></li>
+						<li class="page-item">
+							<a class="page-link" href="#">Next</a>
+						</li>
+						<li class="page-item">
+							<button type="button" class="btn btn-danger" (click)="onImprimir()"><i class="fas fa-file-pdf"></i></button>
+						</li>
+					</ul>
+				</nav>
+			</div>

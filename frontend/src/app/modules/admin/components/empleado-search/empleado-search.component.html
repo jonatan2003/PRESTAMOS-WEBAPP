@@ -1,0 +1,276 @@
+
+
+			<!-- Page header -->
+		
+
+			<div class="container-fluid">
+				<ul class="full-box list-unstyled page-nav-tabs">
+					<li>
+						<a routerLink="/admin/empleado-new"><i class="fas fa-plus fa-fw"></i> &nbsp; AGREGAR EMPLEADO</a>
+					</li>
+					<li>
+						<a routerLink="/admin/empleado-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; LISTA DE EMPLEADO</a>
+					</li>
+					<li>
+						<a class="active" routerLink="/admin/empleado-search"><i class="fas fa-search fa-fw"></i> &nbsp; BUSCAR EMPLEADO</a>
+					</li>
+				</ul>
+			</div>
+
+			<!-- Content here-->
+			<div class="container-fluid">
+				<form (submit)="buscarEmpleados()"  class="form-neon">
+					<div class="container-fluid">
+						<div class="row justify-content-md-center">
+							<div class="col-12 col-md-6">
+								<div class="form-group">
+									<label for="inputSearch" class="bmd-label-floating">¿Qué empleado estas buscando?</label>
+									<input type="text" class="form-control" name="busqueda-" id="inputSearch" maxlength="30" [(ngModel)]="terminoBusqueda">
+								</div>
+							</div>
+							<div class="col-12">
+								<p class="text-center" style="margin-top: 40px;">
+									<button type="submit" class="btn btn-raised btn-info"><i class="fas fa-search"></i> &nbsp; BUSCAR</button>
+								</p>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+
+
+			<div class="container-fluid mt-3"  *ngIf="empleados.length > 0">
+				<form (submit)="eliminarBusqueda()">
+					<input type="hidden" name="eliminar-busqueda" value="eliminar">
+					<div class="container-fluid">
+						<div class="row justify-content-md-center">
+							<div class="col-12 col-md-6">
+								<p class="text-center" style="font-size: 20px;">
+									Resultados de la busqueda <strong>“{{ terminoBusqueda }}”</strong>
+								</p>
+							</div>
+							<div class="col-12">
+								<p class="text-center" style="margin-top: 20px;">
+									<button type="submit" class="btn btn-raised btn-danger"><i class="far fa-trash-alt"></i> &nbsp; ELIMINAR BÚSQUEDA</button>
+								</p>
+							</div>
+						</div>
+					</div>
+				</form>
+			<!-- </div> -->
+
+
+			<!-- <div class="container-fluid"> -->
+				<div class="table-responsive">
+					<table class="table table-dark table-sm">
+						<thead>
+							<tr class="text-center roboto-medium">
+								<th>DNI</th>
+								<th>NOMBRE</th>
+								<th>APELLIDO</th>
+								<th>FECHA NACIMIENTO</th>
+								<th>FECHA CONTRATACION</th>
+								<th>GENERO</th>
+								<th>DIRECCION</th>
+								<th>TELEFONO</th>
+								<th>CORREO</th>
+								<th>TIPO CONTRATO</th>
+								<th>ACTUALIZAR</th>
+								<th>ELIMINAR</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr *ngFor="let empleado of empleados" class="text-center" >
+								<td>{{ empleado.dni }}</td>
+								<td>{{ empleado.nombre }}</td>
+								<td>{{ empleado.apellidos }}</td>
+								<td>{{ empleado.fecha_nacimiento }}</td>
+								<td>{{ empleado.fecha_contratacion }}</td>
+								<td>{{ empleado.genero }}</td>
+								<td>{{ empleado.direccion }}</td>
+								<td>{{ empleado.telefono }}</td>
+								<td>{{ empleado.correo }}</td>
+								<td>{{ empleado.tipo_contrato }}</td>
+								<td>
+									<button type="button" (click)="setSelectedEmpleado(empleado)" class="btn btn-primary" >
+										<i class="fas fa-sync-alt"></i>
+									 </button>
+								</td>
+						    <td>
+								<button  (click)="deleteEmpleado(empleado.id!)" type="button" class="btn btn-warning">
+									<i class="far fa-trash-alt"></i>
+								 </button>
+							</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<nav aria-label="Page navigation example">
+					<ul class="pagination justify-content-center">
+					  <li class="page-item" [class.disabled]="currentPage === 1">
+						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage - 1)" tabindex="-1">Atras</a>
+					  </li>
+					  <li class="page-item" *ngFor="let page of getPages()">
+						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(page)">{{ page }}</a>
+					  </li>
+					  <li class="page-item" [class.disabled]="currentPage === totalPages">
+						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
+					  </li>
+					</ul>
+				  </nav>
+			</div>
+
+
+
+			
+
+			<!-- MODAL Cliente -->
+<div class="modal fade" id="ModalEmpleado" #modalEmpleado tabindex="-1" role="dialog" aria-labelledby="ModalEmpleado" aria-hidden="true" >
+
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="ModalEmpleado">ACTUALIZAR EMPLEADO</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" id="cerrarModalEmpleado" (click)="guardar()">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					
+					<form class="form-neon" [formGroup]="form" (ngSubmit)="updateEmpleado()">
+						<fieldset>
+							<legend><i class="fas fa-user"></i> &nbsp; Información básica</legend>
+							<div class="container-fluid">
+								<div class="row">
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="empleado_nombre" >Nombre</label>
+											<input formControlName="nombre" type="text" class="form-control" maxlength="50">
+											<div class="alert alert-danger mt-2"[hidden]="form.get('nombre').valid || form.get('nombre').pristine">
+											<span *ngIf="form.get('nombre').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="empleado_apellido" >Apellido</label>
+											<input formControlName="apellidos" type="text" class="form-control" maxlength="50">
+											<div class="alert alert-danger mt-2"[hidden]="form.get('apellidos').valid || form.get('apellidos').pristine">
+											<span *ngIf="form.get('apellidos').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="dni" >DNI</label>
+											<input formControlName="dni" type="text" class="form-control" maxlength="8" minlength="8">
+											<div class="alert alert-danger mt-2"[hidden]="form.get('dni').valid || form.get('dni').pristine">
+											<span *ngIf="form.get('dni').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											<span *ngIf="form.get('dni').errors?.['minlength']" class="text-danger">El DNI debe tener exactamente 8 dígitos</span>
+									  <br>
+											<span *ngIf="form.get('dni').errors?.['maxlenght']" class="text-danger">El DNI debe tener exactamente 8 dígitos</span>
+								  <br>
+											<span *ngIf="form.get('dni').errors?.['pattern']" class="text-danger">El DNI solo puede contener números</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="fecha_nacimiento" >Fecha Nacimiento</label>
+											<input formControlName="fecha_nacimiento" type="date" class="form-control" maxlength="27">
+											<div class="alert alert-danger mt-2"[hidden]="form.get('fecha_nacimiento').valid || form.get('fecha_nacimiento').pristine">
+											<span *ngIf="form.get('fecha_nacimiento').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="fecha_contratacion" >Fecha Contratacion</label>
+											<input formControlName="fecha_contratacion" type="date" class="form-control" maxlength="27">
+											<div class="alert alert-danger mt-2"[hidden]="form.get('fecha_contratacion').valid || form.get('fecha_contratacion').pristine">
+											<span *ngIf="form.get('fecha_contratacion').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="item_categoria">Genero</label>
+											<select formControlName="genero" class="form-control" >
+												<option value="" selected="" disabled="">Seleccione una opción</option>
+												<option value="masculino">Masculino</option>
+												<option value="femenino">Femenino</option>
+											</select>
+											<div class="alert alert-danger mt-2"[hidden]="form.get('genero').valid || form.get('genero').pristine">
+											<span *ngIf="form.get('genero').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="empleado_direccion" >Dirección</label>
+											<input formControlName="direccion" type="text" class="form-control" maxlength="50">
+											<div class="alert alert-danger mt-2"[hidden]="form.get('direccion').valid || form.get('direccion').pristine">
+											<span *ngIf="form.get('direccion').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="empleado_telefono" >Telefono</label>
+											<input formControlName="telefono" type="text" class="form-control" maxlength="9" minlength="9">
+											<div class="alert alert-danger mt-2"[hidden]="form.get('telefono').valid || form.get('telefono').pristine">
+												<span *ngIf="form.get('telefono').errors?.['required']" class="text-danger">Este campo es requerido</span>
+												<span *ngIf="form.get('telefono').errors?.['minlength']" class="text-danger">El DNI debe tener exactamente 9 dígitos</span>
+								<br>
+												<span *ngIf="form.get('telefono').errors?.['maxlenght']" class="text-danger">El DNI debe tener exactamente 9 dígitos</span>
+								<br>
+												<span *ngIf="form.get('telefono').errors?.['pattern']" class="text-danger">El DNI solo puede contener números</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="empleado_correo" >CORREO</label>
+											<input formControlName="correo" type="email" class="form-control" maxlength="50">
+											<div class="alert alert-danger mt-2"[hidden]="form.get('correo').valid || form.get('correo').pristine">
+											<span *ngIf="form.get('correo').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											<span *ngIf="form.get('correo').errors?.['email']" class="text-danger">el correo debe ser valido</span>
+							</div>
+										</div>
+									</div>
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="tipo_contratacion">TIPO CONTRATACION</label>
+											<select formControlName="tipo_contrato" class="form-control"
+    >
+												<option value="" selected="" disabled="">Seleccione una opcion</option>
+												<option value="temporal">Temporal</option>
+												<option value="medio tiempo">Medio Tiempo</option>
+												<option value="tiempo completo">Tiempo Completo</option>
+											</select>
+											<div class="alert alert-danger mt-2"[hidden]="form.get('tipo_contrato').valid || form.get('tipo_contrato').pristine">
+											<span *ngIf="form.get('tipo_contrato').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+							<br>
+							<p class="text-center" style="margin-top: 40px;">
+								
+								<button [disabled]="form.untouched || form.invalid" type="submit" class="btn btn-raised btn-info btn-sm" (click)="guardar()">
+									<i class="far fa-save"></i> &nbsp; GUARDAR
+								  </button>							</p>
+
+						</form>
+				</div>				
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="guardar()">Cerrar</button>
+			</div>
+		</div>
+	</div>
+	</div>

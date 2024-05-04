@@ -1,0 +1,88 @@
+
+            <!-- Page header -->
+         
+			
+            <div class="container-fluid">
+                <ul class="full-box list-unstyled page-nav-tabs">
+                    <li>
+                        <a routerLink="/admin/venta-new"><i class="fas fa-plus fa-fw"></i> &nbsp; NUEVO VENTA</a>
+                    </li>
+                    <li>
+                        <a routerLink="/admin/venta-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; LISTA DE VENTA</a>
+                    </li>
+                    <li>
+                        <a routerLink="/admin/venta-search"><i class="fas fa-search-dollar fa-fw"></i> &nbsp; BUSCAR VENTA</a>
+                    </li>
+                    <li>
+                        <a class="active" routerLink="/admin/venta-pending"><i class="fas fa-hand-holding-usd fa-fw"></i> &nbsp; VENTAS PENDIENTES</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!--CONTENT-->
+
+			 <div class="container-fluid">
+				<div *ngIf="!loading" class="table-responsive">
+					<table *ngIf="listDetalleVenta.length > 0"  class="table table-dark table-sm">
+						<thead>
+							<tr class="text-center roboto-medium">
+								<th scope="col">VENTA</th>
+                <th scope="col">ARTICULO</th>
+								<th scope="col">CANTIDAD</th>
+								<th scope="col">PRECIO UNITARIO</th>
+								<th scope="col">SUB TOTAL</th>
+                <th scope="col">TOTAL</th>
+                <th scope="col">DESCRIPCION</th>
+								<th scope="col">FACTURA</th>
+								<th scope="col">ACTUALIZAR</th>
+								<th scope="col">PAGOS</th>
+								<th scope="col">ELIMINAR</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr *ngFor="let detalleventa of listDetalleVenta" class="text-center" >
+								<td>{{ detalleventa.idventa}}</td>
+								<td>{{ detalleventa.Venta?.Articulo.id}}</td>
+								<td>{{ detalleventa.precio_unitario}}</td>
+								<td>{{ detalleventa.subtotal}}</td>
+								<td>
+									<a href="#" class="btn btn-info">
+	  									<i class="fas fa-file-pdf"></i>
+									</a>
+								</td>
+								<td>
+									<a routerLink="'/venta-pending-update/{{ detalleventa.id }}'"  class="btn btn-success">
+	  									<i class="fas fa-sync-alt"></i>
+									</a>
+								</td>
+								<td>
+									<a href="#" class="btn btn-info">
+	  									<i class="fas fa-dollar-sign"></i>
+									</a>
+								</td>
+								<td>
+									<form action="">
+										<button (click)="deleteDetaventa(detalleventa.id!)" type="button" class="btn btn-warning">
+		  									<i class="far fa-trash-alt"></i>
+										</button>
+									</form>
+								</td>
+							</tr>
+
+						</tbody>
+					</table>
+				</div>
+				<nav aria-label="Page navigation example">
+					<ul class="pagination justify-content-center">
+						<li class="page-item disabled">
+							<a class="page-link" href="#" tabindex="-1">Previous</a>
+						</li>
+						<li class="page-item"><a class="page-link" href="#">1</a></li>
+						<li class="page-item"><a class="page-link" href="#">2</a></li>
+						<li class="page-item"><a class="page-link" href="#">3</a></li>
+						<li class="page-item">
+							<a class="page-link" href="#">Next</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
