@@ -100,7 +100,7 @@ export class VentaListComponent {
     this.loading = true;
     this._ventaService.deleteVenta(id).subscribe(() => {
       this.getListVentas();
-      this.toastr.warning('El Venta fue eliminado con exito', 'Venta eliminado');
+      this.toastr.warning('La Venta fue eliminado con exito', 'Venta eliminada');
     });
   }
 

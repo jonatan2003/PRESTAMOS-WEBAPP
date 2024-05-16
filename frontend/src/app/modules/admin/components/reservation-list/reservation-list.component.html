@@ -74,9 +74,12 @@
 									</button>
 								</td>
 								<td>
-									<button type="button" (click)="setSelectedPago(prestamos)" class="btn btn-primary">
+									<button type="button" 
+											(click)="setSelectedPago(prestamos)" 
+											class="btn btn-primary"
+											[disabled]="prestamos.estado.toLowerCase().trim() === 'pagado' || prestamos.estado.toLowerCase().trim() === 'vendido'">
 										<i class="fas fa-money-bill-alt"></i>
-									 </button>
+									</button>
 								</td>
 								<!-- <td>
 									<button type="button" (click)="setSelectedPrestamo(prestamos)" class="btn btn-primary">

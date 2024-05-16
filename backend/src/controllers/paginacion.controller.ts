@@ -11,7 +11,7 @@ import DetalleVenta from '../models/detalleventa.model';
 import Usuario from '../models/usuario.model';
 import Pago from '../models/pago.model';
 import { Op } from 'sequelize';
-
+import server from '../server';
 
 export const getClientes = async (req: Request, res: Response) => {
     try {
@@ -512,21 +512,238 @@ export const getUsuarios = async (req: Request, res: Response) => {
 };
 
 
-export const getPrestamosVencidos = async (req: Request, res: Response) => {
+// export const getPrestamosVencidos = async (req: Request, res: Response) => {
+//   try {
+//     const page = parseInt(req.query.page as string, 10) || 1;
+//     const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+//     const offset = (page - 1) * pageSize;
+
+//     const hoy = new Date(); // Obtener la fecha actual
+
+//     // Obtener los préstamos vencidos
+//     const prestamosVencidos = await Prestamo.findAndCountAll({
+//       where: {
+//         fecha_devolucion: {
+//           [Op.lt]: hoy // Obtener los préstamos donde la fecha de devolución es anterior a la fecha actual
+//         },
+
+//         [Op.and]: [
+//           { estado: 'pendiente' }, // Préstamos vencidos con estado 'pendiente'
+//           //{ estado: 'venta' } // Préstamos vencidos con estado 'venta'
+//         ],
+//       },
+//       include: [
+//         { model: Cliente, as: 'Cliente' },
+//         { model: Empleado, as: 'Empleado' },
+//         {
+//           model: Articulo,
+//           as: 'Articulo',
+//           include: [
+//             { model: Categoria, as: 'Categoria' },
+//             { model: Vehiculo, as: 'Vehiculo' },
+//             { model: Electrodomestico, as: 'Electrodomestico' },
+//           ],
+//         },
+//       ],
+//       limit: pageSize,
+//       offset: offset,
+//       order: [['fecha_devolucion', 'DESC']], // Ordenar por fecha de devolución en orden descendente
+//     });
+
+//     // Obtener los IDs de los préstamos vencidos
+//     const prestamosIds = prestamosVencidos.rows.map((prestamo: any) => prestamo.id);
+
+//     // Actualizar los préstamos vencidos a estado 'venta'
+//     // Añade una condición para actualizar solo los préstamos que están en estado 'pendiente'
+//     await Prestamo.update(
+//       { estado: 'venta' },
+//       {
+//         where: {
+//           id: prestamosIds,
+//           estado: 'pendiente' // Solo actualizar préstamos que estén en estado 'pendiente'
+//         }
+//       }
+//     );
+
+//     // Recuperar nuevamente los préstamos actualizados (incluyendo los que se acaban de actualizar a 'venta')
+//     const prestamosActualizados = await Prestamo.findAll({
+//       where: {
+//         id: prestamosIds
+//       },
+//       include: [
+//         { model: Cliente, as: 'Cliente' },
+//         { model: Empleado, as: 'Empleado' },
+//         {
+//           model: Articulo,
+//           as: 'Articulo',
+//           include: [
+//             { model: Categoria, as: 'Categoria' },
+//             { model: Vehiculo, as: 'Vehiculo' },
+//             { model: Electrodomestico, as: 'Electrodomestico' },
+//           ],
+//         },
+//       ]
+//     });
+
+//     const totalItems = prestamosVencidos.count;
+//     const totalPages = Math.ceil(totalItems / pageSize);
+
+//     res.json({
+//       page,
+//       pageSize,
+//       totalItems,
+//       totalPages,
+//       data: prestamosActualizados, // Devuelve los préstamos actualizados
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ msg: 'Error al obtener los préstamos vencidos' });
+//   }
+// };
+
+
+export const actualizarPrestamosAVenta = async (req: Request, res: Response) => {
+  try {
+    const hoy = new Date();
+
+    // Obtener y actualizar los préstamos vencidos y pendientes a estado 'venta'
+    const [prestamosActualizadosCount] = await Prestamo.update(
+      { estado: 'venta' },
+      {
+        where: {
+          estado: 'pendiente',
+          fecha_devolucion: {
+            [Op.lt]: hoy
+          }
+        }
+      }
+    );
+
+    if (prestamosActualizadosCount > 0) {
+      // Obtener los préstamos actualizados que cumplen con los criterios
+      const prestamosActualizados = await Prestamo.findAll({
+        where: {
+          estado: 'venta',
+          fecha_devolucion: {
+            [Op.lt]: hoy
+          }
+        },
+        include: [
+          {
+            model: Articulo,
+            as: 'Articulo',
+            include: [
+              { model: Vehiculo, as: 'Vehiculo' },
+              { model: Electrodomestico, as: 'Electrodomestico' }
+            ]
+          },
+          { model: Cliente, as: 'Cliente' },
+          { model: Empleado, as: 'Empleado' }
+        ]
+      });
+
+      const io = server.getIO(); // Obtener la instancia de io desde la instancia de Server
+
+      // Emitir un evento para cada préstamo actualizado
+      prestamosActualizados.forEach((prestamo: any) => {
+        const { id, estado, Articulo, Cliente, Empleado } = prestamo;
+
+        let articuloDescripcion = 'No disponible';
+        if (Articulo) {
+          if (Articulo.Vehiculo) {
+            articuloDescripcion = Articulo.Vehiculo.descripcion || 'No hay descripción de vehículo disponible';
+          } else if (Articulo.Electrodomestico) {
+            articuloDescripcion = Articulo.Electrodomestico.descripcion || 'No hay descripción de electrodoméstico disponible';
+          }
+        }
+
+        const clienteNombre = Cliente ? Cliente.nombre : 'No disponible';
+        const empleadoNombre = Empleado ? Empleado.nombre : 'No disponible';
+
+        const mensaje = `Se ha actualizado el préstamo a estado "venta" - Detalles del artículo: ${articuloDescripcion}`;
+        const evento = {
+          id: id,
+          estado: estado,
+          cliente: clienteNombre,
+          empleado: empleadoNombre
+        };
+
+        io.emit('prestamoActualizado', { message: mensaje, prestamo: evento });
+      });
+
+      res.status(200).json({ success: true, message: 'Se han actualizado los préstamos a estado "venta" correctamente.' });
+      
+    } else {
+      res.status(404).json({ success: false, message: 'No se encontraron préstamos vencidos y pendientes para actualizar.' });
+    }
+  } catch (error) {
+    console.error('Error al actualizar préstamos a estado "venta":', error);
+    res.status(500).json({ success: false, message: 'Error al actualizar préstamos a estado "venta".' });
+  }
+};
+
+// async function obtenerDescripcionArticulo(articulo: any): Promise<string> {
+//   if (!articulo) {
+//     return 'No hay descripción disponible';
+//   }
+
+//   const { idvehiculo, idelectrodomestico } = articulo.dataValues;
+
+//   if (idvehiculo !== null) {
+//     return await obtenerDescripcionVehiculo(idvehiculo);
+//   } else if (idelectrodomestico !== null) {
+//     return await obtenerDescripcionElectrodomestico(idelectrodomestico);
+//   } else {
+//     return 'No hay descripción disponible';
+//   }
+// }
+
+// async function obtenerDescripcionVehiculo(idVehiculo: number): Promise<string> {
+//   try {
+//     const vehiculo:any = await Vehiculo.findByPk(idVehiculo); // Busca el vehículo por su ID
+
+//     if (vehiculo) {
+//       return vehiculo.descripcion || 'No hay descripción de vehículo disponible';
+//     } else {
+//       return 'No hay descripción de vehículo disponible';
+//     }
+//   } catch (error) {
+//     console.error('Error al obtener la descripción del vehículo:', error);
+//     return 'Error al obtener la descripción del vehículo';
+//   }
+// }
+
+// async function obtenerDescripcionElectrodomestico(idElectrodomestico: number): Promise<string> {
+//   try {
+//     const electrodomestico:any = await Electrodomestico.findByPk(idElectrodomestico); // Busca el electrodoméstico por su ID
+
+//     if (electrodomestico) {
+//       return electrodomestico.descripcion || 'No hay descripción de electrodoméstico disponible';
+//     } else {
+//       return 'No hay descripción de electrodoméstico disponible';
+//     }
+//   } catch (error) {
+//     console.error('Error al obtener la descripción del electrodoméstico:', error);
+//     return 'Error al obtener la descripción del electrodoméstico';
+//   }
+// }
+
+
+export const getPrestamosVenta = async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string, 10) || 1;
     const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
     const offset = (page - 1) * pageSize;
 
-    const hoy = new Date(); // Obtener la fecha actual
-
-    const prestamosVencidos = await Prestamo.findAndCountAll({
+    // Realiza la consulta paginada para obtener los préstamos en estado 'venta'
+    const prestamosVenta = await Prestamo.findAndCountAll({
       where: {
-        fecha_devolucion: {
-          [Op.lt]: hoy // Obtener los préstamos donde la fecha de devolución es anterior a la fecha actual
-        }
+        estado: 'venta'
       },
-      include: [
+      limit: pageSize,
+      offset: offset,
+      order: [['id', 'DESC']],
+            include: [
         { model: Cliente, as: 'Cliente' },
         { model: Empleado, as: 'Empleado' },
         {
@@ -538,13 +755,11 @@ export const getPrestamosVencidos = async (req: Request, res: Response) => {
             { model: Electrodomestico, as: 'Electrodomestico' },
           ],
         },
-      ],
-      limit: pageSize,
-      offset: offset,
-      order: [['fecha_devolucion', 'DESC']], // Ordenar por fecha de devolución en orden descendente
+      ]
+    
     });
 
-    const totalItems = prestamosVencidos.count;
+    const totalItems = prestamosVenta.count;
     const totalPages = Math.ceil(totalItems / pageSize);
 
     res.json({
@@ -552,14 +767,13 @@ export const getPrestamosVencidos = async (req: Request, res: Response) => {
       pageSize,
       totalItems,
       totalPages,
-      data: prestamosVencidos.rows,
+      data: prestamosVenta.rows
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: 'Error al obtener los préstamos vencidos' });
+    console.error('Error al obtener préstamos en estado "venta" con paginación:', error);
+    res.status(500).json({ success: false, message: 'Error al obtener préstamos en estado "venta" con paginación.' });
   }
 };
-
 
 export const getPrestamosPendientes = async (req: Request, res: Response) => {
   try {

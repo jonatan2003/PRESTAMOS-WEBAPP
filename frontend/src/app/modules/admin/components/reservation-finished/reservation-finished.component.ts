@@ -157,7 +157,7 @@ estado : string ;
                 this.loading = true;
               
                 // Ajusta el método para aceptar parámetros de paginación
-                this._paginacionService.getListPrestamosVencidos(this.currentPage, this.pageSize).subscribe((response: any) => {
+                this._paginacionService.getListPrestamosVentas(this.currentPage, this.pageSize).subscribe((response: any) => {
                   this.listPrestamos = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
                   this.loading = false;
                  console.log(this.listPrestamos);
@@ -449,7 +449,7 @@ estado : string ;
                   monto_prestamo: this.selectedPrestamo.monto_prestamo,
                   monto_pago: this.selectedPrestamo.monto_pago,
                   observacion:  this.selectedPrestamo.observacion,
-                  estado: "venta"
+                  estado: "vendido"
                 }; // Objeto de estado que contiene solo el nuevo estado 'venta'
             
                 console.log('Prestamo a actualizar:', this.idprestamo, prestamo); // Registro para verificar qué préstamo y estado se actualizará

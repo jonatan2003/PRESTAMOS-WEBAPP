@@ -69,9 +69,12 @@
 
 								
 								<td>
-									<button type="button" (click)="setSelectedVenta(prestamos)" class="btn btn-primary">
+									<button type="button" 
+											(click)="setSelectedVenta(prestamos)" 
+											class="btn btn-primary"
+											[disabled]="prestamos.estado.toLowerCase().trim() === 'vendido'">
 										<i class="fas fa-shopping-cart fa-fw"></i>
-									 </button>
+									</button>
 								</td>
 								<!-- <td>
 									<button type="button" (click)="setSelectedVenta(prestamos)" class="btn btn-primary">
@@ -89,7 +92,7 @@
 							</tr>
 						</tbody>
 					</table>
-					<div class="justify-content-center text-center" > <h2 *ngIf="listPrestamos.length == 0">No hay préstamos vencidos para mostrar</h2>
+					<div class="justify-content-center text-center" > <h2 *ngIf="listPrestamos.length == 0">No hay productos para VENDER</h2>
 					</div>
 					
 				</div>

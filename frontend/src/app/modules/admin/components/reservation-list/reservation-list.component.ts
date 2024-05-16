@@ -397,12 +397,13 @@ montoRestante: number ;
       // Agregar el pago guardado a la lista de pagos
       this.listPagos.push(pagoGuardado);
       this.loading = false;
-
+ console.log(this.listPagos);
+ 
       // Obtener el índice del último elemento agregado
       const lastIndex = this.listPagos.length - 1;
 
       // Llamar a la función para imprimir fila del último pago agregado
-     // this.onImprimirFilaPagos(lastIndex);
+     this.onImprimirFilaPagos(lastIndex);
 
       // Redirigir después de guardar
       this.router.navigate(['admin/pagos-list']);

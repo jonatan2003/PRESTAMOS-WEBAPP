@@ -63,6 +63,7 @@ import { EmpleadoGuard } from '../services/empleado.guard';
 import { User2UpdateComponent } from '../modules/empleado/components/user-update2/user2-update.component';
 import { PagosSearchComponent } from '../modules/admin/components/pagos-search/pagos-search.component';
 import { Pagos2SearchComponent } from '../modules/empleado/components/pagos2-search/pagos2-search.component';
+import { WebSocketService } from '../services/websocket.service';
 
 
 
@@ -133,7 +134,7 @@ import { Pagos2SearchComponent } from '../modules/empleado/components/pagos2-sea
       positionClass: 'toast-bottom-right'
     }), // ToastrModule added
   ],
-  providers: [AdminGuard,EmpleadoGuard,ToastrModule],
+  providers: [AdminGuard,EmpleadoGuard,ToastrModule,WebSocketService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

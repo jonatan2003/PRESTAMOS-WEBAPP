@@ -258,7 +258,7 @@ saveArticulo() {
   let idvehiculo: number | null;
   let idelectrodomestico: number | null;
 
-  let estado = ""
+  let estado : "";
   // Obtener ID de categoría seleccionada
   idcategoria = this.categoriaSeleccionada;
 
@@ -280,7 +280,7 @@ saveArticulo() {
    //  id, // Se deja como null al agregar un nuevo artículo
     idvehiculo,
     idelectrodomestico,
-    estado
+    estado: "prestamo"
     // Agrega otras propiedades necesarias aquí
   };
 
@@ -300,6 +300,7 @@ saveArticulo() {
 
   });
 }
+
 
 
 

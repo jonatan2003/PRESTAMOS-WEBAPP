@@ -83,7 +83,31 @@ export const getPagoById = async (req: Request, res: Response) => {
   try {
     const pago = await Pago.findByPk(idPago,{
       include: [
-        { model: Prestamo, as: 'Prestamo' }
+        { model: Prestamo, as: 'Prestamo',
+        include: [ { model: Cliente, as: 'Cliente'},
+        { model: Empleado, as: 'Empleado' },
+        { model: Articulo, as: 'Articulo' ,
+        include: [
+          { 
+            model: Categoria, // Relación con la tabla de Artículos
+            as: 'Categoria' // Alias para la relación de Artículo
+          },
+          { 
+            model: Vehiculo, // Relación con la tabla de Artículos
+            as: 'Vehiculo' // Alias para la relación de Artículo
+          },
+          { 
+            model: Electrodomestico, // Relación con la tabla de Artículos
+            as: 'Electrodomestico' // Alias para la relación de Artículo
+          },
+        ]
+        }
+         
+        ]
+
+
+
+         }
        
       ],
     });

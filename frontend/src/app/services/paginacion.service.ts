@@ -56,6 +56,12 @@ export class PaginacionService {
       .set('page_size', pageSize.toString());
     return this.http.get<Prestamo[]>(`${this.apiUrl}/prestamosvencidos`,{ params });
   }
+  getListPrestamosVentas(page: number, pageSize: number): Observable<Prestamo[]> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('page_size', pageSize.toString());
+    return this.http.get<Prestamo[]>(`${this.apiUrl}/prestamosventas`,{ params });
+  }
   getListPrestamosPendientes(page: number, pageSize: number): Observable<Prestamo[]> {
     let params = new HttpParams()
       .set('page', page.toString())

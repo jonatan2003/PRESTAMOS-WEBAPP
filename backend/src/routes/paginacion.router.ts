@@ -10,9 +10,10 @@ import { getClientes,
        getVentas,
         getDetallesVenta,
          getUsuarios, 
-         getPrestamosVencidos, 
          getPrestamosPendientes,
-         getPrestamosPagados} from '../controllers/paginacion.controller';
+         getPrestamosPagados,
+         getPrestamosVenta,
+         actualizarPrestamosAVenta} from '../controllers/paginacion.controller';
 
 const PaginacionRouter = Router();
 
@@ -48,7 +49,10 @@ PaginacionRouter.get('/detalleventas', getDetallesVenta);
 
 PaginacionRouter.get('/usuarios', getUsuarios);
 
-PaginacionRouter.get('/prestamosvencidos', getPrestamosVencidos);
+PaginacionRouter.get('/prestamosvencidos', actualizarPrestamosAVenta);
+
+PaginacionRouter.get('/prestamosventas', getPrestamosVenta);
+
 
 PaginacionRouter.get('/prestamospendientes', getPrestamosPendientes);
 
