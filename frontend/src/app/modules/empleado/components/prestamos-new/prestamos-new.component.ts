@@ -6,7 +6,7 @@ import { ArticulosService } from 'src/app/services/articulo.service';
 import { Articulo } from 'src/app/interfaces/articulo.interface';
 import { Empleado } from 'src/app/interfaces/empleado.interface';
 import { EmpleadoService } from 'src/app/services/empleado.service';
-
+import { switchMap } from 'rxjs/operators';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -23,17 +23,21 @@ import { Electrodomestico } from 'src/app/interfaces/electrodomestico.interface'
 import { Vehiculo } from 'src/app/interfaces/vehiculo.interface';
 
 import { AuthService } from 'src/app/services/auth.service';
+import { ImpresionService } from 'src/app/shared/services/impresion.service';
+import { formatDate } from '@angular/common';
+
 
 @Component({
-  selector: 'app-prestamos-new',
-  templateUrl: './prestamos-new.component.html',
-  styleUrls: ['./prestamos-new.component.css']
+  selector: 'app-reservation-new',
+  templateUrl: './Prestamos-new.component.html',
+  styleUrls: ['./Prestamos-new.component.css']
 })
 export class PrestamosNewComponent {
 // formulario ARTICULO
   categorias: Categoria[] = []; // Variable para almacenar los productos disponibles
   listCategorias: Categoria[] = [];
   listElectrodomesticos: Electrodomestico [] = [];
+  listPrestamos: Prestamo[] = [];
   listVehiculos: Vehiculo []  = [];
   formarticulo: FormGroup;
   categoriaSeleccionada: number; // Variable para almacenar la categoría seleccionada
@@ -93,7 +97,7 @@ id_articulo = null;
     private _clientesService: ClienteService,
     private _articulosService: ArticulosService,
     private _empleadosService: EmpleadoService,
-
+    private impresionService: ImpresionService,
     private _prestamosService: PrestamoService,
     private router: Router,
     private toastr: ToastrService,
@@ -164,7 +168,6 @@ const fechaActualString = this.fechaActual.toISOString().slice(0, 10);
 
 
 addPrestamo() {
-
   const prestamo: Prestamo = {
     idcliente: this.form.value.id_cliente,
     idempleado: this.id_empleado,
@@ -174,13 +177,9 @@ addPrestamo() {
     monto_prestamo: this.form.value.monto_prestamo,
     monto_pago: this.form.value.monto_prestamo,
     observacion: this.form.value.observacion,
-    estado: "pendiente" 
-    // ... Otros campos del formulario de articulo según la interfaz
+    estado: 'pendiente'
+    // ... Otros campos del formulario de artículo según la interfaz
   };
-
-
-
-
 
   this.loading = true;
 
@@ -188,19 +187,32 @@ addPrestamo() {
     // Es editar
     prestamo.id = this.id;
     this._prestamosService.updatePrestamo(this.id, prestamo).subscribe(() => {
-      this.toastr.info(`El prestamo  fue actualizado con éxito`, 'prestamo actualizado');
+      this.toastr.info(`El préstamo fue actualizado con éxito`, 'Préstamo actualizado');
       this.loading = false;
-     // window.location.href = '/reservation-list';
-      // this.router.navigate(['admin/reservation-list']);
+      // Redirigir después de la actualización
+      this.router.navigate(['admin/reservation-list']);
     });
   } else {
-    // Es agregar
-    this._prestamosService.savePrestamo(prestamo).subscribe(() => {
-      this.toastr.success(`El prestamo fue registrado con éxito`, 'prestamo registrado');
+    // Es agregar un nuevo préstamo
+    this._prestamosService.savePrestamo(prestamo).pipe(
+      // Obtener el préstamo recién guardado por su ID
+      switchMap((response: Prestamo) => {
+        this.toastr.success(`El préstamo fue registrado con éxito`, 'Préstamo registrado');
+        const idprestamo = response.id;
+        // Obtener el préstamo completo usando su ID
+        return this._prestamosService.getPrestamo(idprestamo);
+      })
+    ).subscribe((prestamoGuardado: Prestamo) => {
+      // Agregar el préstamo guardado a la lista de préstamos
+      this.listPrestamos.push(prestamoGuardado);
       this.loading = false;
-     // window.location.href = '/reservation-list';
-       this.router.navigate(['empleado/prestamos-list']);
-
+      const lastIndex = this.listPrestamos.length - 1;
+      this.onImprimirFila(lastIndex);
+      // Redirigir después de guardar
+      this.router.navigate(['admin/reservation-list']);
+    }, error => {
+      console.error('Error al obtener el préstamo guardado:', error);
+      this.loading = false;
     });
   }
 }
@@ -246,7 +258,7 @@ saveArticulo() {
   let idvehiculo: number | null;
   let idelectrodomestico: number | null;
 
-  let estado = ""
+  let estado : "";
   // Obtener ID de categoría seleccionada
   idcategoria = this.categoriaSeleccionada;
 
@@ -268,7 +280,7 @@ saveArticulo() {
    //  id, // Se deja como null al agregar un nuevo artículo
     idvehiculo,
     idelectrodomestico,
-    estado : "prestamo" ,
+    estado: "prestamo"
     // Agrega otras propiedades necesarias aquí
   };
 
@@ -288,6 +300,7 @@ saveArticulo() {
 
   });
 }
+
 
 
 
@@ -434,5 +447,91 @@ limpiarFormulario() {
 
    
   
+onImprimir() {
+  const entidad = 'Prestamos'; // Nombre de la entidad (para el nombre del archivo PDF)
+  const encabezado = this.getEncabezado(); // Obtener el encabezado de la tabla
+  const cuerpo = this.getCuerpo(); // Obtener el cuerpo de la tabla
+  const titulo = 'Lista de Prestamos'; // Título del informe
+  
+  // Eliminar filas duplicadas del cuerpo
+  const cuerpoUnico = this.eliminarFilasDuplicadas(cuerpo);
+
+  // Llamar al servicio de impresión
+  this.impresionService.imprimir(entidad, encabezado, cuerpoUnico, titulo, true);
+}
+
+// Método para eliminar filas duplicadas del cuerpo de la tabla
+eliminarFilasDuplicadas(cuerpo: Array<any>): Array<any> {
+  const cuerpoUnico: Array<any> = [];
+  const filasVistas = new Set(); // Usamos un conjunto para mantener un registro de las filas vistas
+  cuerpo.forEach((fila) => {
+      // Convertimos la fila en una cadena para poder compararla con otras filas
+      const filaString = JSON.stringify(fila);
+      if (!filasVistas.has(filaString)) {
+          // Si la fila no ha sido vista antes, la agregamos al cuerpo único y al conjunto de filas vistas
+          cuerpoUnico.push(fila);
+          filasVistas.add(filaString);
+      }
+  });
+  return cuerpoUnico;
+}
+
+  getEncabezado(): string[] {
+    const encabezado: string[] = [
+      'CLIENTE',
+      'EMPLEADO',
+      'ARTICULO',
+      'FECHA DE PRÉSTAMO',
+      'FECHA DE DEVOLUCION',
+      'MONTO PRESTAMO',
+      'MONTO PAGO',
+      'OBSERVACION',
+      'ESTADO'
+    ];
+  
+    return encabezado;
+  }
+
+
+getCuerpo(): string[][] {
+  const cuerpo: string[][] = [];
+  const textosExcluidos = new Set(['Actualizar', 'Eliminar', 'Imprimir', 'Pagos']); // Textos a excluir
+  document.querySelectorAll('table tbody tr').forEach((tr: HTMLTableRowElement) => {
+      const fila: string[] = [];
+      tr.querySelectorAll('td').forEach((td: HTMLTableCellElement) => {
+          const texto = td.textContent.trim();
+          // Verificamos si el texto del TD no está en el conjunto de textos excluidos
+          if (texto && !textosExcluidos.has(texto)) {
+              fila.push(texto);
+          }
+      });
+      cuerpo.push(fila);
+  });
+  return cuerpo;
+}
+
+  
+
+  onImprimirFila(index: number) {
+    const prestamo = this.listPrestamos[index];
+    this.impresionService.imprimirFilaPrestamos('Prestamos', {
+      cliente: prestamo.Cliente?.nombre +" " + prestamo.Cliente?.apellido || '',
+      dni: prestamo.Cliente?.dni || '',
+      empleado: prestamo.Empleado?.nombre +" " + prestamo.Empleado?.apellidos || '',
+      articulo: prestamo.Articulo ? (prestamo.Articulo.Vehiculo ? prestamo.Articulo.Vehiculo.descripcion : (prestamo.Articulo.Electrodomestico ? prestamo.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
+      fechaPrestamo: this.formatDate(prestamo.fecha_prestamo) || '',
+      fechaDevolucion: this.formatDate(prestamo.fecha_devolucion) || '',
+      montoPrestamo: prestamo.monto_prestamo || '',
+      montoPago: prestamo.monto_pago || '',
+      observaciones: prestamo.observacion || '',
+      estado:prestamo.estado || ''
+    } );
+  }
+
+formatDate(date: string | Date): string {
+  // Utiliza la función formatDate de Angular para formatear la fecha
+  // Consulta la documentación de Angular para opciones de formato: https://angular.io/api/common/formatDate
+  return formatDate(date, 'yyyy-MM-dd', 'en-US');
+}
 
 }

@@ -9,11 +9,10 @@ import { environment } from '../enviroments/environment';
 })
 export class WebSocketService {
   private socket: Socket;
-  private receivedEvents: Set<string>;
 
   constructor(private toastr: ToastrService) {
     // Replace 'http://localhost:3000' with the URL of your WebSocket server
-    this.socket = io('http://localhost:3000' , { transports: ['websocket'] } ); // Actualiza esta URL según la configuración del servidor
+    this.socket = io(`${environment.endpoint}` , { transports: ['websocket'] } ); // Actualiza esta URL según la configuración del servidor
 
    
   }

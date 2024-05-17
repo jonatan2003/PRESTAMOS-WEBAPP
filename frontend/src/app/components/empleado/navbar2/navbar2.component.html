@@ -14,51 +14,41 @@
   <!-- <a routerLink="user-update">
     <i class="fas fa-bell"></i>
   </a> -->
+  <!-- data-toggle="dropdown" -->
+<!-- Botón para mostrar/ocultar notificaciones -->
+<button class="btn btn-primary" type="button" (click)="toggleNotifications()" data-toggle="dropdown" [class.active]="showNotifications">
+  <i class="fas fa-bell"></i>
+</button>
 
-
-  <button class="btn btn-primary " type="button" data-toggle="dropdown">
-
-
-    <i class="fas fa-bell"></i>
-
-  </button>
-
-  <ul class="dropdown-menu" >
-
-    <li>
-      <!-- <div *ngIf="!loading" class="table-responsive"> -->
-        <table *ngIf="listPrestamos.length > 0"  class="table table-dark table-sm">
-          <tbody>
-            <tr *ngFor="let prestamos of listPrestamos; let i = index"  class="text-center" >
-             <td>PRESTAMO VENCIDO</td>
-
-              <td>{{ prestamos.Cliente?.nombre }}</td>
-              <td>
-                <span>
-                  {{ prestamos.Articulo ?
-                    (prestamos.Articulo.Vehiculo ?
-                      prestamos.Articulo.Vehiculo.descripcion :
-                      (prestamos.Articulo.Electrodomestico ?
-                        prestamos.Articulo.Electrodomestico.descripcion :
-                        'No hay descripción disponible')) :
-                    'No hay descripción disponible' }}
-                </span>
-              </td>
-
-              <td>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Notificaciones">
-                  <i class="fas fa-bell"></i>
-                </button>
-              </td>
-
-            </tr>
-          </tbody>
-        </table>
-      <!-- </div> -->
-
-    </li>
-
-  </ul>
+<!-- Lista de notificaciones -->
+<ul class="dropdown-menu" [class.show]="showNotifications">
+  <li>
+    <table *ngIf="listPrestamos.length > 0" class="table table-dark table-sm">
+      <tbody>
+        <tr *ngFor="let prestamo of listPrestamos">
+          <td>PRESTAMO VENCIDO</td>
+          <td>{{ prestamo.Cliente?.nombre }}</td>
+          <td>
+            <span>
+              {{ prestamo.Articulo ?
+                (prestamo.Articulo.Vehiculo ?
+                  prestamo.Articulo.Vehiculo.descripcion :
+                  (prestamo.Articulo.Electrodomestico ?
+                    prestamo.Articulo.Electrodomestico.descripcion :
+                    'No hay descripción disponible')) :
+                'No hay descripción disponible' }}
+            </span>
+          </td>
+          <td>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Notificaciones">
+              <i class="fas fa-bell"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
 
 
 

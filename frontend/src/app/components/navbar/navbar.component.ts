@@ -59,41 +59,36 @@ totalPages: number = 0;
     //   // Aquí puedes ejecutar lógica adicional para manejar la actualización de préstamos
     // });
 
-    this.eventSubscription = this.websocketService
-    .listen('prestamoActualizado')
-    .subscribe((data: any) => {
+    this.eventSubscription = this.websocketService.listen('prestamoActualizado').subscribe((data: any) => {
+      console.log('Evento recibido:', data); // Verificar que el evento se recibe
       this.handlePrestamoActualizado(data);
     });
-}
-
-ngOnDestroy() {
-  if (this.eventSubscription) {
-    this.eventSubscription.unsubscribe();
   }
-}
 
-private handlePrestamoActualizado(data: any) {
-  const { message, prestamo } = data;
-  const { estado, cliente, empleado } = prestamo;
-
-  // Mostrar notificación de préstamo actualizado como toast pegajoso
-  this.toastr.info(
-    `${message} '${estado}': Cliente - ${cliente}, Empleado - ${empleado}`,
-    'Préstamo Vencido',
-    {
-      timeOut: 0, // Tiempo de espera en 0 para hacer el toast pegajoso
-      extendedTimeOut: 0, // Tiempo de espera extendido en 0 para hacer el toast pegajoso
-      closeButton: true, // Mostrar el botón de cierre en el toast
-      tapToDismiss: true, // Permitir que el toast se cierre al hacer clic
-      onActivateTick: true // Forzar un tick de detección de cambios al activar el toast
+  ngOnDestroy() {
+    if (this.eventSubscription) {
+      this.eventSubscription.unsubscribe();
     }
+  }
 
-  );
+  private handlePrestamoActualizado(data: any) {
+    const { message, prestamo } = data;
+    const { estado, cliente, empleado } = prestamo;
 
-  this.getListPrestamos();
+    this.toastr.info(
+      `${message} '${estado}': Cliente - ${cliente}, Empleado - ${empleado}`,
+      'Préstamo Vencido',
+      {
+        timeOut: 0,
+        extendedTimeOut: 0,
+        closeButton: true,
+        tapToDismiss: true,
+        onActivateTick: true
+      }
+    );
 
-}
-
+    this.getListPrestamos();
+  }
   
   getListPrestamos() {
     this.loading = true;

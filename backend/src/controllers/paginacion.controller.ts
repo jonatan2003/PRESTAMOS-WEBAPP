@@ -601,31 +601,42 @@ export const getUsuarios = async (req: Request, res: Response) => {
 //   }
 // };
 
-
 export const actualizarPrestamosAVenta = async (req: Request, res: Response) => {
   try {
     const hoy = new Date();
 
-    // Obtener y actualizar los préstamos vencidos y pendientes a estado 'venta'
+    // Obtener los IDs de los préstamos vencidos y pendientes
+    const prestamosPendientes = await Prestamo.findAll({
+      where: {
+        estado: 'pendiente',
+        fecha_devolucion: {
+          [Op.lt]: hoy
+        }
+      }
+    });
+
+    const prestamosIds = prestamosPendientes.map((prestamo: any) => prestamo.id);
+
+    // Actualizar los préstamos vencidos y pendientes a estado 'venta'
     const [prestamosActualizadosCount] = await Prestamo.update(
       { estado: 'venta' },
       {
         where: {
-          estado: 'pendiente',
-          fecha_devolucion: {
-            [Op.lt]: hoy
+          id: {
+            [Op.in]: prestamosIds
           }
         }
       }
     );
 
+    console.log('Préstamos actualizados:', prestamosActualizadosCount); // Verificar el conteo de préstamos actualizados
+
     if (prestamosActualizadosCount > 0) {
-      // Obtener los préstamos actualizados que cumplen con los criterios
-      const prestamosActualizados = await Prestamo.findAll({
+      // Obtener los detalles de los préstamos actualizados
+      const prestamosActualizadosDetails = await Prestamo.findAll({
         where: {
-          estado: 'venta',
-          fecha_devolucion: {
-            [Op.lt]: hoy
+          id: {
+            [Op.in]: prestamosIds
           }
         },
         include: [
@@ -642,10 +653,12 @@ export const actualizarPrestamosAVenta = async (req: Request, res: Response) => 
         ]
       });
 
+      console.log('Detalles de préstamos actualizados:', prestamosActualizadosDetails); // Verificar los detalles de los préstamos actualizados
+
       const io = server.getIO(); // Obtener la instancia de io desde la instancia de Server
 
       // Emitir un evento para cada préstamo actualizado
-      prestamosActualizados.forEach((prestamo: any) => {
+      prestamosActualizadosDetails.forEach((prestamo: any) => {
         const { id, estado, Articulo, Cliente, Empleado } = prestamo;
 
         let articuloDescripcion = 'No disponible';
@@ -669,6 +682,7 @@ export const actualizarPrestamosAVenta = async (req: Request, res: Response) => 
         };
 
         io.emit('prestamoActualizado', { message: mensaje, prestamo: evento });
+        console.log('Evento emitido para préstamo actualizado:', evento); // Verificar el evento emitido
       });
 
       res.status(200).json({ success: true, message: 'Se han actualizado los préstamos a estado "venta" correctamente.' });

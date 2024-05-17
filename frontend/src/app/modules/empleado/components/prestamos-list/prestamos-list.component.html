@@ -12,6 +12,9 @@
                     <li>
                         <a routerLink="/empleado/prestamos-search"><i class="fas fa-search-dollar fa-fw"></i> &nbsp; BUSCAR PRÉSTAMOS</a>
                     </li>
+					<li>
+                        <a  routerLink="/empleado/prestamos-finished"><i class="fas fa-hand-holding-usd fa-fw"></i> &nbsp; PRÉSTAMOS VENCIDOS</a>
+                    </li>
                     <li>
                         <a routerLink="/empleado/prestamos-pending"><i class="fas fa-hand-holding-usd fa-fw"></i> &nbsp; PRÉSTAMOS PENDIENTES</a>
                     </li>
@@ -20,7 +23,7 @@
 
             <!--CONTENT-->
 
-			<div class="container-fluid">
+			 <div class="container-fluid">
 				<div *ngIf="!loading" class="table-responsive">
 					<table *ngIf="listPrestamos.length > 0"  class="table table-dark table-sm">
 						<thead>
@@ -36,7 +39,7 @@
 								<th  scope="col">ESTADO</th>
 								<th  scope="col">IMPRIMIR</th>
 								<th  scope="col">PAGOS</th>
-								<th scope="col">ACTUALIZAR</th>
+								<!-- <th scope="col">ACTUALIZAR</th> -->
 								<th scope="col">ELIMINAR</th>
 
 								<!-- <th  scope="col">ELIMINAR</th> -->
@@ -71,16 +74,19 @@
 									</button>
 								</td>
 								<td>
-									<button type="button" (click)="setSelectedPago(prestamos)" class="btn btn-primary">
-										<i class="fas fa-sync-alt"></i>
-									 </button>
+									<button type="button" 
+											(click)="setSelectedPago(prestamos)" 
+											class="btn btn-primary"
+											[disabled]="prestamos.estado.toLowerCase().trim() === 'pagado' || prestamos.estado.toLowerCase().trim() === 'vendido'">
+										<i class="fas fa-money-bill-alt"></i>
+									</button>
 								</td>
-								<td>
+								<!-- <td>
 									<button type="button" (click)="setSelectedPrestamo(prestamos)" class="btn btn-primary">
 										<i class="fas fa-sync-alt"></i>
 									 </button>
 									
-								</td>
+								</td> -->
 								<td>
 									<form action="">
 										<button (click)="deletePrestamo(prestamos.id)" type="button" class="btn btn-warning">
@@ -102,6 +108,11 @@
 					  </li>
 					  <li class="page-item" [class.disabled]="currentPage === totalPages">
 						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
+					  </li>
+					  <li class="page-item" >
+						<button type="button" class="btn btn-danger" (click)="onImprimir()">
+							<i class="fas fa-file-pdf"></i>
+						</button>
 					  </li>
 					</ul>
 				  </nav>
@@ -328,7 +339,7 @@
 								  
 								<div class="col-12 col-md-4">
 									<div class="form-group">
-										<select formControlName="tipo_pago" id="tipo_pago"  class="form-control" (change)="setSelectTipodePago($event)">
+										<select formControlName="tipo_pago" id="tipo_pago"  class="form-control" >
 											<option value=""  disabled="">Seleccione un Tipo de Pago</option>
 											<option value="interes">INTERES</option>
 											<option value="prestamo">PRESTAMO</option>

@@ -31,6 +31,7 @@ class Server {
   private httpServer: http.Server; // Crea una instancia de http.Server
   private io: SocketIOServer; // Crea una instancia de SocketIOServer
   private isRequesting: boolean = false;
+  private isUpdatingPrestamos: boolean = false;
 
   
   constructor() {
@@ -100,14 +101,11 @@ class Server {
       this.io.on('connection', (socket: Socket) => {
         console.log('Cliente conectado:', socket.id);
   
-        // Manejar la lógica cuando un cliente se conecta
-  
         socket.on('disconnect', () => {
           console.log('Cliente desconectado:', socket.id);
         });
       });
   
-      // Lógica para actualizar préstamos y notificar a los clientes
       setInterval(async () => {
         if (this.isRequesting) {
           console.log('Esperando a que la petición actual termine...');
@@ -124,20 +122,19 @@ class Server {
         };
   
         try {
-          await actualizarPrestamosAVenta(req, res); // Llama al controlador para actualizar préstamos
-          // this.io.emit('prestamosUpdated', { message: 'Se actualizaron los préstamos vencidos' });
+          await actualizarPrestamosAVenta(req, res);
         } catch (error) {
           console.error('Error al actualizar préstamos:', error);
         } finally {
           this.isRequesting = false;
         }
-      }, 60000); // 72000000 cada 20 horas intervalo
+      }, 60000); // 60 segundos para pruebas, 72000000 20 horas para producción
   
     } catch (error) {
       console.log('Error en la configuración de WebSockets:', error);
     }
   }
-
+  
   public getIO(): SocketIOServer {
     return this.io;
   }

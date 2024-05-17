@@ -55,7 +55,7 @@ import { PrestamosFinishedComponent } from '../modules/empleado/components/prest
 import { PrestamosListComponent } from '../modules/empleado/components/prestamos-list/prestamos-list.component';
 import { PrestamosNewComponent } from '../modules/empleado/components/prestamos-new/prestamos-new.component';
 import { PrestamosPendingComponent } from '../modules/empleado/components/prestamos-pending/prestamos-pending.component';
-import { PrestamosSearchComponent } from '../modules/empleado/components/prestamos-search/reservation-search.component';
+import { PrestamosSearchComponent } from '../modules/empleado/components/prestamos-search/prestamos-search.component';
 import { Dashboard2Component } from '../components/empleado/dashboard2/dashboard2.component';
 import { Main2Component } from '../components/empleado/main2/main2.component';
 import { Navbar2Component } from '../components/empleado/navbar2/navbar2.component';
@@ -64,6 +64,7 @@ import { User2UpdateComponent } from '../modules/empleado/components/user-update
 import { PagosSearchComponent } from '../modules/admin/components/pagos-search/pagos-search.component';
 import { Pagos2SearchComponent } from '../modules/empleado/components/pagos2-search/pagos2-search.component';
 import { WebSocketService } from '../services/websocket.service';
+import { VentasList2Component } from '../modules/empleado/components/ventas-list2/ventas-list2.component';
 
 
 
@@ -96,6 +97,7 @@ import { WebSocketService } from '../services/websocket.service';
     CategoriaListComponent,
     CategoriaNewComponent,
     CategoriaSearchComponent,
+    //PARA EMPLEADOS
     EmpleadoListComponent,
     EmpleadoNewComponent,
     EmpleadoSearchComponent,
@@ -112,12 +114,12 @@ import { WebSocketService } from '../services/websocket.service';
   PrestamosNewComponent,
   PrestamosPendingComponent,
   PrestamosSearchComponent,
-
   Dashboard2Component,
   Main2Component,
   Navbar2Component,
  User2UpdateComponent,
- Pagos2SearchComponent
+ Pagos2SearchComponent,
+  VentasList2Component
 
   ],
   imports: [

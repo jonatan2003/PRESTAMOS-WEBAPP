@@ -18,12 +18,14 @@ import { PaginacionService } from 'src/app/services/paginacion.service';
 import { Date } from 'core-js';
 import { Pago } from 'src/app/interfaces/pago.interface';
 import { PagosService } from 'src/app/services/pago.service';
+import { formatDate } from '@angular/common';
+import { switchMap } from 'rxjs/operators';
 
 
 @Component({
-  selector: 'app-prestamos-list',
-  templateUrl: './prestamos-list.component.html',
-  styleUrls: ['./prestamos-list.component.css']
+  selector: 'app-reservation-list',
+  templateUrl: './Prestamos-list.component.html',
+  styleUrls: ['./Prestamos-list.component.css']
 })
 export class PrestamosListComponent implements OnInit  {
   fechaActual: Date;
@@ -33,6 +35,8 @@ export class PrestamosListComponent implements OnInit  {
   formVehiculo: FormGroup;
   id: number;
   listPrestamos: Prestamo[] = [];
+  listPagos: Pago[] = [];
+
   loading: boolean = false;
   encabezado: string[] = [];
   cuerpo: string[][] = [];
@@ -51,7 +55,7 @@ tipo_pagoSeleccionado: string;
 interes: number;
 pagoPrestamo: number;
 estado : string ;
-
+montoRestante: number ;
   constructor(private authService: AuthService,
     private _paginacionService: PaginacionService,
     private _categoriasService: CategoriaService,
@@ -74,9 +78,9 @@ estado : string ;
       idprestamo :  ['', Validators.required],
       tipo_pago:  ['', Validators.required],
       fecha_pago:  ['', Validators.required],
-      interes_pago:  [{ value: '', disabled: true }, ],
+      interes_pago:   ['', Validators.required],
       monto_restante:  ['', Validators.required],
-      capital_pago: [{ value: '', disabled: true }, ],
+      capital_pago:  ['', Validators.required],
       idcliente:  [{ value: '', disabled: true }, ],
       idarticulo:  [{ value: '', disabled: true }, ],
       fecha_prestamo: [{ value: '', disabled: true }, ],
@@ -100,8 +104,37 @@ estado : string ;
                 this.fechaActual = new Date();
 
                 this.getListPrestamos();
-              }
 
+
+                this.formPago.valueChanges.subscribe(() => {
+                  this.setMontoRestante(); // Llama a la función para actualizar el monto restante
+                });
+              }
+              setMontoRestante() {
+                const tipoPago = this.formPago.value.tipo_pago;
+                const interes = this.formPago.value.interes_pago || 0;
+                const capitalPago = this.formPago.value.capital_pago || 0;
+              
+                let montoRestante = this.selectedPrestamo.monto_pago; // Iniciar con el monto total del préstamo
+              
+                if (tipoPago === 'interes') {
+                  montoRestante -= interes; // Restar el interés del monto restante
+                } else if (tipoPago === 'prestamo') {
+                  montoRestante -= capitalPago; // Restar el capital de pago del monto restante
+                } else if (tipoPago === 'completo') {
+                  montoRestante -= (interes + capitalPago); // Restar ambos interés y capital de pago del monto restante
+                  this.formPago.get('estado').setValue('pagado'); // Establecer el estado como 'pagado'
+                }
+              
+                this.formPago.get('monto_restante').setValue(montoRestante);
+              
+                // Verificar si el monto restante es igual a cero para establecer el estado como 'pagado'
+                if (montoRestante === 0) {
+                  this.estado = "pagado";
+                  this.formPago.get('estado').setValue('pagado');
+                }
+              }
+            
 
 
               getListPrestamos() {
@@ -187,47 +220,7 @@ estado : string ;
                
               }
 
-              setSelectTipodePago(event: any) {
-                const selectetipo_pago = event.target.value;
-                this.tipo_pagoSeleccionado = selectetipo_pago;
-                const montoOriginal = this.monto_pago / 1.20;
-                
-                if (this.tipo_pagoSeleccionado === "interes") {
-                  this.interes = 0.20 * montoOriginal;
-                  this.pagoPrestamo = this.monto_pago - this.interes;
-              
-                  // Actualizar el formulario con los valores calculados
-                  this.formPago.patchValue({
-                    capital_pago: 0, // Aquí puedes asignar el valor deseado para capital_pago
-                    interes_pago: this.interes,
-                    monto_restante: this.monto_pago - this.interes
-                  });
-                } else if (this.tipo_pagoSeleccionado === "prestamo") {
-                  this.interes = 0;
-                  this.pagoPrestamo = montoOriginal;
-              
-                  // Actualizar el formulario con los valores calculados
-                  this.formPago.patchValue({
-                    capital_pago: this.pagoPrestamo, // Asigna el valor de capital_pago
-                    interes_pago: 0,
-                    monto_restante: this.monto_pago - this.pagoPrestamo
-                  });
-                } else if (this.tipo_pagoSeleccionado === "completo") {
-                  this.interes = 0.20 * montoOriginal;
-                  this.pagoPrestamo = this.monto_pago - this.interes;
-                 this.estado = "pagado";
-                  // Actualizar el formulario con los valores calculados
-                  this.formPago.patchValue({
-                    capital_pago: this.pagoPrestamo,
-                    interes_pago: this.interes,
-                    monto_restante: 0, // Si es completo, el monto restante es 0
-                    estado: "pagado"
-                  });
-                }
-              
-                // Verifica el valor de capital_pago dentro de este contexto
-                console.log("Capital Pago dentro de setSelectTipodePago:", this.formPago.value.interes_pago);
-              }
+             
 
               setSelectedPrestamo(prestamo: Prestamo) {
                 this.selectedPrestamo = prestamo;
@@ -351,9 +344,9 @@ estado : string ;
                   idprestamo: this.formPago.value.idprestamo,
                   tipo_pago: this.formPago.value.tipo_pago,
                   fecha_pago: this.fechaActual,
-                  interes_pago: this.interes,
+                  interes_pago: this.formPago.value.interes_pago,
                   monto_restante: this.formPago.value.monto_restante,
-                  capital_pago: this.pagoPrestamo,
+                  capital_pago: this.formPago.value.capital_pago
                   
                   // ... Otros campos del formulario de articulo según la interfaz
                 };
@@ -390,19 +383,41 @@ estado : string ;
                   this.getListPrestamos();
                   this.guardarPago();
                    // Es agregar
-                   this._pagoService.savePago(pago).subscribe(() => {
-                    this.toastr.success(`El pago fue registrado con éxito`, 'pago registrado');
-                    this.loading = false;
-                   // window.location.href = '/reservation-list';
-                     this.router.navigate(['empleado/pagos-list']);
-              
-                  });
+                   
+  this._pagoService.savePago(pago).pipe(
+    switchMap((response: Pago) => {
+      this.toastr.success(`El pago fue registrado con éxito`, 'Pago registrado');
+      const idPago = response.id;
+
+      // Obtener el pago completo usando su ID
+      return this._pagoService.getPago(idPago);
+    })
+  ).subscribe(
+    (pagoGuardado: Pago) => {
+      // Agregar el pago guardado a la lista de pagos
+      this.listPagos.push(pagoGuardado);
+      this.loading = false;
+ console.log(this.listPagos);
+ 
+      // Obtener el índice del último elemento agregado
+      const lastIndex = this.listPagos.length - 1;
+
+      // Llamar a la función para imprimir fila del último pago agregado
+     this.onImprimirFilaPagos(lastIndex);
+
+      // Redirigir después de guardar
+      this.router.navigate(['admin/pagos-list']);
+    },
+    error => {
+      console.error('Error al obtener el pago guardado:', error);
+      this.loading = false;
+    }
+  );
                
                   
 
 
               }
-              
               
             
             
@@ -477,7 +492,7 @@ estado : string ;
 
 
   deletePrestamo(id: number) {
-    // Mostrar confirmación antes de eliminar el cliente
+    // Mostrar confirmación antes de eliminar el prestamo
     Swal.fire({
       title: 'Eliminar Prestamo',
       text: '¿Estás seguro de que deseas eliminar este Prestamo?',
@@ -506,59 +521,127 @@ estado : string ;
   }
 
 
-  onImprimir() {
-    const entidad = 'Prestamos'; // Nombre de la entidad (para el nombre del archivo PDF)
-    const encabezado = this.getEncabezado(); // Obtener el encabezado de la tabla
-    const cuerpo = this.getCuerpo(); // Obtener el cuerpo de la tabla
-    const titulo = 'Lista de Prestamos'; // Título del informe
-    this.impresionService.imprimir(entidad, encabezado, cuerpo, titulo, true); // Llama al servicio de impresión
-  }
+  
+onImprimir() {
+  const entidad = 'Prestamos'; // Nombre de la entidad (para el nombre del archivo PDF)
+  const encabezado = this.getEncabezado(); // Obtener el encabezado de la tabla
+  const cuerpo = this.getCuerpo(); // Obtener el cuerpo de la tabla
+  const titulo = 'Lista de Prestamos'; // Título del informe
+  
+  // Eliminar filas duplicadas del cuerpo
+  const cuerpoUnico = this.eliminarFilasDuplicadas(cuerpo);
 
+  // Llamar al servicio de impresión
+  this.impresionService.imprimir(entidad, encabezado, cuerpoUnico, titulo, true);
+}
+
+// Método para eliminar filas duplicadas del cuerpo de la tabla
+eliminarFilasDuplicadas(cuerpo: Array<any>): Array<any> {
+  const cuerpoUnico: Array<any> = [];
+  const filasVistas = new Set(); // Usamos un conjunto para mantener un registro de las filas vistas
+  cuerpo.forEach((fila) => {
+      // Convertimos la fila en una cadena para poder compararla con otras filas
+      const filaString = JSON.stringify(fila);
+      if (!filasVistas.has(filaString)) {
+          // Si la fila no ha sido vista antes, la agregamos al cuerpo único y al conjunto de filas vistas
+          cuerpoUnico.push(fila);
+          filasVistas.add(filaString);
+      }
+  });
+  return cuerpoUnico;
+}
 
   getEncabezado(): string[] {
-    const encabezado: string[] = [];
-    document.querySelectorAll('table thead th').forEach((th: HTMLTableHeaderCellElement) => {
-      const texto = th.textContent.trim();
-      if (texto !== 'ACTUALIZAR' && texto !== 'ELIMINAR' && texto !== 'IMPRIMIR' && texto !== 'PAGOS' ) {
-        encabezado.push(texto);
-      }
-    });
+    const encabezado: string[] = [
+      'CLIENTE',
+      'EMPLEADO',
+      'ARTICULO',
+      'FECHA DE PRÉSTAMO',
+      'FECHA DE DEVOLUCION',
+      'MONTO PRESTAMO',
+      'MONTO PAGO',
+      'OBSERVACION',
+      'ESTADO'
+    ];
+  
     return encabezado;
   }
 
-  getCuerpo(): string[][] {
-    const cuerpo: string[][] = [];
-    document.querySelectorAll('table tbody tr').forEach((tr: HTMLTableRowElement) => {
-      const fila: string[] = [];
-      tr.querySelectorAll('td').forEach((td: HTMLTableCellElement) => {
-        const texto = td.textContent.trim();
-        if (texto !== 'Actualizar' && texto !== 'Eliminar' && texto !== 'Imprimir'&& texto !== 'Pagos') {
-          fila.push(texto);
-        }
-      });
-      cuerpo.push(fila);
+
+
+  getCuerpo(): any[][] {
+    const cuerpo: any[][] = [];
+    const textosExcluidos = new Set(['Actualizar', 'Eliminar', 'Imprimir', 'Pagos']); // Textos a excluir
+    const filasVistas = new Set(); // Usar un conjunto para mantener un registro de las filas ya vistas
+    
+    this.listPrestamos.forEach((prestamo) => {
+      const fila: any[] = [
+        prestamo.Cliente?.nombre + ' ' + prestamo.Cliente?.apellido,
+        prestamo.Empleado?.nombre + ' ' + prestamo.Empleado?.apellidos,
+        prestamo.Articulo ? (prestamo.Articulo.Vehiculo ? prestamo.Articulo.Vehiculo.descripcion : (prestamo.Articulo.Electrodomestico ? prestamo.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
+        prestamo.fecha_prestamo,
+        prestamo.fecha_devolucion,
+        prestamo.monto_prestamo,
+        prestamo.monto_pago,
+        prestamo.observacion,
+        prestamo.estado
+      ];
+  
+      // Convertir la fila en una cadena para compararla
+      const filaString = fila.join('|');
+  
+      // Solo agregar la fila al cuerpo si no se ha visto antes
+      if (!filasVistas.has(filaString)) {
+        cuerpo.push(fila);
+        filasVistas.add(filaString);
+      }
     });
+  
     return cuerpo;
   }
 
-
-  onImprimirFila(index: number) {
-    const prestamo = this.listPrestamos[index];
-    this.impresionService.imprimirFilaPrestamos('Prestamos', {
-      cliente: prestamo.Cliente?.nombre +" " + prestamo.Cliente?.apellido || '',
-      dni: prestamo.Cliente?.dni || '',
-      empleado: prestamo.Empleado?.nombre +" " + prestamo.Empleado?.apellidos || '',
-      articulo: prestamo.Articulo ? (prestamo.Articulo.Vehiculo ? prestamo.Articulo.Vehiculo.descripcion : (prestamo.Articulo.Electrodomestico ? prestamo.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
-      fechaPrestamo: prestamo.fecha_prestamo || '',
-      fechaDevolucion: prestamo.fecha_devolucion || '',
-      montoPrestamo: prestamo.monto_prestamo || '',
-      montoPago: prestamo.monto_pago || '',
-      observaciones: prestamo.observacion || ''
-      
+  
+  onImprimirFilaPagos(index: number) {
+    const pago = this.listPagos[index];
+    this.impresionService.imprimirFilaPagos('Pagos', {
+      cliente: pago.Prestamo.Cliente?.nombre +" " + pago.Prestamo.Cliente?.apellido || '',
+      dni: pago.Prestamo.Cliente?.dni || '',
+      empleado:pago.Prestamo.Empleado?.nombre +" " + pago.Prestamo.Empleado?.apellidos || '',
+      articulo: pago.Prestamo?.Articulo ? (pago.Prestamo?.Articulo.Vehiculo ? pago.Prestamo?.Articulo.Vehiculo.descripcion :  (pago.Prestamo?.Articulo.Electrodomestico ? pago.Prestamo?.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
+      tipo_pago: pago.tipo_pago || '',
+      fecha_pago: this.formatDate(pago.fecha_pago) || '',
+      interes_pago: pago.interes_pago || '',
+      monto_restante: pago.monto_restante || '',
+      capital_pago: pago.capital_pago || '',
+      estado: pago.Prestamo?.estado || ''
     } );
   }
 
+  
+  
+onImprimirFila(index: number) {
+  const prestamo = this.listPrestamos[index];
+  this.impresionService.imprimirFilaPrestamos('Prestamos', {
+    cliente: prestamo.Cliente?.nombre +" " + prestamo.Cliente?.apellido || '',
+    dni: prestamo.Cliente?.dni || '',
+    empleado: prestamo.Empleado?.nombre +" " + prestamo.Empleado?.apellidos || '',
+    articulo: prestamo.Articulo ? (prestamo.Articulo.Vehiculo ? prestamo.Articulo.Vehiculo.descripcion : (prestamo.Articulo.Electrodomestico ? prestamo.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
+    fechaPrestamo: this.formatDate(prestamo.fecha_prestamo) || '',
+    fechaDevolucion: this.formatDate(prestamo.fecha_devolucion) || '',
+    montoPrestamo: prestamo.monto_prestamo || '',
+    montoPago: prestamo.monto_pago || '',
+    observaciones: prestamo.observacion || '',
+    estado:prestamo.estado || ''
+  } );
+}
 
+
+  formatDate(date: string | Date): string {
+    // Utiliza la función formatDate de Angular para formatear la fecha
+    // Consulta la documentación de Angular para opciones de formato: https://angular.io/api/common/formatDate
+    return formatDate(date, 'yyyy-MM-dd', 'en-US');
+  }
+  
 
 
 }

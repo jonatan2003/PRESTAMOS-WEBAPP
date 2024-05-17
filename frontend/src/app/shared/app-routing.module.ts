@@ -42,7 +42,7 @@ import { PagosComponent } from '../modules/empleado/components/pagos/pagos.compo
 import { PrestamosListComponent } from '../modules/empleado/components/prestamos-list/prestamos-list.component';
 import { PrestamosNewComponent } from '../modules/empleado/components/prestamos-new/prestamos-new.component';
 import { PrestamosPendingComponent } from '../modules/empleado/components/prestamos-pending/prestamos-pending.component';
-import { PrestamosSearchComponent } from '../modules/empleado/components/prestamos-search/reservation-search.component';
+import { PrestamosSearchComponent } from '../modules/empleado/components/prestamos-search/prestamos-search.component';
 import { PrestamosFinishedComponent } from '../modules/empleado/components/prestamos-finished/prestamos-finished.component';
 import { Main2Component } from '../components/empleado/main2/main2.component';
 import { EmpleadoGuard } from '../services/empleado.guard';
@@ -50,6 +50,7 @@ import { EmpresaComponent } from '../modules/empleado/components/empresa/empresa
 import { User2UpdateComponent } from '../modules/empleado/components/user-update2/user2-update.component';
 import { PagosSearchComponent } from '../modules/admin/components/pagos-search/pagos-search.component';
 import { Pagos2SearchComponent } from '../modules/empleado/components/pagos2-search/pagos2-search.component';
+import { VentasList2Component } from '../modules/empleado/components/ventas-list2/ventas-list2.component';
 
 
 const routes: Routes = [
@@ -112,6 +113,8 @@ const routes: Routes = [
       { path: 'prestamos-pending', component: PrestamosPendingComponent },
       { path: 'prestamos-search', component: PrestamosSearchComponent },
       { path: 'prestamos-finished', component: PrestamosFinishedComponent },
+      { path: 'ventas-list', component: VentasList2Component },
+
       { path: 'user-update', component: User2UpdateComponent },
 
       { path: '', component: Main2Component},

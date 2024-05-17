@@ -1,7 +1,7 @@
 <!-- Page header -->
 
 
-  <div class="container-fluid">
+<div class="container-fluid">
     <ul class="full-box list-unstyled page-nav-tabs">
         <li>
             <a class="active" routerLink="/empleado/prestamos-new"><i class="fas fa-plus fa-fw"></i> &nbsp; NUEVO PRÉSTAMO</a>
@@ -12,6 +12,9 @@
         <li>
             <a routerLink="/empleado/prestamos-search"><i class="fas fa-search-dollar fa-fw"></i> &nbsp; BUSCAR PRÉSTAMOS</a>
         </li>
+		<li>
+			<a  routerLink="/empleado/prestamos-finished"><i class="fas fa-hand-holding-usd fa-fw"></i> &nbsp; PRÉSTAMOS VENCIDOS</a>
+		</li>
         <li>
             <a routerLink="/empleado/prestamos-pending"><i class="fas fa-hand-holding-usd fa-fw"></i> &nbsp; PRÉSTAMOS PENDIENTES</a>
         </li>
@@ -214,7 +217,7 @@
 			  <div class="col-12 col-md-6">
 				<div class="form-group">
 				  <label for="cliente_rubro" class="bmd-label-floating">Rubro</label>
-				  <input formControlName="rubro" type="text" class="form-control mt-2" maxlength="25">
+				  <input formControlName="rubro" type="text" class="form-control mt-2" maxlength="15">
 				  <div class="alert alert-danger mt-2"[hidden]="formcliente.get('rubro').valid || formcliente.get('rubro').pristine">
 				  <span *ngIf="formcliente.get('rubro').errors?.['required']" class="text-danger">Este campo es requerido</span>
 				  </div>
@@ -391,7 +394,7 @@
 						  <div class="col-12 col-md-4">
 							<div class="form-group">
 							  <label for="numeroMotorVehiculo" class="bmd-label-floating">Número de Motor</label>
-							  <input formControlName="numero_motor" type="text" class="form-control" maxlength="10">
+							  <input formControlName="numero_motor" type="text" class="form-control" maxlength="15">
 							  <div class="alert alert-danger mt-2"
 								[hidden]="formVehiculo.get('numero_motor').valid || formVehiculo.get('numero_motor').pristine">
 								<span *ngIf="formVehiculo.get('numero_motor').errors?.['required']" class="text-danger">Este campo es
@@ -413,7 +416,7 @@
 						  <div class="col-12 col-md-6">
 							<div class="form-group">
 							  <label for="carroceriaVehiculo" class="bmd-label-floating">Carrocería</label>
-							  <input formControlName="carroceria" type="text" class="form-control" maxlength="10" >
+							  <input formControlName="carroceria" type="text" class="form-control" maxlength="15" >
 							  <div class="alert alert-danger mt-2"
 								[hidden]="formVehiculo.get('carroceria').valid || formVehiculo.get('carroceria').pristine">
 								<span *ngIf="formVehiculo.get('carroceria').errors?.['required']" class="text-danger">Este campo es
@@ -424,7 +427,7 @@
 						  <div class="col-12 col-md-6">
 							<div class="form-group">
 							  <label for="descripcionVehiculo" class="bmd-label-floating">Descripción</label>
-							  <input formControlName="descripcion" type="text" class="form-control" maxlength="25">
+							  <input formControlName="descripcion" type="text" class="form-control" maxlength="30">
 							  <div class="alert alert-danger mt-2"
 								[hidden]="formVehiculo.get('descripcion').valid || formVehiculo.get('descripcion').pristine">
 								<span *ngIf="formVehiculo.get('descripcion').errors?.['required']" class="text-danger">Este campo es
@@ -503,7 +506,7 @@
 							<div class="form-group">
 							  <label for="descripcionElectrodomestico" class="bmd-label-floating"
 								>Descripción</label>
-							  <input formControlName="descripcion" type="text" class="form-control" maxlength="25">
+							  <input formControlName="descripcion" type="text" class="form-control" maxlength="30">
 							  <div class="alert alert-danger mt-2"
 								[hidden]="formElectrodomestico.get('descripcion').valid || formElectrodomestico.get('descripcion').pristine">
 								<span *ngIf="formElectrodomestico.get('descripcion').errors?.['required']" class="text-danger">Este
