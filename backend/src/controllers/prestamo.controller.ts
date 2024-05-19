@@ -11,7 +11,7 @@ import { Op } from 'sequelize';
 
 
 export const createPrestamo = async (req: Request, res: Response) => {
-  const { idcliente, idarticulo,idempleado,  fecha_prestamo, fecha_devolucion, monto_prestamo, monto_pago, observacion,estado } = req.body;
+  const { idcliente, idarticulo,idempleado,  fecha_prestamo, fecha_devolucion, monto_prestamo, monto_pago,estado } = req.body;
 
   try {
     // Verificar si el cliente, el empleado y el artículo asociados al préstamo existen
@@ -31,7 +31,6 @@ export const createPrestamo = async (req: Request, res: Response) => {
       fecha_devolucion,
       monto_prestamo,
       monto_pago,
-      observacion,
       estado
     });
 

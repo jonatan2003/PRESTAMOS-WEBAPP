@@ -12,6 +12,11 @@ import Usuario from '../models/usuario.model';
 import Pago from '../models/pago.model';
 import { Op } from 'sequelize';
 import server from '../server';
+import Inventario from '../models/inventario.model';
+import ComprobanteVenta from '../models/comprobante_venta.model';
+import TipoComprobante from '../models/tipo_comprobante.model';
+import Ticket from '../models/ticket.model';
+import TipoPago from '../models/tipo_pago.model';
 
 export const getClientes = async (req: Request, res: Response) => {
     try {
@@ -238,6 +243,8 @@ export const getArticulos = async (req: Request, res: Response) => {
 };
 
 
+
+
 // Método de paginación para Vehículo
 export const getVehiculos = async (req: Request, res: Response) => {
   try {
@@ -296,6 +303,205 @@ export const getElectrodomesticos = async (req: Request, res: Response) => {
     res.status(500).json({ msg: 'Error al obtener la lista de electrodomésticos' });
   }
 };
+
+
+export const getInventario = async (req: Request, res: Response) => {
+  try {
+    // Parámetros de paginación
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+    const offset = (page - 1) * pageSize;
+
+    // Consulta principal con la paginación y las relaciones
+    const inventarios = await Inventario.findAndCountAll({
+      limit: pageSize,
+      offset: offset,
+      order: [['id', 'DESC']],
+      include: [
+        {
+          model: Articulo, as: 'Articulo', include: [
+            { model: Categoria, as: 'Categoria' },
+            { model: Vehiculo, as: 'Vehiculo' },
+            { model: Electrodomestico, as: 'Electrodomestico' }
+          ],
+        },
+      ],
+    });
+
+    // Calcular información de paginación
+    const totalItems = inventarios.count;
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    // Enviar respuesta con los datos y la información de paginación
+    res.json({
+      page,
+      pageSize,
+      totalItems,
+      totalPages,
+      data: inventarios.rows
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al obtener la lista de inventarios' });
+  }
+};
+
+export const getComprobantesVenta = async (req: Request, res: Response) => {
+  const page = parseInt(req.query.page as string, 10) || 1;
+  const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+  const offset = (page - 1) * pageSize;
+
+  try {
+    const comprobantesVenta = await ComprobanteVenta.findAndCountAll({
+      limit: pageSize,
+      offset: offset,
+      order: [['id', 'DESC']],
+      include: [
+        { 
+          model: TipoComprobante, 
+          as: 'TipoComprobante' 
+        },
+        { 
+          model: DetalleVenta, 
+          as: 'DetalleVenta', 
+          include: [
+            { 
+              model: Venta, 
+              as: 'Venta',
+              include: [
+                { 
+                  model: Empleado, 
+                  as: 'Empleado' 
+                },
+                { 
+                  model: Cliente, 
+                  as: 'Cliente' 
+                },
+                { 
+                  model: Articulo, 
+                  as: 'Articulo' ,
+                  include: [
+                    { 
+                      model: Categoria, 
+                      as: 'Categoria' 
+                    },
+                    { 
+                      model: Vehiculo, 
+                      as: 'Vehiculo' 
+                    },
+                    { 
+                      model: Electrodomestico, 
+                      as: 'Electrodomestico' 
+                    },
+                  ]
+                },
+              ],
+            },
+          ],
+        }
+      ],
+    });
+
+    // Calcular información de paginación
+    const totalItems = comprobantesVenta.count;
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    // Enviar respuesta con los datos y la información de paginación
+    res.json({
+      page,
+      pageSize,
+      totalItems,
+      totalPages,
+      data: comprobantesVenta.rows
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al obtener la lista de Comprobantes de Venta' });
+  }
+};
+
+
+export const getTickets = async (req: Request, res: Response) => {
+  try {
+    // Parámetros de paginación
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+    const offset = (page - 1) * pageSize;
+
+    // Consulta principal con la paginación y las relaciones
+    const tickets = await Ticket.findAndCountAll({
+      limit: pageSize,
+      offset: offset,
+      include: [
+        { model: Pago, as: 'Pago' },
+        {
+          model: Prestamo, as: 'Prestamo', include: [
+            { model: Cliente, as: 'Cliente' },
+            { model: Empleado, as: 'Empleado' },
+            {
+              model: Articulo, as: 'Articulo', include: [
+                { model: Categoria, as: 'Categoria' },
+                { model: Vehiculo, as: 'Vehiculo' },
+                { model: Electrodomestico, as: 'Electrodomestico' },
+              ]
+            },
+          ],
+        }
+      ],
+    });
+
+    // Calcular información de paginación
+    const totalItems = tickets.count;
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    // Enviar respuesta con los datos y la información de paginación
+    res.json({
+      page,
+      pageSize,
+      totalItems,
+      totalPages,
+      data: tickets.rows
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al obtener la lista de Tickets' });
+  }
+};
+
+
+export const getTiposPago = async (req: Request, res: Response) => {
+  try {
+    // Parse pagination parameters from request query
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+
+    // Calculate offset
+    const offset = (page - 1) * pageSize;
+
+    // Fetch tiposPago with pagination
+    const tiposPago = await TipoPago.findAndCountAll({
+      limit: pageSize,
+      offset: offset,
+    });
+
+    // Calculate total pages
+    const totalPages = Math.ceil(tiposPago.count / pageSize);
+
+    // Send paginated response
+    res.json({
+      page,
+      pageSize,
+      totalItems: tiposPago.count,
+      totalPages,
+      data: tiposPago.rows,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al obtener la lista de tipos de pago' });
+  }
+};
+
+
 
 // Método de paginación para DetallePrestamo
 export const getPagos = async (req: Request, res: Response) => {
@@ -511,95 +717,6 @@ export const getUsuarios = async (req: Request, res: Response) => {
   }
 };
 
-
-// export const getPrestamosVencidos = async (req: Request, res: Response) => {
-//   try {
-//     const page = parseInt(req.query.page as string, 10) || 1;
-//     const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
-//     const offset = (page - 1) * pageSize;
-
-//     const hoy = new Date(); // Obtener la fecha actual
-
-//     // Obtener los préstamos vencidos
-//     const prestamosVencidos = await Prestamo.findAndCountAll({
-//       where: {
-//         fecha_devolucion: {
-//           [Op.lt]: hoy // Obtener los préstamos donde la fecha de devolución es anterior a la fecha actual
-//         },
-
-//         [Op.and]: [
-//           { estado: 'pendiente' }, // Préstamos vencidos con estado 'pendiente'
-//           //{ estado: 'venta' } // Préstamos vencidos con estado 'venta'
-//         ],
-//       },
-//       include: [
-//         { model: Cliente, as: 'Cliente' },
-//         { model: Empleado, as: 'Empleado' },
-//         {
-//           model: Articulo,
-//           as: 'Articulo',
-//           include: [
-//             { model: Categoria, as: 'Categoria' },
-//             { model: Vehiculo, as: 'Vehiculo' },
-//             { model: Electrodomestico, as: 'Electrodomestico' },
-//           ],
-//         },
-//       ],
-//       limit: pageSize,
-//       offset: offset,
-//       order: [['fecha_devolucion', 'DESC']], // Ordenar por fecha de devolución en orden descendente
-//     });
-
-//     // Obtener los IDs de los préstamos vencidos
-//     const prestamosIds = prestamosVencidos.rows.map((prestamo: any) => prestamo.id);
-
-//     // Actualizar los préstamos vencidos a estado 'venta'
-//     // Añade una condición para actualizar solo los préstamos que están en estado 'pendiente'
-//     await Prestamo.update(
-//       { estado: 'venta' },
-//       {
-//         where: {
-//           id: prestamosIds,
-//           estado: 'pendiente' // Solo actualizar préstamos que estén en estado 'pendiente'
-//         }
-//       }
-//     );
-
-//     // Recuperar nuevamente los préstamos actualizados (incluyendo los que se acaban de actualizar a 'venta')
-//     const prestamosActualizados = await Prestamo.findAll({
-//       where: {
-//         id: prestamosIds
-//       },
-//       include: [
-//         { model: Cliente, as: 'Cliente' },
-//         { model: Empleado, as: 'Empleado' },
-//         {
-//           model: Articulo,
-//           as: 'Articulo',
-//           include: [
-//             { model: Categoria, as: 'Categoria' },
-//             { model: Vehiculo, as: 'Vehiculo' },
-//             { model: Electrodomestico, as: 'Electrodomestico' },
-//           ],
-//         },
-//       ]
-//     });
-
-//     const totalItems = prestamosVencidos.count;
-//     const totalPages = Math.ceil(totalItems / pageSize);
-
-//     res.json({
-//       page,
-//       pageSize,
-//       totalItems,
-//       totalPages,
-//       data: prestamosActualizados, // Devuelve los préstamos actualizados
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ msg: 'Error al obtener los préstamos vencidos' });
-//   }
-// };
 
 export const actualizarPrestamosAVenta = async (req: Request, res: Response) => {
   try {

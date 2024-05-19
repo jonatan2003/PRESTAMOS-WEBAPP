@@ -26,10 +26,6 @@ const Prestamo = db.define('Prestamo', {
   monto_pago: {
     type: DataTypes.DECIMAL(10, 2),
   },
-  observacion: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
   estado: {
     type: DataTypes.STRING,
     allowNull: false,

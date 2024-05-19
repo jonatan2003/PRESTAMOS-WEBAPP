@@ -17,6 +17,10 @@ const Articulo = db.define('Articulo', {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
+  observaciones: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   estado: {
     type: DataTypes.STRING,
     allowNull: false,

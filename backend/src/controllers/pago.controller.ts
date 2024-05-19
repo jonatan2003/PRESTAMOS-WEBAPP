@@ -1,29 +1,14 @@
 // Controladores para el modelo Pago (Pago)
 import { Request, Response } from 'express';
 import Pago from '../models/pago.model';
-import Prestamo from '../models/prestamo.model';
-import Cliente from '../models/cliente.model';
-import Empleado from '../models/empleado.model';
-import Articulo from '../models/articulo.model';
-import Categoria from '../models/categoria.model';
-import Vehiculo from '../models/vehiculo.model';
-import Electrodomestico from '../models/electrodometisco.model';
+import TipoPago from '../models/tipo_pago.model';
 
 export const createPago = async (req: Request, res: Response) => {
-  const { idprestamo, tipo_pago, fecha_pago,interes_pago,monto_restante,capital_pago } = req.body;
+  const { id_tipopago, fecha_pago, interes_pago, monto_restante, capital_pago } = req.body;
 
   try {
-
- // Verificar si el prestamo asociados al Pago existen
- const prestamoExistente = await Prestamo.findByPk(idprestamo);
-
- if (!prestamoExistente ) {
-   return res.status(400).json({ msg: 'El Prestamo especificados no existen' });
- }
-
     const nuevoPago = await Pago.create({
-      idprestamo, 
-      tipo_pago, 
+      id_tipopago,
       fecha_pago,
       interes_pago,
       monto_restante,
@@ -39,36 +24,14 @@ export const createPago = async (req: Request, res: Response) => {
 
 export const getPagos = async (req: Request, res: Response) => {
   try {
-    const pagos = await Pago.findAll({
-      include: [
-        { model: Prestamo, as: 'Prestamo',
-        include: [ { model: Cliente, as: 'Cliente'},
-        { model: Empleado, as: 'Empleado' },
-        { model: Articulo, as: 'Articulo' ,
+    const pagos = await Pago.findAll(
+    
+      {
         include: [
-          { 
-            model: Categoria, // Relación con la tabla de Artículos
-            as: 'Categoria' // Alias para la relación de Artículo
-          },
-          { 
-            model: Vehiculo, // Relación con la tabla de Artículos
-            as: 'Vehiculo' // Alias para la relación de Artículo
-          },
-          { 
-            model: Electrodomestico, // Relación con la tabla de Artículos
-            as: 'Electrodomestico' // Alias para la relación de Artículo
-          },
-        ]
-        }
-         
-        ]
-
-
-
-         }
-       
-      ],
-    });
+          { model: TipoPago, as: 'TipoPago',
+           },
+        ],
+      });
     res.json(pagos);
   } catch (error) {
     console.error(error);
@@ -76,41 +39,17 @@ export const getPagos = async (req: Request, res: Response) => {
   }
 };
 
-
 export const getPagoById = async (req: Request, res: Response) => {
-  const { idPago } = req.params;
+  const { id } = req.params;
 
   try {
-    const pago = await Pago.findByPk(idPago,{
-      include: [
-        { model: Prestamo, as: 'Prestamo',
-        include: [ { model: Cliente, as: 'Cliente'},
-        { model: Empleado, as: 'Empleado' },
-        { model: Articulo, as: 'Articulo' ,
+    const pago = await Pago.findByPk(id,
+      {
         include: [
-          { 
-            model: Categoria, // Relación con la tabla de Artículos
-            as: 'Categoria' // Alias para la relación de Artículo
-          },
-          { 
-            model: Vehiculo, // Relación con la tabla de Artículos
-            as: 'Vehiculo' // Alias para la relación de Artículo
-          },
-          { 
-            model: Electrodomestico, // Relación con la tabla de Artículos
-            as: 'Electrodomestico' // Alias para la relación de Artículo
-          },
-        ]
-        }
-         
-        ]
-
-
-
-         }
-       
-      ],
-    });
+          { model: TipoPago, as: 'TipoPago',
+           },
+        ],
+      });
 
     if (!pago) {
       res.status(404).json({ msg: 'Pago no encontrado' });
@@ -131,14 +70,6 @@ export const updatePago = async (req: Request, res: Response) => {
     const pago = await Pago.findByPk(idPago);
 
     if (pago) {
-      // Verificar si el prestamo asociados al préstamo existen
-      if (body.idprestamo) {
-        const prestamoExistente = await Pago.findByPk(body.idprestamo);
-        if (!prestamoExistente) {
-          return res.status(400).json({ msg: 'El prestamo especificado no existe' });
-        }
-      }
-
       await pago.update(body);
       res.json({ msg: 'El pago fue actualizado con éxito' });
     } else {
@@ -151,10 +82,10 @@ export const updatePago = async (req: Request, res: Response) => {
 };
 
 export const deletePago = async (req: Request, res: Response) => {
-  const { idPago } = req.params;
+  const { id } = req.params;
 
   try {
-    const pago = await Pago.findByPk(idPago);
+    const pago = await Pago.findByPk(id);
 
     if (!pago) {
       res.status(404).json({ msg: 'Pago no encontrado' });
@@ -167,7 +98,3 @@ export const deletePago = async (req: Request, res: Response) => {
     res.status(500).json({ msg: 'Error al eliminar el Pago' });
   }
 };
-
-
-
-

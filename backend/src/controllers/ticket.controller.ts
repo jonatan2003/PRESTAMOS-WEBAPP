@@ -1,33 +1,37 @@
-// ticket.controller.js
-
 import { Request, Response } from 'express';
-import Ticket from '../models/ticket.model'; // Importa el modelo Ticket
-import Pago from '../models/pago.model'; // Importa el modelo Pago
-import DetalleVenta from '../models/detalleventa.model'; // Importa el modelo DetalleVenta
+import Ticket from '../models/ticket.model';
+import Pago from '../models/pago.model';
+import Prestamo from '../models/prestamo.model';
+import Empleado from '../models/empleado.model';
+import Articulo from '../models/articulo.model';
+import Categoria from '../models/categoria.model';
+import Vehiculo from '../models/vehiculo.model';
+import Electrodomestico from '../models/electrodometisco.model';
+import Cliente from '../models/cliente.model';
 
-// Controlador para crear un nuevo Ticket
 export const createTicket = async (req: Request, res: Response) => {
-  const { nro_serie, nro_ticket, tipo_comprobante, id_pago, id_detalleventa } = req.body;
+  const { num_serie, num_ticket, idpago, idprestamo } = req.body;
 
   try {
-    // Verificar si el Pago asociado al Ticket existe
-    const pagoExistente = await Pago.findByPk(id_pago);
-    if (!pagoExistente) {
-      return res.status(400).json({ msg: 'El Pago especificado no existe' });
+    // Verificar si el prestamo asociado al Ticket existe
+    const prestamoExistente = await Prestamo.findByPk(idprestamo);
+    if (!prestamoExistente) {
+      return res.status(400).json({ msg: 'El prestamo especificado no existe' });
     }
 
-    // Verificar si el DetalleVenta asociado al Ticket existe
-    const detalleVentaExistente = await DetalleVenta.findByPk(id_detalleventa);
-    if (!detalleVentaExistente) {
-      return res.status(400).json({ msg: 'El DetalleVenta especificado no existe' });
+    // Verificar si el pago asociado al Ticket existe (si idpago no es nulo)
+    if (idpago) {
+      const pagoExistente = await Pago.findByPk(idpago);
+      if (!pagoExistente) {
+        return res.status(400).json({ msg: 'El pago especificado no existe' });
+      }
     }
 
     const nuevoTicket = await Ticket.create({
-      nro_serie,
-      nro_ticket,
-      tipo_comprobante,
-      id_pago,
-      id_detalleventa,
+      num_serie,
+      num_ticket,
+      idpago,
+      idprestamo,
     });
 
     res.status(201).json(nuevoTicket);
@@ -37,13 +41,34 @@ export const createTicket = async (req: Request, res: Response) => {
   }
 };
 
-// Controlador para obtener todos los Tickets
 export const getTickets = async (req: Request, res: Response) => {
   try {
     const tickets = await Ticket.findAll({
       include: [
         { model: Pago, as: 'Pago' },
-        { model: DetalleVenta, as: 'DetalleVenta' },
+        { model: Prestamo, as: 'Prestamo',
+        include: [
+          { model: Cliente, as: 'Cliente' },
+          { model: Empleado, as: 'Empleado' },
+          { model: Articulo, as: 'Articulo',
+          include: [
+            { 
+              model: Categoria, // Relación con la tabla de Artículos
+              as: 'Categoria' // Alias para la relación de Artículo
+            },
+            { 
+              model: Vehiculo, // Relación con la tabla de Artículos
+              as: 'Vehiculo' // Alias para la relación de Artículo
+            },
+            { 
+              model: Electrodomestico, // Relación con la tabla de Artículos
+              as: 'Electrodomestico' // Alias para la relación de Artículo
+            },
+          ]
+  
+           },
+        ],
+         }
       ],
     });
     res.json(tickets);
@@ -53,7 +78,6 @@ export const getTickets = async (req: Request, res: Response) => {
   }
 };
 
-// Controlador para obtener un Ticket por su ID
 export const getTicketById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -61,7 +85,29 @@ export const getTicketById = async (req: Request, res: Response) => {
     const ticket = await Ticket.findByPk(id, {
       include: [
         { model: Pago, as: 'Pago' },
-        { model: DetalleVenta, as: 'DetalleVenta' },
+        { model: Prestamo, as: 'Prestamo',
+        include: [
+          { model: Cliente, as: 'Cliente' },
+          { model: Empleado, as: 'Empleado' },
+          { model: Articulo, as: 'Articulo',
+          include: [
+            { 
+              model: Categoria, // Relación con la tabla de Artículos
+              as: 'Categoria' // Alias para la relación de Artículo
+            },
+            { 
+              model: Vehiculo, // Relación con la tabla de Artículos
+              as: 'Vehiculo' // Alias para la relación de Artículo
+            },
+            { 
+              model: Electrodomestico, // Relación con la tabla de Artículos
+              as: 'Electrodomestico' // Alias para la relación de Artículo
+            },
+          ]
+  
+           },
+        ],
+         }
       ],
     });
 
@@ -76,35 +122,61 @@ export const getTicketById = async (req: Request, res: Response) => {
   }
 };
 
-// Controlador para actualizar un Ticket por su ID
 export const updateTicket = async (req: Request, res: Response) => {
   const { body } = req;
   const { id } = req.params;
 
   try {
-    const ticket = await Ticket.findByPk(id);
+    const ticket = await Ticket.findByPk(id,{
+      include: [
+        { model: Pago, as: 'Pago' },
+        { model: Prestamo, as: 'Prestamo',
+        include: [
+          { model: Cliente, as: 'Cliente' },
+          { model: Empleado, as: 'Empleado' },
+          { model: Articulo, as: 'Articulo',
+          include: [
+            { 
+              model: Categoria, // Relación con la tabla de Artículos
+              as: 'Categoria' // Alias para la relación de Artículo
+            },
+            { 
+              model: Vehiculo, // Relación con la tabla de Artículos
+              as: 'Vehiculo' // Alias para la relación de Artículo
+            },
+            { 
+              model: Electrodomestico, // Relación con la tabla de Artículos
+              as: 'Electrodomestico' // Alias para la relación de Artículo
+            },
+          ]
+  
+           },
+        ],
+         }
+      ],
+    });
 
     if (ticket) {
-      // Verificar si el Pago asociado al Ticket existe
-      if (body.id_pago) {
-        const pagoExistente = await Pago.findByPk(body.id_pago);
-        if (!pagoExistente) {
-          return res.status(400).json({ msg: 'El Pago especificado no existe' });
+      // Verificar si el prestamo asociado al Ticket existe
+      if (body.idprestamo) {
+        const prestamoExistente = await Prestamo.findByPk(body.idprestamo);
+        if (!prestamoExistente) {
+          return res.status(400).json({ msg: 'El prestamo especificado no existe' });
         }
       }
 
-      // Verificar si el DetalleVenta asociado al Ticket existe
-      if (body.id_detalleventa) {
-        const detalleVentaExistente = await DetalleVenta.findByPk(body.id_detalleventa);
-        if (!detalleVentaExistente) {
-          return res.status(400).json({ msg: 'El DetalleVenta especificado no existe' });
+      // Verificar si el pago asociado al Ticket existe (si idpago no es nulo)
+      if (body.idpago) {
+        const pagoExistente = await Pago.findByPk(body.idpago);
+        if (!pagoExistente) {
+          return res.status(400).json({ msg: 'El pago especificado no existe' });
         }
       }
 
       await ticket.update(body);
       res.json({ msg: 'El Ticket fue actualizado con éxito' });
     } else {
-      res.status(404).json({ msg: `No existe un Ticket con el ID ${id}` });
+      res.status(404).json({ msg: `No existe un Ticket con el id ${id}` });
     }
   } catch (error) {
     console.error(error);
@@ -112,7 +184,6 @@ export const updateTicket = async (req: Request, res: Response) => {
   }
 };
 
-// Controlador para eliminar un Ticket por su ID
 export const deleteTicket = async (req: Request, res: Response) => {
   const { id } = req.params;
 

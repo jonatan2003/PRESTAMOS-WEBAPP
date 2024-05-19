@@ -1,13 +1,10 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection.db';
-import Prestamo from './prestamo.model';
+import TipoPago from './tipo_pago.model';
 
 const Pago = db.define('Pago', {
-  idprestamo: {
-    type: DataTypes.INTEGER,
-  },
-  tipo_pago: {
-    type: DataTypes.STRING,
+  id_tipopago: {
+    type: DataTypes.NUMBER,
     allowNull: false,
   },
   fecha_pago: {
@@ -22,14 +19,13 @@ const Pago = db.define('Pago', {
   capital_pago: {
     type: DataTypes.DECIMAL(10, 2),
   },
- 
 }, {
   createdAt: false,
   updatedAt: false,
   tableName: 'pago',
 });
 
-// Definir la relación con la tabla Prestamo
-Pago.belongsTo(Prestamo, { foreignKey: 'idprestamo', as: 'Prestamo' });
+Pago.belongsTo(TipoPago, { foreignKey: 'id_tipopago', as: 'TipoPago' });
+
 
 export default Pago;

@@ -1,35 +1,46 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection.db';
 import Pago from './pago.model';
-import DetalleVenta from './detalleventa.model';
+import Prestamo from './prestamo.model';
 
 const Ticket = db.define('Ticket', {
-  nro_serie: {
-    type: DataTypes.STRING,
-  },
-  nro_ticket: {
+  id: {
     type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
   },
-  
-  tipo_comprobante: {
-    type: DataTypes.STRING,
+  num_serie: {
+    type: DataTypes.STRING(15),
+    allowNull: true,
+  },
+  num_ticket: {
+    type: DataTypes.STRING(8),
+    allowNull: true,
+  },
+  idpago: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: Pago,
+      key: 'id'
+    }
+  },
+  idprestamo: {
+    type: DataTypes.INTEGER,
     allowNull: false,
-  },
-  id_pago: {
-    type: DataTypes.INTEGER,
-  },
-  id_detalleventa: {
-    type: DataTypes.INTEGER,
-  },
- 
+    references: {
+      model: Prestamo,
+      key: 'id'
+    }
+  }
 }, {
   createdAt: false,
   updatedAt: false,
-  tableName: 'tciket',
+  tableName: 'ticket',
 });
 
-// Definir la relación con la tabla Prestamo
-Ticket.belongsTo(Pago, { foreignKey: 'id_pago', as: 'Pago' });
-Ticket.belongsTo(DetalleVenta, { foreignKey: 'id_detalleventa', as: 'DetalleVenta' });
+// Definir las relaciones
+Ticket.belongsTo(Pago, { foreignKey: 'idpago', as: 'Pago' });
+Ticket.belongsTo(Prestamo, { foreignKey: 'idprestamo', as: 'Prestamo' });
 
 export default Ticket;

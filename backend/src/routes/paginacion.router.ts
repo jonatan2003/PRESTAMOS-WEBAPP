@@ -7,13 +7,17 @@ import { getClientes,
     getElectrodomesticos,
      getPagos,
       getCategorias,
+      getInventario,
        getVentas,
         getDetallesVenta,
          getUsuarios, 
          getPrestamosPendientes,
          getPrestamosPagados,
          getPrestamosVenta,
-         actualizarPrestamosAVenta} from '../controllers/paginacion.controller';
+         actualizarPrestamosAVenta,
+         getComprobantesVenta,
+         getTickets,
+         getTiposPago} from '../controllers/paginacion.controller';
 
 const PaginacionRouter = Router();
 
@@ -34,6 +38,17 @@ PaginacionRouter.get('/vehiculos', getVehiculos);
 
 // Rutas para electrodomésticos
 PaginacionRouter.get('/electrodomesticos', getElectrodomesticos);
+
+PaginacionRouter.get('/inventario', getInventario);
+
+PaginacionRouter.get('/comprobantes_ventas', getComprobantesVenta);
+
+PaginacionRouter.get('/tickets', getTickets);
+
+PaginacionRouter.get('/tipospago', getTiposPago);
+
+
+
 
 // Rutas para detalles de préstamo
 PaginacionRouter.get('/pagos', getPagos);

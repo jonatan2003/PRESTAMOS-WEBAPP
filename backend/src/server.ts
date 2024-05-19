@@ -23,6 +23,10 @@ import PaginacionRouter from './routes/paginacion.router';
 import TicketRouter from './routes/ticket.router';
 import RouterDni from './routes/apidni.router';
 import { actualizarPrestamosAVenta } from './controllers/paginacion.controller';
+import BoletasRouter from './routes/boleta.router';
+import InventarioRouter from './routes/inventario.router';
+import TipoPagoRouter from './routes/tipo_pago.router';
+import ComprobanteVentaRouter from './routes/comprobante_venta.router';
 
 
 class Server {
@@ -83,8 +87,15 @@ class Server {
     this.app.use('/api/v1/empleados', EmpleadosRouter);
     this.app.use('/api/v1/search', SearchRouter);
     this.app.use('/api/v1/paginacion', PaginacionRouter);
+    this.app.use('/api/v1/inventario', InventarioRouter);
+    this.app.use('/api/v1/tipopagos', TipoPagoRouter);
+    this.app.use('/api/v1/comprobantes_ventas', ComprobanteVentaRouter);
+
+
     this.app.use('/api/v1/ticket', TicketRouter);
     this.app.use('/api/v1/dni', RouterDni);
+    this.app.use('/api/v1/boletas', BoletasRouter);
+
   }
 
   private async dbConnect() {
@@ -128,7 +139,7 @@ class Server {
         } finally {
           this.isRequesting = false;
         }
-      }, 60000); // 60 segundos para pruebas, 72000000 20 horas para producción
+      },72000000 ); // 60000 es 60 segundos para pruebas, 72000000 20 horas para producción
   
     } catch (error) {
       console.log('Error en la configuración de WebSockets:', error);

@@ -7,7 +7,7 @@ import { Op } from 'sequelize';
 
 // Crear un nuevo artículo
 export const createArticulo = async (req: Request, res: Response) => {
-  const { idcategoria, idvehiculo, idelectrodomestico,estado } = req.body;
+  const { idcategoria, idvehiculo, idelectrodomestico,observaciones,estado } = req.body;
 
   try {
     // Verificar si la categoría asociada al artículo existe
@@ -36,6 +36,7 @@ export const createArticulo = async (req: Request, res: Response) => {
       idcategoria,
       idvehiculo,
       idelectrodomestico,
+      observaciones,
       estado
     });
 
