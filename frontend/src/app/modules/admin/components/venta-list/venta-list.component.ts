@@ -1,170 +1,142 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { Venta } from 'src/app/interfaces/venta.interface';
 import { VentaService } from 'src/app/services/venta.service';
 import { ImpresionService } from 'src/app/shared/services/impresion.service';
 import Swal from 'sweetalert2';
-import { FormsModule } from '@angular/forms';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import { PaginacionService } from 'src/app/services/paginacion.service';
 import { DetalleVenta } from 'src/app/interfaces/detaventa.interface';
-
-
-
-
+import { Comprobante_venta } from 'src/app/interfaces/comprobante_venta.interface';
+import { ComprobanteventaService } from 'src/app/services/comprobanteventa.service';
 
 @Component({
   selector: 'app-venta-list',
   templateUrl: './venta-list.component.html',
   styleUrls: ['./venta-list.component.css']
 })
-export class VentaListComponent {
+export class VentaListComponent implements OnInit {
 
   listdetalleVentas: DetalleVenta[] = [];
+  listcomprobanteVenta: Comprobante_venta[] = [];
   loading: boolean = false;
-  // Define propiedades para la paginación
   currentPage: number = 1;
-  pageSize: number = 10; // Tamaño de la página
+  pageSize: number = 10;
   totalItems: number;
-  totalPages: number = 0;   // Inicializa totalPages en 0
-  
+  totalPages: number = 0;
 
-
-
-  constructor(private _ventaService: VentaService, 
+  constructor(
+    private _ventaService: VentaService, 
+    private _comprobanteventaService: ComprobanteventaService,
     private _paginacionService: PaginacionService,
     private toastr: ToastrService,
-    private fb: FormBuilder,
-    private router: Router,
-    private aRouter: ActivatedRoute,
     private impresionService: ImpresionService
-    ) { 
-
-
-
-    }
+  ) {}
 
   ngOnInit(): void {
-    // Al inicializar el componente, llamar al método para obtener la lista de ventas
-    this.getListVentas();
-    // Llamar al método para obtener la lista de préstamos en ReservationListComponent
+    
+    this.getListComprobanteventas();
   }
 
-  getListVentas() {
+
+  getListComprobanteventas() {
     this.loading = true;
-  
-    // Ajusta el método para aceptar parámetros de paginación
-    this._paginacionService.getListDetaVentas(this.currentPage, this.pageSize).subscribe((response: any) => {
-      this.listdetalleVentas = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
-      console.log(this.listdetalleVentas);
-      this.loading = false;
-  
-      // Utiliza totalItems del objeto de respuesta para calcular totalPages
-      this.totalPages = response.totalPages;
-    });
+    this._paginacionService.getListComprobanteventas(this.currentPage, this.pageSize).subscribe(
+      (response: any) => {
+        console.log('Comprobante Ventas Response:', response);  // Debugging line
+        this.listcomprobanteVenta = response.data;
+        this.totalPages = response.totalPages;
+        this.loading = false;
+      },
+      (error) => {
+        console.error('Error fetching comprobante ventas:', error);
+        this.loading = false;
+      }
+    );
   }
-  
-  // Método para cambiar de página
+
   pageChanged(page: number) {
     this.currentPage = page;
-    this.getListVentas();
+
+    this.getListComprobanteventas();
   }
-  
-  // Método para generar las páginas disponibles
+
   getPages(): number[] {
-    // Retorna un array de números enteros del 1 al totalPages
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 
-
-  
-  deleteVenta(id: number) {
-    // Mostrar confirmación antes de eliminar la venta
+  deleteComprobante(id: number) {
     Swal.fire({
       title: 'Eliminar Venta',
-      text: '¿Estás seguro de que deseas eliminar este Venta?',
+      text: '¿Estás seguro de que deseas eliminar esta venta?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí',
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.isConfirmed) {
-        // Confirmación aceptada, realizar eliminación
-        this.performDeleteVenta(id);
+        this.performDeleteComprobante(id);
       }
     });
   }
 
-  performDeleteVenta(id: number) {
+  performDeleteComprobante(id: number) {
     this.loading = true;
-    this._ventaService.deleteVenta(id).subscribe(() => {
-      this.getListVentas();
-      this.toastr.warning('La Venta fue eliminado con exito', 'Venta eliminada');
+    this._comprobanteventaService.deleteComprobanteventa(id).subscribe(() => {
+     this.getListComprobanteventas();
+      this.toastr.warning('La comprobante fue eliminada con éxito', 'Venta eliminada');
+      this.loading = false;
     });
   }
 
-
-
- 
- 
-  
-    onImprimir() {
-      const entidad = 'Ventas'; // Nombre de la entidad (para el nombre del archivo PDF)
-      const encabezado = this.getEncabezado(); // Obtener el encabezado de la tabla
-      const cuerpo = this.getCuerpo(); // Obtener el cuerpo de la tabla
-      const titulo = 'Lista de Ventas'; // Título del informe
-      
-      // Eliminar filas duplicadas del cuerpo
-      const cuerpoUnico = this.eliminarFilasDuplicadas(cuerpo);
-    
-      // Llamar al servicio de impresión
-      this.impresionService.imprimir(entidad, encabezado, cuerpoUnico, titulo, true);
+  onImprimir() {
+    const entidad = 'Ventas';
+    const encabezado = this.getEncabezado();
+    const cuerpo = this.getCuerpo();
+    const titulo = 'Lista de Ventas';
+    const cuerpoUnico = this.eliminarFilasDuplicadas(cuerpo);
+    this.impresionService.imprimir(entidad, encabezado, cuerpoUnico, titulo, true);
   }
 
-  // Método para eliminar filas duplicadas del cuerpo de la tabla
   eliminarFilasDuplicadas(cuerpo: Array<any>): Array<any> {
     const cuerpoUnico: Array<any> = [];
-    const filasVistas = new Set(); // Usamos un conjunto para mantener un registro de las filas vistas
+    const filasVistas = new Set();
     cuerpo.forEach((fila) => {
-        // Convertimos la fila en una cadena para poder compararla con otras filas
-        const filaString = JSON.stringify(fila);
-        if (!filasVistas.has(filaString)) {
-            // Si la fila no ha sido vista antes, la agregamos al cuerpo único y al conjunto de filas vistas
-            cuerpoUnico.push(fila);
-            filasVistas.add(filaString);
-        }
+      const filaString = JSON.stringify(fila);
+      if (!filasVistas.has(filaString)) {
+        cuerpoUnico.push(fila);
+        filasVistas.add(filaString);
+      }
     });
     return cuerpoUnico;
   }
-  
-  
+
   getEncabezado(): string[] {
-      const encabezado: string[] = [
-          'EMPLEADO',
-          'CLIENTE',
-          'ARTICULO',
-          'FECHA VENTA',
-          'TIPO PAGO',
-          'CANTIDAD',
-          'PRECIO UNITARIO',
-          'SUBTOTAL',
-          'TOTAL'
-      ];
-      
-      return encabezado;
+    return [
+      'EMPLEADO',
+      'CLIENTE',
+      'ARTICULO',
+      'FECHA VENTA',
+      'TIPO PAGO',
+      'CANTIDAD',
+      'PRECIO UNITARIO',
+      'SUBTOTAL',
+      'TOTAL'
+    ];
   }
-  
+
   getCuerpo(): any[][] {
     const cuerpo: any[][] = [];
-    const textosExcluidos = new Set(['Actualizar', 'Eliminar', 'Imprimir']); // Textos a excluir
-    const filasVistas = new Set(); // Usar un conjunto para mantener un registro de las filas ya vistas
-    
+    const filasVistas = new Set();
     this.listdetalleVentas.forEach((venta) => {
       const fila: any[] = [
-        venta.Venta?.Empleado?.nombre + ' ' + venta.Venta?.Cliente?.apellido,
         venta.Venta?.Empleado?.nombre + ' ' + venta.Venta?.Empleado?.apellidos,
-        venta.Venta?.Articulo ? (venta.Venta?.Articulo.Vehiculo ? venta.Venta?.Articulo.Vehiculo.descripcion : (venta.Venta?.Articulo.Electrodomestico ? venta.Venta?.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
+        venta.Venta?.Cliente?.nombre,
+        venta.Venta?.Articulo ?
+          (venta.Venta?.Articulo.Vehiculo ?
+            venta.Venta?.Articulo.Vehiculo.descripcion :
+            (venta.Venta?.Articulo.Electrodomestico ?
+              venta.Venta?.Articulo.Electrodomestico.descripcion :
+              'No hay descripción disponible')) :
+          'No hay descripción disponible',
         venta.Venta?.fecha_venta,
         venta.Venta?.tipo_pago,
         venta.cantidad,
@@ -172,41 +144,51 @@ export class VentaListComponent {
         venta.subtotal,
         venta.Venta?.total
       ];
-  
-      // Convertir la fila en una cadena para compararla
       const filaString = fila.join('|');
-  
-      // Solo agregar la fila al cuerpo si no se ha visto antes
       if (!filasVistas.has(filaString)) {
         cuerpo.push(fila);
         filasVistas.add(filaString);
       }
     });
-  
     return cuerpo;
   }
-  
+
   onImprimirFila(index: number) {
-      const detalleventa = this.listdetalleVentas[index];
-      this.impresionService.imprimirFilaVentas('Ventas', {
-          empleado: detalleventa.Venta?.Empleado?.nombre +" " + detalleventa.Venta?.Empleado?.apellidos || '',
-          cliente: detalleventa.Venta?.Cliente?.nombre || '',
-          articulo: detalleventa.Venta?.Articulo ?
-              (detalleventa.Venta?.Articulo.Vehiculo ?
-                  detalleventa.Venta?.Articulo.Vehiculo.descripcion :
-                      (detalleventa.Venta?.Articulo.Electrodomestico ?
-                          detalleventa.Venta?.Articulo.Electrodomestico.descripcion :
-                              'No hay descripción disponible')) :
-              'No hay descripción disponible',
-              dni : detalleventa.Venta?.Cliente.dni,
-          fecha_venta: detalleventa.Venta?.fecha_venta || '',
-          tipo_pago: detalleventa.Venta?.tipo_pago || '',
-          cantidad: detalleventa.cantidad || '',
-          precio_unitario: detalleventa.precio_unitario || '',
-          subtotal: detalleventa.subtotal || '',
-          total: detalleventa.Venta?.total || ''
-      });
+    const comprobante = this.listcomprobanteVenta[index];
+    this.impresionService.imprimirFilaVentas('Ventas', {
+      empleado: comprobante.DetalleVenta?.Venta?.Empleado?.nombre + " " + comprobante?.DetalleVenta?.Venta?.Empleado?.apellidos || '',
+      cliente: comprobante.DetalleVenta?.Venta?.Cliente?.nombre || '',
+      articulo: comprobante.DetalleVenta?.Venta?.Articulo ?
+        (comprobante.DetalleVenta?.Venta?.Articulo.Vehiculo ?
+          comprobante.DetalleVenta?.Venta?.Articulo.Vehiculo.descripcion :
+          (comprobante.DetalleVenta?.Venta?.Articulo.Electrodomestico ?
+            comprobante.DetalleVenta?.Venta?.Articulo.Electrodomestico.descripcion :
+            'No hay descripción disponible')) :
+        'No hay descripción disponible',
+      dni: comprobante.DetalleVenta?.Venta?.Cliente.dni,
+      fecha_venta: comprobante.DetalleVenta?.Venta?.fecha_venta || '',
+      tipo_pago: comprobante.DetalleVenta?.Venta?.tipo_pago || '',
+      cantidad: comprobante.DetalleVenta?.cantidad || '',
+      precio_unitario: comprobante.DetalleVenta?.precio_unitario || '',
+      subtotal: comprobante.DetalleVenta?.subtotal || '',
+      total: comprobante.DetalleVenta?.Venta?.total || '',
+      igv: comprobante.igv,
+      descuento: comprobante.descuento,
+      tipo_comprobante: comprobante.TipoComprobante?.nombre,
+      serie: comprobante.TipoComprobante?.TipoSerie?.nombre
+    });
   }
 
-    
+  getArticuloDescripcion(articulo: any): string {
+    if (!articulo) {
+      return 'No hay descripción disponible';
+    }
+    if (articulo.Vehiculo) {
+      return articulo.Vehiculo.descripcion;
+    }
+    if (articulo.Electrodomestico) {
+      return articulo.Electrodomestico.descripcion;
+    }
+    return 'No hay descripción disponible';
+  }
 }

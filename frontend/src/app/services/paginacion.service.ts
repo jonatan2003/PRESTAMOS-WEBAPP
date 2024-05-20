@@ -13,7 +13,7 @@ import { Usuario } from '../interfaces/usuario.interface';
 import { Electrodomestico } from '../interfaces/electrodomestico.interface';
 import { Vehiculo } from '../interfaces/vehiculo.interface';
 import { Pago } from '../interfaces/pago.interface';
-
+import { Comprobante_venta } from '../interfaces/comprobante_venta.interface';
 @Injectable({
   providedIn: 'root'
 })
@@ -24,6 +24,12 @@ export class PaginacionService {
     this.apiUrl = `${environment.endpoint}api/v1/paginacion`;
   }
 
+  getListComprobanteventas(page: number, pageSize: number): Observable<Comprobante_venta[]> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('page_size', pageSize.toString());
+    return this.http.get<Comprobante_venta[]>(`${this.apiUrl}/comprobantes_ventas`,{ params });
+  }
 
   getListClientes(page: number, pageSize: number): Observable<Cliente[]> {
     let params = new HttpParams()

@@ -22,7 +22,7 @@
 			<!-- Content here-->
 			<div class="container-fluid">
 				<div *ngIf="!loading"  class="table-responsive">
-					<table *ngIf="listdetalleVentas.length > 0" class="table table-dark table-sm">
+					<table *ngIf="listcomprobanteVenta.length > 0" class="table table-dark table-sm">
 						<thead>
 							
 
@@ -43,25 +43,25 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr *ngFor="let detalleventas of listdetalleVentas  let i = index"  class="text-center"  >
-								<td>{{ detalleventas.Venta?.Empleado?.nombre}}  {{ detalleventas.Venta?.Empleado?.apellidos}}</td>
-								<td>{{detalleventas.Venta?.Cliente?.nombre}}</td>
+							<tr *ngFor="let comprobante of listcomprobanteVenta  let i = index"  class="text-center"  >
+								<td>{{ comprobante.DetalleVenta?.Venta?.Empleado?.nombre}}</td>
+								<td>{{comprobante.DetalleVenta?.Venta?.Cliente?.nombre}}</td>
 								
 								<td> <span>
-									{{ detalleventas.Venta?.Articulo ?
-										(detalleventas.Venta?.Articulo.Vehiculo ?
-										detalleventas.Venta?.Articulo.Vehiculo.descripcion :
-											(detalleventas.Venta?.Articulo.Electrodomestico ?
-											detalleventas.Venta?.Articulo.Electrodomestico.descripcion :
+									{{comprobante.DetalleVenta?.Venta?.Articulo ?
+										(comprobante.DetalleVenta?.Venta?.Articulo.Vehiculo ?
+										comprobante.DetalleVenta?.Venta?.Articulo.Vehiculo.descripcion :
+											(comprobante.DetalleVenta?.Venta?.Articulo.Electrodomestico ?
+											comprobante.DetalleVenta?.Venta?.Articulo.Electrodomestico.descripcion :
 												'No hay descripción disponible')) :
 										'No hay descripción disponible' }}
 								</span></td>
-								<td>{{ detalleventas.Venta?.fecha_venta }}</td>
-								<td>{{ detalleventas.Venta?.tipo_pago }}</td>
-								<td>{{ detalleventas.cantidad }}</td>
-								<td>{{ detalleventas.precio_unitario }}</td>
-								<td>{{ detalleventas.subtotal }}</td>
-								<td>{{ detalleventas.Venta?.total }}</td>
+								<td>{{ comprobante.DetalleVenta?.Venta?.fecha_venta }}</td>
+								<td>{{ comprobante.DetalleVenta?.Venta?.tipo_pago }}</td>
+								<td>{{ comprobante.DetalleVenta?.cantidad }}</td>
+								<td>{{ comprobante.DetalleVenta?.precio_unitario }}</td>
+								<td>{{ comprobante.DetalleVenta?.subtotal }}</td>
+								<td>{{ comprobante.DetalleVenta?.Venta?.total }}</td>
 
 								<td>
 									<button type="button" class="btn btn-danger" (click)="onImprimirFila(i)">
@@ -75,7 +75,7 @@
 								</td> -->
 								<td>
 									<form action="">
-										<button (click)="deleteVenta(detalleventas.id!)"  type="button" class="btn btn-warning">
+										<button (click)="deleteComprobante(comprobante.id!)"  type="button" class="btn btn-warning">
 		  									<i class="far fa-trash-alt"></i>
 										</button>
 									</form>
