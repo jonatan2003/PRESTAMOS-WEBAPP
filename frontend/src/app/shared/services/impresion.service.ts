@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { dA } from '@fullcalendar/core/internal-common';
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable';
 import QRCode from 'qrcode';
@@ -411,14 +412,14 @@ const nro_serie = `Serie: T${generateRandomString(3)}-000${generateRandomNumber(
 
   }
 
-  
+   
 // IMPRESION DE LA VENTA
 
 async imprimirFilaVentas(entidad: string, datos: any) {
   const doc1 = new jsPDF({
       orientation: 'portrait',
       unit: 'in',
-      format: [2.9, 7],
+      format: [2.9, 7.7],
   });
 
 
@@ -429,7 +430,7 @@ function generateRandomNumber() {
 
 // Función para generar una cadena aleatoria de 5 caracteres
 function generateRandomString(length) {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const characters = '0123456789';
   let result = '';
   const charactersLength = characters.length;
   for (let i = 0; i < length; i++) {
@@ -445,50 +446,59 @@ const qrCodeDataURL = await QRCode.toDataURL(qrData);
 
 
 // Genera un número de serie único
-const nro_serie = `Serie: T${generateRandomString(3)}-000${generateRandomNumber()}         Ticket:${this.generateUniqueTicketNumber()}`;
+const nro_serie = `                           ${datos.serie}`;
 
 
 
   // Datos de la empresa
+  const boleta ='          BOLETA DE VENTA ELECTRONICA ';
   const empresa = '               CASA DE EMPEÑOS DON GATO';
   const direccion = `Calle: Principal 123, Ciudad    Teléfono: 987654233`;
   const ruc =`                      R.U.C: 10785645876`;
 
   // Datos del préstamo
-  const cliente = `Cliente: ${datos.cliente}                  Dni: ${datos.dni}`;
-
+  const cliente = `Cliente: ${datos.cliente}`;
+  const dni = `Dni: ${datos.dni}`;
   const empleado = `Empleado: ${datos.empleado} `;
-  const descripcion = `Articulo                Cantidad                  Precio Unit` ;
-  const articulo = `${datos.articulo}                  ${datos.cantidad}                         S/.${datos.precio_unitario}`;
+  const descripcion = `Cantidad             Articulo                       Precio Unit` ;
+  const articulo = `${datos.cantidad}                     ${datos.articulo}                         S/.${datos.precio_unitario}`;
   
-  const fecha_venta = `Fecha: ${datos.fecha_venta}`;
+  const fecha_venta = `Fecha de emision:                              ${datos.fecha_venta}`;
 
   const tipo_pago = `Tipo de Pago: ${datos.tipo_pago}         SubTotal:      S/.${datos.subtotal}`;               
-  const subtotal = `SubTotal:${datos.subtotal}`  ;
-  const total = `                                                    Total:     S/.${datos.total}`;;
+ 
+  const IGV =`                                                    IGV:         S/.${datos.igv}`;
+  const descuento =`                                 Total  Descuento:       S/.${datos.descuento}`;
 
+  const total =`                                      Importe Toatl:     S/.${datos.total}`;
 
 
   // Contenido del encabezado
   const encabezado = [
-      [empresa],
+    [empresa],
   ];
 
   // Contenido del cuerpo
   const cuerpo = [
-      [ruc],
-      [nro_serie],
-      [direccion], 
-      [fecha_venta],
+      [direccion],
       [''],
-      [cliente],
+      [boleta], 
+      [ruc], 
+      [nro_serie],
+      [''],
+      [fecha_venta],
       [empleado],
+      [cliente],
+      [dni],
       [''],
       [descripcion],
       [articulo],
       [tipo_pago],
+      [IGV],
+      [descuento],
       [total],
 
+  
       [''],
       [''],
       [''],
@@ -510,7 +520,7 @@ const nro_serie = `Serie: T${generateRandomString(3)}-000${generateRandomNumber(
 
   // Ajustar las coordenadas del código QR para que aparezca en una esquina o en la parte inferior de la boleta
   const qrX = 0.8; // Coordenada X
-  const qrY = 4.8; // Coordenada Y
+  const qrY = 6; // Coordenada Y
 
   // Convertir la imagen a Base64
   const imgData = await this.getBase64ImageFromURL('/assets/img/login/gato.png');
@@ -527,8 +537,10 @@ const nro_serie = `Serie: T${generateRandomString(3)}-000${generateRandomNumber(
       styles: {
         fontSize: 8, // Tamaño de la letra de hoja
         halign: 'justify', // Alineación horizontal justificada
-        textColor: [0, 0, 0] // Color del texto en RGB (negro)
+        textColor: [0, 0, 0], // Color del texto en RGB (negro)
+
     },
+
       theme: 'plain',
       tableWidth: doc1.internal.pageSize.width - 0.2 , // Ancho de la tabla
       margin: { // Adjust the margins
@@ -537,10 +549,16 @@ const nro_serie = `Serie: T${generateRandomString(3)}-000${generateRandomNumber(
         left: marginleft + 0.1,
         right: marginright +0
     },
-
+    didParseCell: (data) => {
+      if (data.row.index === 10) { // Cambia el índice a la fila que contiene 'descripcion'
+        data.cell.styles.fontStyle = 'bold';
+      }
+    },
 
     didDrawCell: (data) => {
       if (data.section === 'body') {
+
+
           // Establecer color de los bordes
           doc1.setDrawColor(0); // Color negro
             // Dibujar borde superior
@@ -550,24 +568,36 @@ const nro_serie = `Serie: T${generateRandomString(3)}-000${generateRandomNumber(
           } else if (data.row.index === cuerpo.length - 1) {
               // Si es la última fila, no dibujar el borde inferior
               doc1.setLineWidth(0);
-          } else if (data.row.index === 2 || data.row.index === 3) {
+          } else if (data.row.index === 2 ) {
               // Si es la tercera o cuarta fila, no dibujar los bordes
-              doc1.setLineWidth(0);
-          } else if (data.row.index === 4|| data.row.index === 7) {
+              doc1.setLineWidth(-1);
+          }else if (data.row.index === 3 || data.row.index === 4 ) {
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
-          }else if ( data.row.index === 8 ) {
+        } else if (data.row.index === 6) {
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
-          } 
-          else if ( data.row.index === 12 || data.row.index === 13 ) {
+          }else if ( data.row.index === 7 || data.row.index === 8) {
+            // Si es la tercera o cuarta fila, no dibujar los bordes
+            doc1.setLineWidth(0);
+          } else if (data.row.index === 9  ) {
+            // Si es la tercera o cuarta fila, no dibujar los bordes
+            doc1.setLineWidth(0);
+          }else if (data.row.index === 10 || data.row.index === 12) {
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
           }
-          else if ( data.row.index === 14 || data.row.index === 15 ) {
+        
+          else if ( data.row.index === 14 || data.row.index === 15 || data.row.index === 13 ) {
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
-          }else if ( data.row.index === 16 || data.row.index === 17 ) {
+          }else if (data.row.index === 16 || data.row.index === 17 || data.row.index === 18) {
+            // Si es la tercera o cuarta fila, no dibujar los bordes
+            doc1.setLineWidth(0);
+          }else if ( data.row.index === 19 || data.row.index === 20) {
+            // Si es la tercera o cuarta fila, no dibujar los bordes
+            doc1.setLineWidth(0);
+          }else if ( data.row.index === 21 || data.row.index === 22) {
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
           }else {

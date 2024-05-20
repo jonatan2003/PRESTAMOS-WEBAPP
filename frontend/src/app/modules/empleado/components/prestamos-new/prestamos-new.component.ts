@@ -176,7 +176,6 @@ addPrestamo() {
     fecha_devolucion: this.form.value.fecha_devolucion,
     monto_prestamo: this.form.value.monto_prestamo,
     monto_pago: this.form.value.monto_prestamo,
-    observacion: this.form.value.observacion,
     estado: 'pendiente'
     // ... Otros campos del formulario de artículo según la interfaz
   };
@@ -280,7 +279,8 @@ saveArticulo() {
    //  id, // Se deja como null al agregar un nuevo artículo
     idvehiculo,
     idelectrodomestico,
-    estado: "prestamo"
+    estado: "prestamo",
+    observaciones: ""
     // Agrega otras propiedades necesarias aquí
   };
 
@@ -523,7 +523,7 @@ getCuerpo(): string[][] {
       fechaDevolucion: this.formatDate(prestamo.fecha_devolucion) || '',
       montoPrestamo: prestamo.monto_prestamo || '',
       montoPago: prestamo.monto_pago || '',
-      observaciones: prestamo.observacion || '',
+      observaciones: prestamo.Articulo?.observaciones || '',
       estado:prestamo.estado || ''
     } );
   }

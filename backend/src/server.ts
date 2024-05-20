@@ -27,6 +27,8 @@ import BoletasRouter from './routes/boleta.router';
 import InventarioRouter from './routes/inventario.router';
 import TipoPagoRouter from './routes/tipo_pago.router';
 import ComprobanteVentaRouter from './routes/comprobante_venta.router';
+import routerSUNAT from './routes/sunat.router';
+import routerRUC from './routes/apiruc.router';
 
 
 class Server {
@@ -90,11 +92,12 @@ class Server {
     this.app.use('/api/v1/inventario', InventarioRouter);
     this.app.use('/api/v1/tipopagos', TipoPagoRouter);
     this.app.use('/api/v1/comprobantes_ventas', ComprobanteVentaRouter);
-
-
     this.app.use('/api/v1/ticket', TicketRouter);
     this.app.use('/api/v1/dni', RouterDni);
+    this.app.use('/api/v1/ruc', routerRUC);
     this.app.use('/api/v1/boletas', BoletasRouter);
+    this.app.use('/api/v1/sunat', routerSUNAT);
+
 
   }
 

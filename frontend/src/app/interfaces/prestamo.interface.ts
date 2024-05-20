@@ -13,7 +13,6 @@ export interface Prestamo {
   fecha_devolucion: Date;
   monto_prestamo: number;
   monto_pago : number;
-  observacion: string;
   estado: string;
   Cliente?: Cliente;
   Empleado?: Empleado;

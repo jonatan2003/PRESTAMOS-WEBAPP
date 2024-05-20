@@ -106,15 +106,7 @@
 						</div>
 					</div>
 					
-					<div class="col-12 col-md-4">
-						<div class="form-group">
-							<label for="observacion">Observacion</label>
-							<input formControlName="observacion" type="text" class="form-control" maxlength="27">
-							<div class="alert alert-danger mt-2"[hidden]="form.get('observacion').valid || form.get('observacion').pristine">
-							<span *ngIf="form.get('observacion').errors?.['required']" class="text-danger">Este campo es requerido</span>
-							</div>
-						</div>
-					</div>
+					
 					
 				</div>
 			</div>
@@ -348,7 +340,7 @@
 						<div class="row">
 						  <div class="col-12 col-md-4">
 							<div class="form-group">
-							  <label for="marcaVehiculo" class="bmd-label-floating">Marca</label>
+							  <label for="marcaVehiculo" >Marca</label>
 							  <input formControlName="marca" type="text" class="form-control" maxlength="10">
 							  <div class="alert alert-danger mt-2"
 								[hidden]="formVehiculo.get('marca').valid || formVehiculo.get('marca').pristine">
@@ -359,7 +351,7 @@
 						  </div>
 						  <div class="col-12 col-md-4">
 							<div class="form-group">
-							  <label for="modeloVehiculo" class="bmd-label-floating">Modelo</label>
+							  <label for="modeloVehiculo" >Modelo</label>
 							  <input formControlName="modelo" type="text" class="form-control" maxlength="10">
 							  <div class="alert alert-danger mt-2"
 								[hidden]="formVehiculo.get('modelo').valid || formVehiculo.get('modelo').pristine">
@@ -370,7 +362,7 @@
 						  </div>
 						  <div class="col-12 col-md-4">
 							<div class="form-group">
-							  <label for="colorVehiculo" class="bmd-label-floating">Color</label>
+							  <label for="colorVehiculo" >Color</label>
 							  <input formControlName="color" type="text" class="form-control"
 								maxlength="10">
 							  <div class="alert alert-danger mt-2"
@@ -382,7 +374,7 @@
 						  </div>
 						  <div class="col-12 col-md-4">
 							<div class="form-group">
-							  <label for="numeroSerieVehiculo" class="bmd-label-floating">Número de Serie</label>
+							  <label for="numeroSerieVehiculo" >Número de Serie</label>
 							  <input formControlName="numero_serie" type="text" class="form-control" maxlength="15">
 							  <div class="alert alert-danger mt-2"
 								[hidden]="formVehiculo.get('numero_serie').valid || formVehiculo.get('numero_serie').pristine">
@@ -393,7 +385,7 @@
 						  </div>
 						  <div class="col-12 col-md-4">
 							<div class="form-group">
-							  <label for="numeroMotorVehiculo" class="bmd-label-floating">Número de Motor</label>
+							  <label for="numeroMotorVehiculo" >Número de Motor</label>
 							  <input formControlName="numero_motor" type="text" class="form-control" maxlength="15">
 							  <div class="alert alert-danger mt-2"
 								[hidden]="formVehiculo.get('numero_motor').valid || formVehiculo.get('numero_motor').pristine">
@@ -404,7 +396,7 @@
 						  </div>
 						  <div class="col-12 col-md-4">
 							<div class="form-group">
-							  <label for="placaVehiculo" class="bmd-label-floating">Placa</label>
+							  <label for="placaVehiculo" >Placa</label>
 							  <input formControlName="placa" type="text" class="form-control" maxlength="10">
 							  <div class="alert alert-danger mt-2"
 								[hidden]="formVehiculo.get('placa').valid || formVehiculo.get('placa').pristine">
@@ -415,7 +407,7 @@
 						  </div>
 						  <div class="col-12 col-md-6">
 							<div class="form-group">
-							  <label for="carroceriaVehiculo" class="bmd-label-floating">Carrocería</label>
+							  <label for="carroceriaVehiculo" >Carrocería</label>
 							  <input formControlName="carroceria" type="text" class="form-control" maxlength="15" >
 							  <div class="alert alert-danger mt-2"
 								[hidden]="formVehiculo.get('carroceria').valid || formVehiculo.get('carroceria').pristine">
@@ -426,12 +418,22 @@
 						  </div>
 						  <div class="col-12 col-md-6">
 							<div class="form-group">
-							  <label for="descripcionVehiculo" class="bmd-label-floating">Descripción</label>
+							  <label for="descripcionVehiculo" >Descripción</label>
 							  <input formControlName="descripcion" type="text" class="form-control" maxlength="30">
 							  <div class="alert alert-danger mt-2"
 								[hidden]="formVehiculo.get('descripcion').valid || formVehiculo.get('descripcion').pristine">
 								<span *ngIf="formVehiculo.get('descripcion').errors?.['required']" class="text-danger">Este campo es
 								  requerido</span>
+							  </div>
+							</div>
+						  </div>
+
+						  <div class="col-12 col-md-6">
+							<div class="form-group">
+							  <label for="observaciones">Observaciones</label>
+							  <input formControlName="observaciones" type="text" class="form-control" maxlength="100">
+							  <div class="alert alert-danger mt-2"[hidden]="formVehiculo.get('observaciones').valid || formVehiculo.get('observaciones').pristine">
+							  <span *ngIf="formVehiculo.get('observaciones').errors?.['required']" class="text-danger">Este campo es requerido</span>
 							  </div>
 							</div>
 						  </div>
@@ -459,7 +461,7 @@
 			  
 						  <div class="col-12 col-md-4">
 							<div class="form-group">
-							  <label for="marcaElectrodomestico" class="bmd-label-floating">Marca</label>
+							  <label for="marcaElectrodomestico" >Marca</label>
 							  <input formControlName="marca" type="text" class="form-control" maxlength="10">
 							  <div class="alert alert-danger mt-2"
 								[hidden]="formElectrodomestico.get('marca').valid || formElectrodomestico.get('marca').pristine">
@@ -470,7 +472,7 @@
 						  </div>
 						  <div class="col-12 col-md-4">
 							<div class="form-group">
-							  <label for="modeloElectrodomestico" class="bmd-label-floating">Modelo</label>
+							  <label for="modeloElectrodomestico" >Modelo</label>
 							  <input formControlName="modelo" type="text" class="form-control" maxlength="10">
 							  <div class="alert alert-danger mt-2"
 								[hidden]="formElectrodomestico.get('modelo').valid || formElectrodomestico.get('modelo').pristine">
@@ -481,7 +483,7 @@
 						  </div>
 						  <div class="col-12 col-md-4">
 							<div class="form-group">
-							  <label for="colorElectrodomestico" class="bmd-label-floating">Color</label>
+							  <label for="colorElectrodomestico" >Color</label>
 							  <input formControlName="color" type="text" class="form-control" 
 								maxlength="10">
 							  <div class="alert alert-danger mt-2"
@@ -493,7 +495,7 @@
 						  </div>
 						  <div class="col-12 col-md-6">
 							<div class="form-group">
-							  <label for="numeroSerieElectrodomestico" class="bmd-label-floating">Número de Serie</label>
+							  <label for="numeroSerieElectrodomestico" >Número de Serie</label>
 							  <input formControlName="numero_serie" type="text" class="form-control" maxlength="15">
 							  <div class="alert alert-danger mt-2"
 								[hidden]="formElectrodomestico.get('numero_serie').valid || formElectrodomestico.get('numero_serie').pristine">
@@ -504,13 +506,22 @@
 						  </div>
 						  <div class="col-12 col-md-6">
 							<div class="form-group">
-							  <label for="descripcionElectrodomestico" class="bmd-label-floating"
+							  <label for="descripcionElectrodomestico" 
 								>Descripción</label>
 							  <input formControlName="descripcion" type="text" class="form-control" maxlength="30">
 							  <div class="alert alert-danger mt-2"
 								[hidden]="formElectrodomestico.get('descripcion').valid || formElectrodomestico.get('descripcion').pristine">
 								<span *ngIf="formElectrodomestico.get('descripcion').errors?.['required']" class="text-danger">Este
 								  campo es requerido</span>
+							  </div>
+							</div>
+						  </div>
+						  <div class="col-12 col-md-6">
+							<div class="form-group">
+							  <label for="observaciones">Observaciones</label>
+							  <input formControlName="observaciones" type="text" class="form-control" maxlength="100">
+							  <div class="alert alert-danger mt-2"[hidden]="formElectrodomestico.get('observaciones').valid || formElectrodomestico.get('observaciones').pristine">
+							  <span *ngIf="formElectrodomestico.get('observaciones').errors?.['required']" class="text-danger">Este campo es requerido</span>
 							  </div>
 							</div>
 						  </div>

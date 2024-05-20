@@ -7,6 +7,7 @@ export interface Articulo {
   idcategoria: number ;
   idvehiculo: number;
   idelectrodomestico: number;
+  observaciones: string;
   estado: string ;
   Categoria?: Categoria; // Relación con la tabla Categoria
   Vehiculo?: Vehiculo; // Relación con la tabla Vehiculo

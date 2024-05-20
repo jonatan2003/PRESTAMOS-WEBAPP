@@ -132,6 +132,17 @@
                 </div>
               </div>
             </div>
+
+            <div class="col-12 col-md-4">
+              <div class="form-group">
+                <label for="observaciones">Observaciones</label>
+                <input formControlName="observaciones" type="text" class="form-control" maxlength="100">
+                <div class="alert alert-danger mt-2"[hidden]="formVehiculo.get('observaciones').valid || formVehiculo.get('observaciones').pristine">
+                <span *ngIf="formVehiculo.get('observaciones').errors?.['required']" class="text-danger">Este campo es requerido</span>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </fieldset>
@@ -211,6 +222,17 @@
                 </div>
               </div>
             </div>
+
+            <div class="col-12 col-md-4">
+              <div class="form-group">
+                <label for="observaciones">Observaciones</label>
+                <input formControlName="observaciones" type="text" class="form-control" maxlength="100">
+                <div class="alert alert-danger mt-2"[hidden]="formElectrodomestico.get('observaciones').valid || formElectrodomestico.get('observaciones').pristine">
+                <span *ngIf="formElectrodomestico.get('observaciones').errors?.['required']" class="text-danger">Este campo es requerido</span>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </fieldset>

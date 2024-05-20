@@ -218,7 +218,7 @@ totalPages: number = 0;
       fechaDevolucion: prestamo.fecha_devolucion || '',
       montoPrestamo: prestamo.monto_prestamo || '',
       montoPago: prestamo.monto_pago || '',
-      observaciones: prestamo.observacion || ''
+      observaciones: prestamo.Articulo?.observaciones || ''
     } );
   }
 

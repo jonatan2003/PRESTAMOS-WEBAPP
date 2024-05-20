@@ -109,7 +109,6 @@ id_articulo = null;
       fecha_devolucion: ['', Validators.required],
       monto_prestamo: ['', Validators.required],
       tasa_interes: [{ value: '', disabled: true }, ],
-      observacion: ['', Validators.required],
     });
 
     this.formcliente = this.fb.group({
@@ -132,6 +131,7 @@ id_articulo = null;
       numero_motor: ['', Validators.required],
       placa: ['', Validators.required],
       descripcion: ['', Validators.required],
+      observaciones: ['', Validators.required],
     });
 
     this.formElectrodomestico = this.fb.group({
@@ -140,6 +140,8 @@ id_articulo = null;
       color: ['', Validators.required],
       numero_serie: ['', Validators.required],
       descripcion: ['', Validators.required],
+      observaciones: ['', Validators.required],
+
     });
 
     this.id = Number(aRouter.snapshot.paramMap.get('id'));
@@ -176,7 +178,6 @@ addPrestamo() {
     fecha_devolucion: this.form.value.fecha_devolucion,
     monto_prestamo: this.form.value.monto_prestamo,
     monto_pago: this.form.value.monto_prestamo,
-    observacion: this.form.value.observacion,
     estado: 'pendiente'
     // ... Otros campos del formulario de artículo según la interfaz
   };
@@ -257,7 +258,7 @@ saveArticulo() {
   // let id: number ; // Inicializarlo como null al agregar un nuevo artículo
   let idvehiculo: number | null;
   let idelectrodomestico: number | null;
-
+  let observaciones: string
   let estado : "";
   // Obtener ID de categoría seleccionada
   idcategoria = this.categoriaSeleccionada;
@@ -265,9 +266,11 @@ saveArticulo() {
   // Obtener ID de vehículo o electrodoméstico según la categoría seleccionada
   if (idcategoria === 1) {
     idvehiculo = this.vehiculoId;
+    observaciones = this.formVehiculo.value.observaciones;
     idelectrodomestico = null;
   } else if (idcategoria === 2) {
     idvehiculo = null;
+    observaciones = this.formElectrodomestico.value.observaciones;
     idelectrodomestico = this.electrodomesticoId;
   } else {
     // Manejar el caso si la categoría no está seleccionada correctamente
@@ -280,7 +283,9 @@ saveArticulo() {
    //  id, // Se deja como null al agregar un nuevo artículo
     idvehiculo,
     idelectrodomestico,
-    estado: "prestamo"
+    estado: "prestamo",
+    observaciones
+
     // Agrega otras propiedades necesarias aquí
   };
 
@@ -523,7 +528,7 @@ getCuerpo(): string[][] {
       fechaDevolucion: this.formatDate(prestamo.fecha_devolucion) || '',
       montoPrestamo: prestamo.monto_prestamo || '',
       montoPago: prestamo.monto_pago || '',
-      observaciones: prestamo.observacion || '',
+      observaciones: prestamo.Articulo?.observaciones|| '',
       estado:prestamo.estado || ''
     } );
   }

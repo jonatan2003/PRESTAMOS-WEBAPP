@@ -157,7 +157,6 @@ estado : string ;
                     fecha_prestamo: prestamo.fecha_prestamo,
                     fecha_devolucion: prestamo.fecha_devolucion,
                     monto_prestamo: prestamo.monto_prestamo,
-                    observacion: prestamo.observacion,
                     estado: "pendiente"
 
 
@@ -178,7 +177,6 @@ estado : string ;
                     fecha_prestamo: prestamo.fecha_prestamo,
                     fecha_devolucion: prestamo.fecha_devolucion,
                     monto_prestamo: prestamo.monto_prestamo,
-                    observacion: prestamo.observacion,
                     estado: "pendiente"
                   });
 
@@ -310,7 +308,6 @@ estado : string ;
                   fecha_devolucion: this.formPago.value.monto_pago,
                   monto_prestamo : 44 ,
                   monto_pago: this.formPago.value.monto_pago,
-                  observacion: "",
                   estado: this.formPago.value.monto_pago,
                  
                 };
@@ -370,7 +367,6 @@ estado : string ;
                   fecha_devolucion: this.selectedPrestamo.fecha_devolucion,
                   monto_prestamo: this.selectedPrestamo.monto_prestamo,
                   monto_pago: this.formPago.value.monto_restante,
-                  observacion:  this.selectedPrestamo.observacion,
                   estado: this.estado
                 };
             
@@ -556,7 +552,7 @@ estado : string ;
       fechaDevolucion: prestamo.fecha_devolucion || '',
       montoPrestamo: prestamo.monto_prestamo || '',
       montoPago: prestamo.monto_pago || '',
-      observaciones: prestamo.observacion || ''
+      observaciones: prestamo.Articulo?.observaciones || ''
       
     } );
   }

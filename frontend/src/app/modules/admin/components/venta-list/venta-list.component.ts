@@ -157,7 +157,7 @@ export class VentaListComponent implements OnInit {
     const comprobante = this.listcomprobanteVenta[index];
     this.impresionService.imprimirFilaVentas('Ventas', {
       empleado: comprobante.DetalleVenta?.Venta?.Empleado?.nombre + " " + comprobante?.DetalleVenta?.Venta?.Empleado?.apellidos || '',
-      cliente: comprobante.DetalleVenta?.Venta?.Cliente?.nombre || '',
+      cliente: comprobante.DetalleVenta?.Venta?.Cliente?.apellido + " " +  comprobante.DetalleVenta?.Venta?.Cliente?.nombre|| '',
       articulo: comprobante.DetalleVenta?.Venta?.Articulo ?
         (comprobante.DetalleVenta?.Venta?.Articulo.Vehiculo ?
           comprobante.DetalleVenta?.Venta?.Articulo.Vehiculo.descripcion :
@@ -175,20 +175,9 @@ export class VentaListComponent implements OnInit {
       igv: comprobante.igv,
       descuento: comprobante.descuento,
       tipo_comprobante: comprobante.TipoComprobante?.nombre,
-      serie: comprobante.TipoComprobante?.TipoSerie?.nombre
+      serie: comprobante.num_serie
     });
   }
 
-  getArticuloDescripcion(articulo: any): string {
-    if (!articulo) {
-      return 'No hay descripción disponible';
-    }
-    if (articulo.Vehiculo) {
-      return articulo.Vehiculo.descripcion;
-    }
-    if (articulo.Electrodomestico) {
-      return articulo.Electrodomestico.descripcion;
-    }
-    return 'No hay descripción disponible';
-  }
+
 }

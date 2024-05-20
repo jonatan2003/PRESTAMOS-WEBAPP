@@ -448,7 +448,6 @@ estado : string ;
                   fecha_devolucion: this.selectedPrestamo.fecha_devolucion,
                   monto_prestamo: this.selectedPrestamo.monto_prestamo,
                   monto_pago: this.selectedPrestamo.monto_pago,
-                  observacion:  this.selectedPrestamo.observacion,
                   estado: "vendido"
                 }; // Objeto de estado que contiene solo el nuevo estado 'venta'
             

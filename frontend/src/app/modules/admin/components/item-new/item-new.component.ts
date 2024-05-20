@@ -54,6 +54,8 @@ export class ItemNewComponent {
         numero_motor: ['', Validators.required],
         placa: ['', Validators.required],
         descripcion: ['', Validators.required],
+        observaciones: ['', Validators.required],
+
       });
 
       this.formElectrodomestico = this.fb.group({
@@ -62,6 +64,8 @@ export class ItemNewComponent {
         color: ['', Validators.required],
         numero_serie: ['', Validators.required],
         descripcion: ['', Validators.required],
+        observaciones: ['', Validators.required],
+
       });
 
       this.id = Number(aRouter.snapshot.paramMap.get('id'));
@@ -78,6 +82,7 @@ export class ItemNewComponent {
     // let id: number ; // Inicializarlo como null al agregar un nuevo artículo
     let idvehiculo: number | null;
     let idelectrodomestico: number | null;
+    let observaciones: string
 
     let estado = ""
     // Obtener ID de categoría seleccionada
@@ -85,10 +90,12 @@ export class ItemNewComponent {
 
     // Obtener ID de vehículo o electrodoméstico según la categoría seleccionada
     if (idcategoria === 1) {
+      observaciones = this.formVehiculo.value.observaciones;
       idvehiculo = this.vehiculoId;
       idelectrodomestico = null;
     } else if (idcategoria === 2) {
       idvehiculo = null;
+      observaciones = this.formElectrodomestico.value.observaciones;
       idelectrodomestico = this.electrodomesticoId;
     } else {
       // Manejar el caso si la categoría no está seleccionada correctamente
@@ -101,7 +108,8 @@ export class ItemNewComponent {
      //  id, // Se deja como null al agregar un nuevo artículo
       idvehiculo,
       idelectrodomestico,
-      estado : "disponible"
+      estado : "disponible",
+      observaciones
       // Agrega otras propiedades necesarias aquí
     };
 
