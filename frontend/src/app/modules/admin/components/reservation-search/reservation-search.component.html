@@ -90,7 +90,7 @@
               <tr class="text-center" *ngFor="let prestamo of prestamos let i = index"  >
 
 								<td>{{ prestamo.Cliente?.nombre}}</td>
-								<td>{{ prestamo.Empleado?.nombre }}</td>
+								<!-- <td>{{ prestamo.Empleado?.nombre }}</td> -->
 								<td>{{ prestamo.Articulo?.Vehiculo?.descripcion ||prestamo.Articulo?.Electrodomestico?.descripcion }}</td>
                 <td>{{ prestamo.fecha_prestamo }}</td>
 								<td>{{ prestamo.fecha_devolucion }}</td>

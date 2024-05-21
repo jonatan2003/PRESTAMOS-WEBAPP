@@ -170,7 +170,6 @@ const fechaActualString = this.fechaActual.toISOString().slice(0, 10);
 addPrestamo() {
   const prestamo: Prestamo = {
     idcliente: this.form.value.id_cliente,
-    idempleado: this.id_empleado,
     idarticulo: this.form.value.id_articulo,
     fecha_prestamo: this.fechaActual,
     fecha_devolucion: this.form.value.fecha_devolucion,
@@ -518,7 +517,7 @@ getCuerpo(): string[][] {
     this.impresionService.imprimirFilaPrestamos('Prestamos', {
       cliente: prestamo.Cliente?.nombre +" " + prestamo.Cliente?.apellido || '',
       dni: prestamo.Cliente?.dni || '',
-      empleado: prestamo.Empleado?.nombre +" " + prestamo.Empleado?.apellidos || '',
+      // empleado: prestamo.Empleado?.nombre +" " + prestamo.Empleado?.apellidos || '',
       articulo: prestamo.Articulo ? (prestamo.Articulo.Vehiculo ? prestamo.Articulo.Vehiculo.descripcion : (prestamo.Articulo.Electrodomestico ? prestamo.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
       fechaPrestamo: this.formatDate(prestamo.fecha_prestamo) || '',
       fechaDevolucion: this.formatDate(prestamo.fecha_devolucion) || '',

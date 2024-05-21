@@ -2,6 +2,7 @@ import { DataTypes } from 'sequelize';
 import db from '../db/connection.db';
 import Pago from './pago.model';
 import Prestamo from './prestamo.model';
+import Empleado from './empleado.model';
 
 const Ticket = db.define('Ticket', {
   id: {
@@ -16,6 +17,9 @@ const Ticket = db.define('Ticket', {
   num_ticket: {
     type: DataTypes.STRING(8),
     allowNull: true,
+  },
+  idempleado: {
+    type: DataTypes.INTEGER,
   },
   idpago: {
     type: DataTypes.INTEGER,
@@ -42,5 +46,6 @@ const Ticket = db.define('Ticket', {
 // Definir las relaciones
 Ticket.belongsTo(Pago, { foreignKey: 'idpago', as: 'Pago' });
 Ticket.belongsTo(Prestamo, { foreignKey: 'idprestamo', as: 'Prestamo' });
+Ticket.belongsTo(Empleado, { foreignKey: 'idempleado', as: 'Empleado' });
 
 export default Ticket;

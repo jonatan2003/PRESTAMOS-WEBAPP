@@ -27,6 +27,8 @@ import { ImpresionService } from 'src/app/shared/services/impresion.service';
 import { formatDate } from '@angular/common';
 import { ApiDniService } from 'src/app/services/apidni.service';
 import { ApiRucService } from 'src/app/services/apiruc.service';
+import { TicketService } from 'src/app/services/ticket.service';
+import { Ticket } from 'src/app/interfaces/ticket.interface';
 
 
 @Component({
@@ -49,7 +51,7 @@ export class ReservationNewComponent {
   id_empleado : number ;
  vehiculoId: number | null = null;;
  electrodomesticoId: number | null = null;
-
+  listTicket : Ticket [] = [];
 //..--------------
 
 
@@ -90,8 +92,8 @@ id_articulo = null;
   
 
 
-  constructor(private authService: AuthService,
-     private _categoriasService: CategoriaService,
+  constructor(
+    private ticketService : TicketService,
     private _electrodomesticoService: ElectrodomesticoService,
     private apiDniService: ApiDniService, 
     private apiRucService: ApiRucService,
@@ -100,7 +102,6 @@ id_articulo = null;
     private searchService: SearchService,
     private _clientesService: ClienteService,
     private _articulosService: ArticulosService,
-    private _empleadosService: EmpleadoService,
     private impresionService: ImpresionService,
     private _prestamosService: PrestamoService,
     private router: Router,
@@ -236,53 +237,49 @@ onRucChange() {
 addPrestamo() {
   const prestamo: Prestamo = {
     idcliente: this.form.value.id_cliente,
-    idempleado: this.id_empleado,
     idarticulo: this.form.value.id_articulo,
     fecha_prestamo: this.fechaActual,
     fecha_devolucion: this.form.value.fecha_devolucion,
     monto_prestamo: this.form.value.monto_prestamo,
     monto_pago: this.form.value.monto_prestamo,
     estado: 'pendiente'
-    // ... Otros campos del formulario de artículo según la interfaz
   };
 
   this.loading = true;
 
-  if (this.id !== 0) {
-    // Es editar
-    prestamo.id = this.id;
-    this._prestamosService.updatePrestamo(this.id, prestamo).subscribe(() => {
-      this.toastr.info(`El préstamo fue actualizado con éxito`, 'Préstamo actualizado');
-      this.loading = false;
-      // Redirigir después de la actualización
-      this.router.navigate(['admin/reservation-list']);
-    });
-  } else {
-    // Es agregar un nuevo préstamo
-    this._prestamosService.savePrestamo(prestamo).pipe(
-      // Obtener el préstamo recién guardado por su ID
-      switchMap((response: Prestamo) => {
-        this.toastr.success(`El préstamo fue registrado con éxito`, 'Préstamo registrado');
-        const idprestamo = response.id;
-        // Obtener el préstamo completo usando su ID
-        return this._prestamosService.getPrestamo(idprestamo);
-      })
-    ).subscribe((prestamoGuardado: Prestamo) => {
-      // Agregar el préstamo guardado a la lista de préstamos
-      this.listPrestamos.push(prestamoGuardado);
-      this.loading = false;
-      const lastIndex = this.listPrestamos.length - 1;
-      this.onImprimirFila(lastIndex);
-      // Redirigir después de guardar
-      this.router.navigate(['admin/reservation-list']);
-    }, error => {
-      console.error('Error al obtener el préstamo guardado:', error);
-      this.loading = false;
-    });
-  }
+  this._prestamosService.savePrestamo(prestamo).pipe(
+    switchMap((response: Prestamo) => {
+      this.toastr.success(`El préstamo fue registrado con éxito`, 'Préstamo registrado');
+      const idprestamo = response.id;
+
+      const ticket: Ticket = {
+        num_serie: '', // Asegúrate de generar o asignar correctamente estos valores
+        num_ticket: '',
+        idempleado: this.id_empleado,
+        idpago: null,
+        idprestamo: idprestamo,
+      };
+
+      return this.ticketService.saveTicket(ticket);
+    }),
+    switchMap((ticketGuardado: Ticket) => {
+      return this.ticketService.getTicket(ticketGuardado.id);
+    })
+  ).subscribe((ticketGuardado: Ticket) => {
+    this.loading = false;
+    this.listTicket.push(ticketGuardado); // Agregar el ticket guardado a la lista
+    const lastIndex = this.listTicket.length - 1;
+    // Llamar a la función para imprimir fila del último pago agregado
+    this.onImprimirFila(lastIndex);
+
+    this.toastr.success(`El ticket fue registrado con éxito`, 'Ticket registrado');
+    this.router.navigate(['admin/reservation-list']);
+  }, error => {
+    console.error('Error al procesar la solicitud:', error);
+    this.toastr.error('Hubo un error al procesar la solicitud', 'Error');
+    this.loading = false;
+  });
 }
-
-
 
 
 
@@ -684,18 +681,20 @@ getCuerpo(): string[][] {
   
 
   onImprimirFila(index: number) {
-    const prestamo = this.listPrestamos[index];
-    this.impresionService.imprimirFilaPrestamos('Prestamos', {
-      cliente: prestamo.Cliente?.nombre +" " + prestamo.Cliente?.apellido || '',
-      dni: prestamo.Cliente?.dni || '',
-      empleado: prestamo.Empleado?.nombre +" " + prestamo.Empleado?.apellidos || '',
-      articulo: prestamo.Articulo ? (prestamo.Articulo.Vehiculo ? prestamo.Articulo.Vehiculo.descripcion : (prestamo.Articulo.Electrodomestico ? prestamo.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
-      fechaPrestamo: this.formatDate(prestamo.fecha_prestamo) || '',
-      fechaDevolucion: this.formatDate(prestamo.fecha_devolucion) || '',
-      montoPrestamo: prestamo.monto_prestamo || '',
-      montoPago: prestamo.monto_pago || '',
-      observaciones: prestamo.Articulo?.observaciones|| '',
-      estado:prestamo.estado || ''
+    const ticket = this.listTicket[index];
+    this.impresionService.imprimirFilaPrestamos('Ticket', {
+      num_serie: ticket.num_serie,
+      num_ticket: ticket.num_ticket,
+      cliente: ticket.Prestamo?.Cliente?.nombre +" " + ticket.Prestamo?.Cliente?.apellido || '',
+      dni: ticket.Prestamo?.Cliente?.dni || '',
+      empleado: ticket.Empleado?.nombre +" " + ticket.Empleado?.apellidos || '',
+      articulo: ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.descripcion : (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
+      fechaPrestamo: this.formatDate(ticket.Prestamo?.fecha_prestamo) || '',
+      fechaDevolucion: this.formatDate(ticket.Prestamo?.fecha_devolucion) || '',
+      montoPrestamo: ticket.Prestamo?.monto_prestamo || '',
+      montoPago: ticket.Prestamo?.monto_pago || '',
+      observaciones: ticket.Prestamo?.Articulo?.observaciones|| '',
+      estado:ticket.Prestamo?.estado || ''
     } );
   }
 

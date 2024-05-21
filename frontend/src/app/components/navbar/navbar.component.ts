@@ -212,7 +212,7 @@ totalPages: number = 0;
     this.impresionService.imprimirFilaPrestamos('Prestamos', {
       cliente: prestamo.Cliente?.nombre || '',
       dni: prestamo.Cliente?.dni || '',
-      empleado: prestamo.Empleado?.nombre || '',
+      // empleado: prestamo.Empleado?.nombre || '',
       articulo: prestamo.Articulo ? (prestamo.Articulo.Vehiculo ? prestamo.Articulo.Vehiculo.descripcion : (prestamo.Articulo.Electrodomestico ? prestamo.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
       fechaPrestamo: prestamo.fecha_prestamo || '',
       fechaDevolucion: prestamo.fecha_devolucion || '',

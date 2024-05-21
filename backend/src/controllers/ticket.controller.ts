@@ -8,9 +8,10 @@ import Categoria from '../models/categoria.model';
 import Vehiculo from '../models/vehiculo.model';
 import Electrodomestico from '../models/electrodometisco.model';
 import Cliente from '../models/cliente.model';
+import TipoPago from '../models/tipo_pago.model';
 
 export const createTicket = async (req: Request, res: Response) => {
-  const { num_serie, num_ticket, idpago, idprestamo } = req.body;
+  const { num_serie, num_ticket,idempleado, idpago, idprestamo } = req.body;
 
   try {
     // Verificar si el prestamo asociado al Ticket existe
@@ -19,17 +20,12 @@ export const createTicket = async (req: Request, res: Response) => {
       return res.status(400).json({ msg: 'El prestamo especificado no existe' });
     }
 
-    // Verificar si el pago asociado al Ticket existe (si idpago no es nulo)
-    if (idpago) {
-      const pagoExistente = await Pago.findByPk(idpago);
-      if (!pagoExistente) {
-        return res.status(400).json({ msg: 'El pago especificado no existe' });
-      }
-    }
+   
 
     const nuevoTicket = await Ticket.create({
       num_serie,
       num_ticket,
+      idempleado,
       idpago,
       idprestamo,
     });
@@ -45,11 +41,14 @@ export const getTickets = async (req: Request, res: Response) => {
   try {
     const tickets = await Ticket.findAll({
       include: [
-        { model: Pago, as: 'Pago' },
+        { model: Empleado, as: 'Empleado' },
+        { model: Pago, as: 'Pago', include: [
+          { model: TipoPago, as: 'TipoPago',
+           },
+        ], },
         { model: Prestamo, as: 'Prestamo',
         include: [
           { model: Cliente, as: 'Cliente' },
-          { model: Empleado, as: 'Empleado' },
           { model: Articulo, as: 'Articulo',
           include: [
             { 
@@ -84,11 +83,16 @@ export const getTicketById = async (req: Request, res: Response) => {
   try {
     const ticket = await Ticket.findByPk(id, {
       include: [
-        { model: Pago, as: 'Pago' },
+        { model: Empleado, as: 'Empleado' },
+        { model: Pago, as: 'Pago' ,
+        include: [
+          { model: TipoPago, as: 'TipoPago',
+           },
+        ],
+        },
         { model: Prestamo, as: 'Prestamo',
         include: [
           { model: Cliente, as: 'Cliente' },
-          { model: Empleado, as: 'Empleado' },
           { model: Articulo, as: 'Articulo',
           include: [
             { 
@@ -129,11 +133,11 @@ export const updateTicket = async (req: Request, res: Response) => {
   try {
     const ticket = await Ticket.findByPk(id,{
       include: [
+        { model: Empleado, as: 'Empleado' },
         { model: Pago, as: 'Pago' },
         { model: Prestamo, as: 'Prestamo',
         include: [
           { model: Cliente, as: 'Cliente' },
-          { model: Empleado, as: 'Empleado' },
           { model: Articulo, as: 'Articulo',
           include: [
             { 

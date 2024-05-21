@@ -433,11 +433,11 @@ export const getTickets = async (req: Request, res: Response) => {
       limit: pageSize,
       offset: offset,
       include: [
+        { model: Empleado, as: 'Empleado' },
         { model: Pago, as: 'Pago' },
         {
           model: Prestamo, as: 'Prestamo', include: [
             { model: Cliente, as: 'Cliente' },
-            { model: Empleado, as: 'Empleado' },
             {
               model: Articulo, as: 'Articulo', include: [
                 { model: Categoria, as: 'Categoria' },
@@ -518,7 +518,6 @@ export const getPagos = async (req: Request, res: Response) => {
       include: [
         { model: Prestamo, as: 'Prestamo',
         include: [ { model: Cliente, as: 'Cliente'},
-        { model: Empleado, as: 'Empleado' },
         { model: Articulo, as: 'Articulo' ,
         include: [
           { 

@@ -11,21 +11,19 @@ import { Op } from 'sequelize';
 
 
 export const createPrestamo = async (req: Request, res: Response) => {
-  const { idcliente, idarticulo,idempleado,  fecha_prestamo, fecha_devolucion, monto_prestamo, monto_pago,estado } = req.body;
+  const { idcliente, idarticulo,  fecha_prestamo, fecha_devolucion, monto_prestamo, monto_pago,estado } = req.body;
 
   try {
     // Verificar si el cliente, el empleado y el artículo asociados al préstamo existen
     const clienteExistente = await Cliente.findByPk(idcliente);
-    const empleadoExistente = await Empleado.findByPk(idempleado);
     const articuloExistente = await Articulo.findByPk(idarticulo);
 
-    if (!clienteExistente || !empleadoExistente || !articuloExistente) {
+    if (!clienteExistente || !articuloExistente) {
       return res.status(400).json({ msg: 'El cliente, el empleado o el artículo especificados no existen' });
     }
 
     const nuevoPrestamo = await Prestamo.create({
       idcliente,
-      idempleado,
       idarticulo,
       fecha_prestamo,
       fecha_devolucion,
@@ -46,7 +44,6 @@ export const getPrestamos = async (req: Request, res: Response) => {
     const prestamos = await Prestamo.findAll({
       include: [
         { model: Cliente, as: 'Cliente' },
-        { model: Empleado, as: 'Empleado' },
         { model: Articulo, as: 'Articulo',
         include: [
           { 
@@ -80,7 +77,6 @@ export const getPrestamoById = async (req: Request, res: Response) => {
     const prestamo = await Prestamo.findByPk(idPrestamo, {
       include: [
         { model: Cliente, as: 'Cliente' },
-        { model: Empleado, as: 'Empleado' },
         { model: Articulo, as: 'Articulo' ,
         include: [
           { 
@@ -200,7 +196,6 @@ export const getUltimoPrestamoIngresado = async (req: Request, res: Response) =>
     const ultimoPrestamo = await Prestamo.findOne({
       include: [
         { model: Cliente, as: 'Cliente' },
-        { model: Empleado, as: 'Empleado' },
         { model: Articulo, as: 'Articulo',
         include: [
           { 

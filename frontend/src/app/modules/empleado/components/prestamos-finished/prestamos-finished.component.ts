@@ -183,11 +183,11 @@ estado : string ;
               setSelectedVenta(prestamo: Prestamo) {
                 this.selectedPrestamo = prestamo;
               // this.nombreClienteSeleccionado = prestamo.Cliente.nombre + " " +prestamo.Cliente.apellido ;
-             this.nombresempleado = prestamo.Empleado.nombre + " " +prestamo.Empleado.apellidos ;
+            //  this.nombresempleado = prestamo.Empleado.nombre + " " +prestamo.Empleado.apellidos ;
              this.estado = "pendiente";
              this.formVenta.get('cantidad').setValue(1);
              this.formVenta.get('monto_prestamo').setValue(prestamo.monto_prestamo);
-             this.idempleado = prestamo.idempleado;
+            //  this.idempleado = prestamo.idempleado;
               this.idprestamo = prestamo.id;
 
 
@@ -443,7 +443,7 @@ estado : string ;
                 const prestamo: Prestamo = {
                  
                   idcliente: this.selectedPrestamo.idcliente,
-                  idempleado: this.selectedPrestamo.idempleado,
+                  // idempleado: this.selectedPrestamo.idempleado,
                   idarticulo:  this.selectedPrestamo.idarticulo,
                   fecha_prestamo:  this.selectedPrestamo.fecha_prestamo,
                   fecha_devolucion: this.selectedPrestamo.fecha_devolucion,

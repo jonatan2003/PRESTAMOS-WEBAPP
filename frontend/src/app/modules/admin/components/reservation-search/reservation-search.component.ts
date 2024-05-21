@@ -150,7 +150,7 @@ getPages(): number[] {
   setSelectedPago(prestamo: Prestamo) {
     this.selectedPrestamo = prestamo;
    this.nombreClienteSeleccionado = prestamo.Cliente.nombre + " " +prestamo.Cliente.apellido ;
- this.nombresempleado = prestamo.Empleado.nombre + " " +prestamo.Empleado.apellidos ;
+//  this.nombresempleado = prestamo.Empleado.nombre + " " +prestamo.Empleado.apellidos ;
  this.estado = "pendiente";
 
    
@@ -318,7 +318,6 @@ getPages(): number[] {
     const prestamo: Prestamo = {
       idarticulo : 1 ,
       idcliente : 2 ,
-      idempleado : 2 ,
       fecha_prestamo: this.formPago.value.monto_pago,
       fecha_devolucion: this.formPago.value.monto_pago,
       monto_prestamo : 44 ,
@@ -375,7 +374,7 @@ getPages(): number[] {
     const prestamo: Prestamo = {
      
       idcliente: this.selectedPrestamo.idcliente,
-      idempleado: this.selectedPrestamo.idempleado,
+      // idempleado: this.selectedPrestamo.idempleado,
       idarticulo:  this.selectedPrestamo.idarticulo,
       fecha_prestamo:  this.selectedPrestamo.fecha_prestamo,
       fecha_devolucion: this.selectedPrestamo.fecha_devolucion,
@@ -562,7 +561,7 @@ onImprimirFila(index: number) {
   this.impresionService.imprimirFilaPrestamos('Prestamos', {
     cliente: prestamo.Cliente?.nombre +" " + prestamo.Cliente?.apellido || '',
     dni: prestamo.Cliente?.dni || '',
-    empleado: prestamo.Empleado?.nombre +" " + prestamo.Empleado?.apellidos || '',
+    // empleado: prestamo.Empleado?.nombre +" " + prestamo.Empleado?.apellidos || '',
     articulo: prestamo.Articulo ? (prestamo.Articulo.Vehiculo ? prestamo.Articulo.Vehiculo.descripcion : (prestamo.Articulo.Electrodomestico ? prestamo.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
     fechaPrestamo: prestamo.fecha_prestamo || '',
     fechaDevolucion: prestamo.fecha_devolucion || '',

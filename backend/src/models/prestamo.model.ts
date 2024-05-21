@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection.db';
-import Empleado from './empleado.model';
 import Articulo from './articulo.model';
 import Cliente from './cliente.model';
 
@@ -9,9 +8,6 @@ const Prestamo = db.define('Prestamo', {
     type: DataTypes.INTEGER,
   },
   idarticulo: {
-    type: DataTypes.INTEGER,
-  },
-  idempleado: {
     type: DataTypes.INTEGER,
   },
   fecha_prestamo: {
@@ -37,7 +33,6 @@ const Prestamo = db.define('Prestamo', {
 });
 
 // Definir las relaciones con las tablas Empleado, Articulo y Cliente
-Prestamo.belongsTo(Empleado, { foreignKey: 'idempleado', as: 'Empleado' });
 Prestamo.belongsTo(Articulo, { foreignKey: 'idarticulo', as: 'Articulo' });
 Prestamo.belongsTo(Cliente, { foreignKey: 'idcliente', as: 'Cliente' });
 
