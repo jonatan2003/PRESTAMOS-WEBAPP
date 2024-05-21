@@ -168,6 +168,17 @@ const fechaActualString = this.fechaActual.toISOString().slice(0, 10);
 
 }
 
+onTipoClienteChange(event: any) {
+  const tipoCliente = event.target.value;
+  if (tipoCliente === 'ruc') {
+    this.formcliente.controls['dni'].disable();
+    this.formcliente.controls['ruc'].enable();
+  } else {
+    this.formcliente.controls['ruc'].disable();
+    this.formcliente.controls['dni'].enable();
+  }
+}
+
 
 addPrestamo() {
   const prestamo: Prestamo = {
@@ -448,7 +459,110 @@ limpiarFormulario() {
      this.form.controls['id_empleado'].setValue(empleado.id);
     }
 
+    mostrarCliente() {
+      // Mostrar el modal
+      const modal = document.getElementById('ModalCliente');
+      if (modal) {
+        // Añadir las clases necesarias para mostrar el modal
+        modal.classList.add('show');
+        modal.classList.add('fade');
+        modal.style.display = 'block';
+    
+        // Establecer el estado del modal como modal
+        modal.setAttribute('aria-modal', 'true');
+    
+        // Agregar la clase 'modal-open' al cuerpo del documento
+        document.body.classList.add('modal-open');
+    
+        // Crear y agregar el backdrop del modal
+        const backdrop = document.createElement('div');
+        backdrop.classList.add('modal-backdrop');
+        backdrop.classList.add('fade');
+        backdrop.classList.add('show');
+        document.body.appendChild(backdrop);
+      }
+    }
 
+    mostrarArticulo() {
+      // Mostrar el modal
+      const modal = document.getElementById('ModalArticulo');
+      if (modal) {
+        // Añadir las clases necesarias para mostrar el modal
+        modal.classList.add('show');
+        modal.classList.add('fade');
+        modal.style.display = 'block';
+    
+        // Establecer el estado del modal como modal
+        modal.setAttribute('aria-modal', 'true');
+    
+        // Agregar la clase 'modal-open' al cuerpo del documento
+        document.body.classList.add('modal-open');
+    
+        // Crear y agregar el backdrop del modal
+        const backdrop = document.createElement('div');
+        backdrop.classList.add('modal-backdrop');
+        backdrop.classList.add('fade');
+        backdrop.classList.add('show');
+        document.body.appendChild(backdrop);
+      }
+    }
+    guardarCliente() {
+      // Aquí iría tu lógica para guardar el formulario
+
+      // Luego, cierra el modal
+      const modal = document.getElementById('ModalCliente');
+      if (modal) {
+        // Eliminar todas las clases de Bootstrap que controlan la visualización del modal
+        modal.classList.remove('show');
+        modal.classList.remove('fade');
+        modal.classList.remove('show');
+        modal.classList.remove('showing');
+        
+        // Ocultar el modal
+        modal.style.display = 'none';
+        
+        // Restablecer el estado del modal
+        modal.setAttribute('aria-modal', 'false');
+        
+        // Eliminar la clase 'modal-open' del cuerpo del documento
+        document.body.classList.remove('modal-open');
+        
+        // Eliminar el backdrop del modal
+        const backdrop = document.getElementsByClassName('modal-backdrop')[0];
+        if (backdrop) {
+          backdrop.parentNode.removeChild(backdrop);
+        }
+      }
+    }
+
+    guardarArticulo() {
+      // Aquí iría tu lógica para guardar el formulario
+
+      // Luego, cierra el modal
+      const modal = document.getElementById('ModalArticulo');
+      if (modal) {
+        // Eliminar todas las clases de Bootstrap que controlan la visualización del modal
+        modal.classList.remove('show');
+        modal.classList.remove('fade');
+        modal.classList.remove('show');
+        modal.classList.remove('showing');
+        
+        // Ocultar el modal
+        modal.style.display = 'none';
+        
+        // Restablecer el estado del modal
+        modal.setAttribute('aria-modal', 'false');
+        
+        // Eliminar la clase 'modal-open' del cuerpo del documento
+        document.body.classList.remove('modal-open');
+        
+        // Eliminar el backdrop del modal
+        const backdrop = document.getElementsByClassName('modal-backdrop')[0];
+        if (backdrop) {
+          backdrop.parentNode.removeChild(backdrop);
+        }
+      }
+    }
 
    
   

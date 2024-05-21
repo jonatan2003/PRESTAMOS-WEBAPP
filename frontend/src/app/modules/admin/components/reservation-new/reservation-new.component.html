@@ -28,8 +28,8 @@
           <form id="formPrestamo" action="" autocomplete="off" >
             <p class="text-center roboto-medium">AGREGAR CLIENTE | ITEMS | EMPLEADO</p>
             <p class="text-center">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalCliente"><i class="fas fa-user-plus"></i> &nbsp; Agregar cliente</button>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalItem"><i class="fas fa-box-open"></i> &nbsp; Agregar item</button>
+                <button type="button" class="btn btn-primary"  (click)="mostrarCliente()"><i class="fas fa-user-plus"></i> &nbsp; Agregar Cliente</button>
+                <button type="button" class="btn btn-primary"  (click)="mostrarArticulo()"><i class="fas fa-box-open"></i> &nbsp; Agregar Articulo</button>
                 <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalEmpleado"><i class="fas fa-user"></i> &nbsp; Agregar empleado</button> -->
             </p>
           </form>
@@ -129,112 +129,125 @@
 
 
   
-  <!-- modal-cliente -->
-  <div class="modal fade" id="ModalCliente" tabindex="-1" role="dialog" aria-labelledby="ModalCliente" aria-hidden="true">
+ <!-- modal-cliente -->
+<div class="modal fade" id="ModalCliente" tabindex="-1" role="dialog" aria-labelledby="ModalCliente" aria-hidden="true">
 	<div class="modal-dialog" role="document">
-	<div class="modal-content">
-	
-	<div class="modal-header">
-	<h5 class="modal-title" id="ModalCliente">AGREGAR CLIENTES</h5>
-	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	<span aria-hidden="true">&times;</span>
-	</button>
-	</div>
-	
-	
-	<div class="modal-body">
-	<div class="container-fluid">
-	
-	
-	  <form class="form-neon"  [formGroup]="formcliente" (ngSubmit)="addCliente()" >
-		<fieldset>
-		  <legend><i class="fas fa-user"></i> &nbsp; Información básica</legend>
-		  <div class="container-fluid" >
-			<div class="row"  >
-			  <div class="col-12 col-md-6">
-				<div class="form-group">
-				  <label for="cliente_dni" class="bmd-label-floating">DNI</label>
-				  <input formControlName="dni" type="text" class="form-control mt-2" pattern="[0-9]*" maxlength="8" minlength="8">
-				  <div class="alert alert-danger mt-2"[hidden]="formcliente.get('dni').valid || formcliente.get('dni').pristine">
-				  <span *ngIf="formcliente.get('dni').errors?.['required']" class="text-danger">Este campo es requerido</span>
-				  <span *ngIf="formcliente.get('dni').errors?.['minlength']" class="text-danger">El DNI debe tener exactamente 8 dígitos</span>
-				  <br>
-				  <span *ngIf="formcliente.get('dni').errors?.['maxlenght']" class="text-danger">El DNI debe tener exactamente 8 dígitos</span>
-				  <br>
-				  <span *ngIf="formcliente.get('dni').errors?.['pattern']" class="text-danger">El DNI solo puede contener números</span>
-				</div>
-				</div>
-			  </div>
-			  <div class="col-12 col-md-6">
-				<div class="form-group">
-				  <label for="cliente_nombre" class="bmd-label-floating">Nombre</label>
-				  <input formControlName="nombre" type="text" class="form-control mt-2" maxlength="15">
-				  <div class="alert alert-danger mt-2"[hidden]="formcliente.get('nombre').valid || formcliente.get('nombre').pristine">
-				  <span *ngIf="formcliente.get('nombre').errors?.['required']" class="text-danger">Este campo es requerido</span>
-				  </div>
-				</div>
-			  </div>
-			  <div class="col-12 col-md-6">
-				<div class="form-group">
-				  <label for="cliente_apellido" class="bmd-label-floating">Apellido</label>
-				  <input formControlName="apellido" type="text" class="form-control mt-2" maxlength="15">
-				  <div class="alert alert-danger mt-2"[hidden]="formcliente.get('apellido').valid || formcliente.get('apellido').pristine">
-				  <span *ngIf="formcliente.get('apellido').errors?.['required']" class="text-danger">Este campo es requerido</span>
-				  </div>
-				</div>
-			  </div>
-			  <div class="col-12 col-md-6">
-				<div class="form-group">
-				  <label for="cliente_telefono" class="bmd-label-floating">Teléfono</label>
-				  <input formControlName="telefono" type="text" class="form-control mt-2" maxlength="9" minlength="9">
-				  <div class="alert alert-danger mt-2"[hidden]="formcliente.get('telefono').valid || formcliente.get('telefono').pristine">
-					<span *ngIf="formcliente.get('telefono').errors?.['required']" class="text-danger">Este campo es requerido</span>
-					<span *ngIf="formcliente.get('telefono').errors?.['minlength']" class="text-danger">El Telefono debe tener exactamente 9 dígitos</span>
-					<br>
-					<span *ngIf="formcliente.get('telefono').errors?.['maxlenght']" class="text-danger">El Telefono debe tener exactamente 9 dígitos</span>
-					<br>
-					<span *ngIf="formcliente.get('telefono').errors?.['pattern']" class="text-danger">El Telefono solo puede contener números</span>
-				  </div>
-				</div>
-			  </div>
-			  <div class="col-12 col-md-6">
-				<div class="form-group">
-				  <label for="cliente_direccion" class="bmd-label-floating">Dirección</label>
-				  <input formControlName="direccion" type="text" class="form-control mt-2" maxlength="25">
-				  <div class="alert alert-danger mt-2"[hidden]="formcliente.get('direccion').valid || formcliente.get('direccion').pristine">
-				  <span *ngIf="formcliente.get('direccion').errors?.['required']" class="text-danger">Este campo es requerido</span>
-				  </div>
-				</div>
-			  </div>
-			  <div class="col-12 col-md-6">
-				<div class="form-group">
-				  <label for="cliente_rubro" class="bmd-label-floating">Rubro</label>
-				  <input formControlName="rubro" type="text" class="form-control mt-2" maxlength="15">
-				  <div class="alert alert-danger mt-2"[hidden]="formcliente.get('rubro').valid || formcliente.get('rubro').pristine">
-				  <span *ngIf="formcliente.get('rubro').errors?.['required']" class="text-danger">Este campo es requerido</span>
-				  </div>
-				</div>
-			  </div>
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h5 class="modal-title" id="ModalCliente">AGREGAR CLIENTES</h5>
+		  <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="guardarCliente()">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+  
+		<div class="modal-body">
+		  <div class="container-fluid">
+			<form class="form-neon" [formGroup]="formcliente" (ngSubmit)="guardarCliente()">
+			  <fieldset>
+				<legend><i class="fas fa-user"></i> &nbsp; Información básica </legend>
+				<div class="container-fluid">
+				  <div class="row">
+					<div class="form-group">
+						<label for="tipoCliente">Tipo de Cliente</label>
+						<select id="tipoCliente" formControlName="tipoCliente" (change)="onTipoClienteChange($event)">
+						  <option value="dni">DNI</option>
+						  <option value="ruc">RUC</option>
+						</select>
+					  </div>
+					  
+					<div class="form-group" *ngIf="formcliente.controls['tipoCliente'].value === 'dni'">
+						<label for="dni">DNI</label>
+						<input type="text" id="dni" formControlName="dni" class="form-control">
+					  </div>
+					  
+					  <div class="form-group" *ngIf="formcliente.controls['tipoCliente'].value === 'ruc'">
+						<label for="ruc">RUC</label>
+						<input type="text" id="ruc" formControlName="ruc" class="form-control">
+					  </div>
 
-			</div>
+
+					<div class="col-12 col-md-6">
+					  <div class="form-group">
+						<label for="cliente_dni" class="bmd-label-floating">DNI</label>
+						<input formControlName="dni" type="text" class="form-control mt-2" pattern="[0-9]*" maxlength="8" minlength="8">
+						<div class="alert alert-danger mt-2" [hidden]="formcliente.get('dni').valid || formcliente.get('dni').pristine">
+						  <span *ngIf="formcliente.get('dni').errors?.['required']" class="text-danger">Este campo es requerido</span>
+						  <span *ngIf="formcliente.get('dni').errors?.['minlength']" class="text-danger">El DNI debe tener exactamente 8 dígitos</span>
+						  <br>
+						  <span *ngIf="formcliente.get('dni').errors?.['maxlength']" class="text-danger">El DNI debe tener exactamente 8 dígitos</span>
+						  <br>
+						  <span *ngIf="formcliente.get('dni').errors?.['pattern']" class="text-danger">El DNI solo puede contener números</span>
+						</div>
+					  </div>
+					</div>
+					<div class="col-12 col-md-6">
+					  <div class="form-group">
+						<label for="cliente_nombre" class="bmd-label-floating">Nombre</label>
+						<input formControlName="nombre" type="text" class="form-control mt-2" maxlength="15">
+						<div class="alert alert-danger mt-2" [hidden]="formcliente.get('nombre').valid || formcliente.get('nombre').pristine">
+						  <span *ngIf="formcliente.get('nombre').errors?.['required']" class="text-danger">Este campo es requerido</span>
+						</div>
+					  </div>
+					</div>
+					<div class="col-12 col-md-6">
+					  <div class="form-group">
+						<label for="cliente_apellido" class="bmd-label-floating">Apellido</label>
+						<input formControlName="apellido" type="text" class="form-control mt-2" maxlength="15">
+						<div class="alert alert-danger mt-2" [hidden]="formcliente.get('apellido').valid || formcliente.get('apellido').pristine">
+						  <span *ngIf="formcliente.get('apellido').errors?.['required']" class="text-danger">Este campo es requerido</span>
+						</div>
+					  </div>
+					</div>
+					<div class="col-12 col-md-6">
+					  <div class="form-group">
+						<label for="cliente_telefono" class="bmd-label-floating">Teléfono</label>
+						<input formControlName="telefono" type="text" class="form-control mt-2" maxlength="9" minlength="9">
+						<div class="alert alert-danger mt-2" [hidden]="formcliente.get('telefono').valid || formcliente.get('telefono').pristine">
+						  <span *ngIf="formcliente.get('telefono').errors?.['required']" class="text-danger">Este campo es requerido</span>
+						  <span *ngIf="formcliente.get('telefono').errors?.['minlength']" class="text-danger">El Telefono debe tener exactamente 9 dígitos</span>
+						  <br>
+						  <span *ngIf="formcliente.get('telefono').errors?.['maxlength']" class="text-danger">El Telefono debe tener exactamente 9 dígitos</span>
+						  <br>
+						  <span *ngIf="formcliente.get('telefono').errors?.['pattern']" class="text-danger">El Telefono solo puede contener números</span>
+						</div>
+					  </div>
+					</div>
+					<div class="col-12 col-md-6">
+					  <div class="form-group">
+						<label for="cliente_direccion" class="bmd-label-floating">Dirección</label>
+						<input formControlName="direccion" type="text" class="form-control mt-2" maxlength="25">
+						<div class="alert alert-danger mt-2" [hidden]="formcliente.get('direccion').valid || formcliente.get('direccion').pristine">
+						  <span *ngIf="formcliente.get('direccion').errors?.['required']" class="text-danger">Este campo es requerido</span>
+						</div>
+					  </div>
+					</div>
+					<div class="col-12 col-md-6">
+					  <div class="form-group">
+						<label for="cliente_rubro" class="bmd-label-floating">Rubro</label>
+						<input formControlName="rubro" type="text" class="form-control mt-2" maxlength="15">
+						<div class="alert alert-danger mt-2" [hidden]="formcliente.get('rubro').valid || formcliente.get('rubro').pristine">
+						  <span *ngIf="formcliente.get('rubro').errors?.['required']" class="text-danger">Este campo es requerido</span>
+						</div>
+					  </div>
+					</div>
+				  </div>
+				</div>
+			  </fieldset>
+			  <p class="text-center" style="margin-top: 40px;">
+				<button type="reset" class="btn btn-raised btn-secondary btn-sm"><i class="fas fa-paint-roller"></i> &nbsp; LIMPIAR</button>
+				&nbsp; &nbsp;
+				<button [disabled]="formcliente.invalid" type="submit" class="btn btn-raised btn-info btn-sm"><i class="far fa-save"></i> &nbsp; GUARDAR</button>
+			  </p>
+			</form>
 		  </div>
-  </fieldset>
-  <p class="text-center" style="margin-top: 40px;">
-	<button type="reset" class="btn btn-raised btn-secondary btn-sm"><i class="fas fa-paint-roller"></i> &nbsp; LIMPIAR</button>
-	&nbsp; &nbsp;
-	<button [disabled]="formcliente.invalid"   type="submit" class="btn btn-raised btn-info btn-sm"><i  class="far fa-save"></i> &nbsp; GUARDAR</button>
-  </p>
-</form>
-	
+		</div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="guardarCliente()">Cerrar</button>
+		</div>
+	  </div>
 	</div>
-	</div>
-	<div class="modal-footer">
-	<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-	</div>
-	</div>
-	</div>
-	</div>
-
+  </div>
+  
 
 <!-- modal-cliente
 <div class="modal fade" id="ModalCliente" tabindex="-1" role="dialog" aria-labelledby="ModalCliente" aria-hidden="true">
@@ -305,13 +318,13 @@
 
 
 <!-- MODAL ITEM -->
-<div  class="modal fade" id="ModalItem" tabindex="-1" role="dialog" aria-labelledby="ModalItem" aria-hidden="true" >
+<div  class="modal fade" id="ModalArticulo" tabindex="-1" role="dialog" aria-labelledby="ModalArticulo" aria-hidden="true" >
   <div class="modal-dialog" role="document">
 	  <div class="modal-content">
 		  <div class="modal-header">
 
-			  <h5 class="modal-title" id="ModalItem">Agregar item</h5>
-			  <button   type="button" class="close" data-dismiss="modal" aria-label="Close">
+			  <h5 class="modal-title" id="ModalArticulo">Agregar item</h5>
+			  <button   type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="guardarArticulo()">
 				  <span aria-hidden="true">&times;</span>
 			  </button>
 		  </div>
@@ -428,10 +441,10 @@
 							</div>
 						  </div>
 
-						  <div class="col-12 col-md-6">
+						  <div class="col-12 col-md-12">
 							<div class="form-group">
 							  <label for="observaciones">Observaciones</label>
-							  <input formControlName="observaciones" type="text" class="form-control" maxlength="100">
+							  <input formControlName="observaciones" type="textarea" class="form-control" maxlength="100">
 							  <div class="alert alert-danger mt-2"[hidden]="formVehiculo.get('observaciones').valid || formVehiculo.get('observaciones').pristine">
 							  <span *ngIf="formVehiculo.get('observaciones').errors?.['required']" class="text-danger">Este campo es requerido</span>
 							  </div>
@@ -516,7 +529,7 @@
 							  </div>
 							</div>
 						  </div>
-						  <div class="col-12 col-md-6">
+						  <div class="col-12 col-md-12">
 							<div class="form-group">
 							  <label for="observaciones">Observaciones</label>
 							  <input formControlName="observaciones" type="text" class="form-control" maxlength="100">
@@ -545,7 +558,7 @@
 
 		  </div>
 		  <div class="modal-footer">
-			  <button  type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+			  <button  type="button" class="btn btn-secondary" data-dismiss="modal" (click)="guardarArticulo()">Cerrar</button>
 		  </div>
 	  </div>
   </div>

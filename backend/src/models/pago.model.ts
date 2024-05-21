@@ -3,7 +3,7 @@ import db from '../db/connection.db';
 import TipoPago from './tipo_pago.model';
 
 const Pago = db.define('Pago', {
-  id_tipopago: {
+  tipo_pago: {
     type: DataTypes.NUMBER,
     allowNull: false,
   },
@@ -25,7 +25,7 @@ const Pago = db.define('Pago', {
   tableName: 'pago',
 });
 
-Pago.belongsTo(TipoPago, { foreignKey: 'id_tipopago', as: 'TipoPago' });
+Pago.belongsTo(TipoPago, { foreignKey: 'tipo_pago', as: 'TipoPago' });
 
 
 export default Pago;
