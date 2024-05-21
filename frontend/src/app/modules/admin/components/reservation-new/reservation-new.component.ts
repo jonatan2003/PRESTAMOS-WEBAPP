@@ -362,7 +362,7 @@ saveArticulo() {
     this.idArticuloSeleccionado = response.id;
     this.form.get('id_articulo').setValue(this.idArticuloSeleccionado);
 
-    document.getElementById('ModalItem').click();
+    this.guardarArticulo();
   }, error => {
     // Manejar errores si la operación de guardar falla
     console.error('Error al guardar el artículo:', error);
@@ -400,7 +400,6 @@ addVehiculo() {
       this.saveArticulo();
     
 
-      document.getElementById('ModalItem').click();
     },
     (error: any) => { // Manejo de errores
       console.error('Error al guardar el vehículo:', error);
@@ -431,7 +430,6 @@ addElectrodomestico() {
       this.saveArticulo();
 
 
-      document.getElementById('ModalItem').click();
     },
     (error: any) => { // Manejo de errores
       console.error('Error al guardar el electrodoméstico:', error);

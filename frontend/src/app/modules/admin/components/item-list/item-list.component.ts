@@ -98,6 +98,7 @@ totalPages: number = 0;   // Inicializa totalPages en 0
          
               id: articulo.id,
               estado: articulo.estado,
+              observaciones: articulo.observaciones,
               Vehiculo: {
                 
                 id: articulo.idvehiculo,
@@ -117,6 +118,7 @@ totalPages: number = 0;   // Inicializa totalPages en 0
           this.listArticulosElectrodomesticos = response.data.map((articulo: any) => ({
                id: articulo.id,
                estado: articulo.estado,
+               observaciones: articulo.observaciones,
                Electrodomestico: {
                 id: articulo.idelectrodomestico,
                 descripcion: articulo.Electrodomestico?.descripcion || '',

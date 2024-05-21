@@ -42,6 +42,7 @@
                     <th scope="col">NUMERO MOTOR</th>
                     <th scope="col">PLACA</th>
                     <th scope="col">DESCRIPCION</th>
+                    <th scope="col">OBSERVACION</th>
                     <th scope="col">ESTADO</th>
                     <th scope="col">ACTUALIZAR</th>
                     <th scope="col">ELIMINAR</th>
@@ -60,6 +61,7 @@
                   <td>{{ articulo.Vehiculo?.numero_motor }}</td>
                   <td>{{ articulo.Vehiculo?.placa }}</td>
                   <td>{{ articulo.Vehiculo?.descripcion }}</td>
+                  <td>{{ articulo.observaciones }}</td>
                   <td>{{ articulo.estado }}</td>
 
                     <td>
@@ -92,6 +94,7 @@
                   <th scope="col">MODELO</th>
                   <th scope="col">COLOR</th>
                   <th scope="col">NUMERO SERIE</th>
+                  <th scope="col">OBSERVACION</th>
                   <th scope="col">ESTADO</th>
                   <th scope="col">ACTUALIZAR</th>
                   <th scope="col">ELIMINAR</th>
@@ -105,6 +108,7 @@
          <td>{{ articulo.Electrodomestico?.modelo }}</td>
           <td>{{ articulo.Electrodomestico?.color }}</td>
          <td>{{ articulo.Electrodomestico?.numero_serie }}</td>
+         <td>{{ articulo.observaciones }}</td>
          <td>{{ articulo.estado }}</td>
                   <td>
                     <button type="button" (click)="setSelectedArticulo(articulo)" class="btn btn-primary" >
