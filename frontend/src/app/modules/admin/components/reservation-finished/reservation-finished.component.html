@@ -25,7 +25,7 @@
 
 			 <div class="container-fluid">
 				<div *ngIf="!loading" class="table-responsive">
-					<table *ngIf="listPrestamos.length > 0"  class="table table-dark table-sm">
+					<table *ngIf="listTickets.length > 0"  class="table table-dark table-sm">
 						<thead>
 							<tr class="text-center roboto-medium">
 								<th  scope="col">CLIENTE</th>
@@ -45,36 +45,34 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr *ngFor="let prestamos of listPrestamos; let i = index"  class="text-center" >
-								<td>{{ prestamos.Cliente?.nombre  }} {{ prestamos.Cliente?.apellido  }}</td>
-								<!-- <td>{{ prestamos.Empleado?.nombre }} {{ prestamos.Empleado?.apellidos }}</td> -->
-
+							<tr *ngFor="let ticket of listTickets; let i = index"  class="text-center" >
+								<td>{{ ticket.Prestamo?.Cliente?.nombre }}</td>
+								<td>{{ ticket.Empleado?.nombre }} {{ ticket.Empleado?.apellidos }}</td>
 								<td>
-									<span>
-										{{ prestamos.Articulo ?
-											(prestamos.Articulo.Vehiculo ?
-												prestamos.Articulo.Vehiculo.descripcion :
-												(prestamos.Articulo.Electrodomestico ?
-													prestamos.Articulo.Electrodomestico.descripcion :
-													'No hay descripción disponible')) :
-											'No hay descripción disponible' }}
-									</span>
+								  <span>
+									{{ ticket.Prestamo?.Articulo ?
+									  (ticket.Prestamo.Articulo.Vehiculo ?
+										ticket.Prestamo.Articulo.Vehiculo.descripcion :
+										(ticket.Prestamo.Articulo.Electrodomestico ?
+										  ticket.Prestamo.Articulo.Electrodomestico.descripcion :
+										  'No hay descripción disponible')) :
+									  'No hay descripción disponible' }}
+								  </span>
 								</td>
-                                <td>{{ prestamos.fecha_prestamo }}</td>
-				                <td>{{ prestamos.fecha_devolucion}}</td>
-			                	<td>{{ prestamos.monto_prestamo }}</td>
-                                <td>{{ prestamos.monto_pago}}</td>
-								<td>{{ prestamos.Articulo?.observaciones }}</td>
-								<td>{{ prestamos.estado }}</td>
-
+								<td>{{ ticket.Prestamo?.fecha_prestamo }}</td>
+								<td>{{ ticket.Prestamo?.fecha_devolucion }}</td>
+								<td>{{ ticket.Prestamo?.monto_prestamo }}</td>
+								<td>{{ ticket.Prestamo?.monto_pago }}</td>
+								<td>{{ ticket.Prestamo?.Articulo?.observaciones }}</td>
+								<td>{{ ticket.Prestamo?.estado }}</td>
 								
 								<td>
-									<button type="button" 
+									<!-- <button type="button" 
 											(click)="setSelectedVenta(prestamos)" 
 											class="btn btn-primary"
 											[disabled]="prestamos.estado.toLowerCase().trim() === 'vendido'">
 										<i class="fas fa-shopping-cart fa-fw"></i>
-									</button>
+									</button> -->
 								</td>
 								<!-- <td>
 									<button type="button" (click)="setSelectedVenta(prestamos)" class="btn btn-primary">
@@ -84,7 +82,7 @@
 								</td> -->
 								<td>
 									<form action="">
-										<button (click)="deletePrestamo(prestamos.id)" type="button" class="btn btn-warning">
+										<button (click)="deletePrestamo(ticket.id!)" type="button" class="btn btn-warning">
 											<i class="far fa-trash-alt"></i>
 										</button>
 									</form>
@@ -92,7 +90,7 @@
 							</tr>
 						</tbody>
 					</table>
-					<div class="justify-content-center text-center" > <h2 *ngIf="listPrestamos.length == 0">No hay productos para VENDER</h2>
+					<div class="justify-content-center text-center" > <h2 *ngIf="listTickets.length == 0">No hay productos para VENDER</h2>
 					</div>
 					
 				</div>

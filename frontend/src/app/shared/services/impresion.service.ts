@@ -78,7 +78,7 @@ const qrCodeDataURL = await QRCode.toDataURL(qrData);
 
 
 // Genera un número de serie único
-const nro_serie = `Serie: ${datos.num_Serie}        Ticket:${datos.num_ticket} `;
+const nro_serie = `Serie: ${datos.num_serie}        Ticket:${datos.num_ticket} `;
 
 
 

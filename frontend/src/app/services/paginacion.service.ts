@@ -54,13 +54,14 @@ export class PaginacionService {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('page_size', pageSize.toString());
-    return this.http.get<Prestamo[]>(`${this.apiUrl}/prestamos`,{ params });
+    return this.http.get<Prestamo[]>(`${this.apiUrl}/ticketsprestamos`,{ params });
   }
+ 
   getListPrestamosVencidos(page: number, pageSize: number): Observable<Prestamo[]> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('page_size', pageSize.toString());
-    return this.http.get<Prestamo[]>(`${this.apiUrl}/prestamosvencidos`,{ params });
+    return this.http.get<Prestamo[]>(`${this.apiUrl}/ticketsventas`,{ params });
   }
   getListPrestamosVentas(page: number, pageSize: number): Observable<Prestamo[]> {
     let params = new HttpParams()
@@ -103,7 +104,7 @@ export class PaginacionService {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('page_size', pageSize.toString());
-    return this.http.get<Pago[]>(`${this.apiUrl}/pagos`,{ params });
+    return this.http.get<Pago[]>(`${this.apiUrl}/ticketspagos`,{ params });
   }
   getListVentas(page: number, pageSize: number): Observable<Venta[]> {
     let params = new HttpParams()

@@ -421,6 +421,155 @@ export const getComprobantesVenta = async (req: Request, res: Response) => {
 };
 
 
+export const getTicketsVentas = async (req: Request, res: Response) => {
+  try {
+    // Parámetros de paginación
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+    const offset = (page - 1) * pageSize;
+
+    // Consulta principal con la paginación y las relaciones
+    const tickets = await Ticket.findAndCountAll({
+      limit: pageSize,
+      offset: offset,
+      include: [
+        { model: Empleado, as: 'Empleado' },
+        { model: Pago, as: 'Pago' },
+        {
+          model: Prestamo, as: 'Prestamo', where: { estado: 'vencido' }, // Filtrar por préstamos en estado 'venta'
+          include: [
+            { model: Cliente, as: 'Cliente' },
+            {
+              model: Articulo, as: 'Articulo', include: [
+                { model: Categoria, as: 'Categoria' },
+                { model: Vehiculo, as: 'Vehiculo' },
+                { model: Electrodomestico, as: 'Electrodomestico' },
+              ]
+            },
+          ],
+        }
+      ],
+    });
+
+    // Calcular información de paginación
+    const totalItems = tickets.count;
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    // Enviar respuesta con los datos y la información de paginación
+    res.json({
+      page,
+      pageSize,
+      totalItems,
+      totalPages,
+      data: tickets.rows
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al obtener la lista de Tickets' });
+  }
+};
+
+
+export const getTicketsPagos = async (req: Request, res: Response) => {
+  try {
+    // Parámetros de paginación
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+    const offset = (page - 1) * pageSize;
+
+    // Consulta principal con la paginación y las relaciones
+    const tickets = await Ticket.findAndCountAll({
+      limit: pageSize,
+      offset: offset,
+      include: [
+        { model: Empleado, as: 'Empleado' },
+        {
+          model: Pago, as: 'Pago', where: { '$Pago.idPrestamo$': { [Op.col]: 'Ticket.idPrestamo' } }
+        },
+        {
+          model: Prestamo, as: 'Prestamo', include: [
+            { model: Cliente, as: 'Cliente' },
+            {
+              model: Articulo, as: 'Articulo', include: [
+                { model: Categoria, as: 'Categoria' },
+                { model: Vehiculo, as: 'Vehiculo' },
+                { model: Electrodomestico, as: 'Electrodomestico' },
+              ]
+            },
+          ],
+        }
+      ],
+    });
+
+    // Calcular información de paginación
+    const totalItems = tickets.count;
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    // Enviar respuesta con los datos y la información de paginación
+    res.json({
+      page,
+      pageSize,
+      totalItems,
+      totalPages,
+      data: tickets.rows
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al obtener la lista de Tickets' });
+  }
+};
+
+
+export const getTicketsPrestamos = async (req: Request, res: Response) => {
+  try {
+    // Parámetros de paginación
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+    const offset = (page - 1) * pageSize;
+
+    // Consulta principal con la paginación y las relaciones
+    const tickets = await Ticket.findAndCountAll({
+      limit: pageSize,
+      offset: offset,
+      where: { // Asegura que solo se incluyan tickets con préstamos
+        '$Prestamo.id$': { [Op.ne]: null }
+      },
+      include: [
+        { model: Empleado, as: 'Empleado' },
+        { model: Pago, as: 'Pago' },
+        {
+          model: Prestamo, as: 'Prestamo', include: [
+            { model: Cliente, as: 'Cliente' },
+            {
+              model: Articulo, as: 'Articulo', include: [
+                { model: Categoria, as: 'Categoria' },
+                { model: Vehiculo, as: 'Vehiculo' },
+                { model: Electrodomestico, as: 'Electrodomestico' },
+              ]
+            },
+          ],
+        }
+      ],
+    });
+
+    // Calcular información de paginación
+    const totalItems = tickets.count;
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    // Enviar respuesta con los datos y la información de paginación
+    res.json({
+      page,
+      pageSize,
+      totalItems,
+      totalPages,
+      data: tickets.rows
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al obtener la lista de Tickets' });
+  }
+};
+
 export const getTickets = async (req: Request, res: Response) => {
   try {
     // Parámetros de paginación
@@ -735,7 +884,7 @@ export const actualizarPrestamosAVenta = async (req: Request, res: Response) => 
 
     // Actualizar los préstamos vencidos y pendientes a estado 'venta'
     const [prestamosActualizadosCount] = await Prestamo.update(
-      { estado: 'venta' },
+      { estado: 'vencido' },
       {
         where: {
           id: {
@@ -765,7 +914,6 @@ export const actualizarPrestamosAVenta = async (req: Request, res: Response) => 
             ]
           },
           { model: Cliente, as: 'Cliente' },
-          { model: Empleado, as: 'Empleado' }
         ]
       });
 
@@ -775,7 +923,7 @@ export const actualizarPrestamosAVenta = async (req: Request, res: Response) => 
 
       // Emitir un evento para cada préstamo actualizado
       prestamosActualizadosDetails.forEach((prestamo: any) => {
-        const { id, estado, Articulo, Cliente, Empleado } = prestamo;
+        const { id, estado, Articulo, Cliente } = prestamo;
 
         let articuloDescripcion = 'No disponible';
         if (Articulo) {
@@ -787,14 +935,12 @@ export const actualizarPrestamosAVenta = async (req: Request, res: Response) => 
         }
 
         const clienteNombre = Cliente ? Cliente.nombre : 'No disponible';
-        const empleadoNombre = Empleado ? Empleado.nombre : 'No disponible';
 
         const mensaje = `Se ha actualizado el préstamo a estado "venta" - Detalles del artículo: ${articuloDescripcion}`;
         const evento = {
           id: id,
           estado: estado,
           cliente: clienteNombre,
-          empleado: empleadoNombre
         };
 
         io.emit('prestamoActualizado', { message: mensaje, prestamo: evento });

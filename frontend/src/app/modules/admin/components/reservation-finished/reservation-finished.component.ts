@@ -25,6 +25,7 @@ import { DetaventaService } from 'src/app/services/detaventa.service';
 import { DetalleVenta } from 'src/app/interfaces/detaventa.interface';
 import { formatDate } from '@angular/common';
 import { switchMap } from 'rxjs/operators';
+import { Ticket } from 'src/app/interfaces/ticket.interface';
 
 @Component({
   selector: 'app-reservation-finished',
@@ -40,6 +41,7 @@ export class ReservationFinishedComponent  {
   id: number;
   listPrestamos: Prestamo[] = [];
   listdetalleVentas: DetalleVenta[] = [];
+  listTickets: Ticket[] = [];
   loading: boolean = false;
   encabezado: string[] = [];
   cuerpo: string[][] = [];
@@ -157,10 +159,10 @@ estado : string ;
                 this.loading = true;
               
                 // Ajusta el método para aceptar parámetros de paginación
-                this._paginacionService.getListPrestamosVentas(this.currentPage, this.pageSize).subscribe((response: any) => {
-                  this.listPrestamos = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
+                this._paginacionService.getListPrestamosVencidos(this.currentPage, this.pageSize).subscribe((response: any) => {
+                  this.listTickets = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
                   this.loading = false;
-                 console.log(this.listPrestamos);
+                 console.log(this.listTickets);
                   // Utiliza totalItems del objeto de respuesta para calcular totalPages
                   this.totalPages = response.totalPages;
                 });

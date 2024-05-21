@@ -20,6 +20,7 @@ import { Pago } from 'src/app/interfaces/pago.interface';
 import { PagosService } from 'src/app/services/pago.service';
 import { formatDate } from '@angular/common';
 import { switchMap } from 'rxjs/operators';
+import { Ticket } from 'src/app/interfaces/ticket.interface';
 
 
 @Component({
@@ -36,7 +37,7 @@ export class ReservationListComponent implements OnInit  {
   id: number;
   listPrestamos: Prestamo[] = [];
   listPagos: Pago[] = [];
-
+  listTickets: Ticket[] = [];
   loading: boolean = false;
   encabezado: string[] = [];
   cuerpo: string[][] = [];
@@ -142,9 +143,9 @@ montoRestante: number ;
               
                 // Ajusta el método para aceptar parámetros de paginación
                 this._paginacionService.getListPrestamos(this.currentPage, this.pageSize).subscribe((response: any) => {
-                  this.listPrestamos = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
+                  this.listTickets = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
                   this.loading = false;
-              
+                  console.log(this.listTickets);
                   // Utiliza totalItems del objeto de respuesta para calcular totalPages
                   this.totalPages = response.totalPages;
                 });
@@ -613,21 +614,23 @@ eliminarFilasDuplicadas(cuerpo: Array<any>): Array<any> {
 
   
   
-onImprimirFila(index: number) {
-  const prestamo = this.listPrestamos[index];
-  this.impresionService.imprimirFilaPrestamos('Prestamos', {
-    cliente: prestamo.Cliente?.nombre +" " + prestamo.Cliente?.apellido || '',
-    dni: prestamo.Cliente?.dni || '',
-    // empleado: prestamo.Empleado?.nombre +" " + prestamo.Empleado?.apellidos || '',
-    articulo: prestamo.Articulo ? (prestamo.Articulo.Vehiculo ? prestamo.Articulo.Vehiculo.descripcion : (prestamo.Articulo.Electrodomestico ? prestamo.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
-    fechaPrestamo: this.formatDate(prestamo.fecha_prestamo) || '',
-    fechaDevolucion: this.formatDate(prestamo.fecha_devolucion) || '',
-    montoPrestamo: prestamo.monto_prestamo || '',
-    montoPago: prestamo.monto_pago || '',
-    observaciones: prestamo.Articulo?.observaciones || '',
-    estado:prestamo.estado || ''
-  } );
-}
+  onImprimirFila(index: number) {
+    const ticket = this.listTickets[index];
+    this.impresionService.imprimirFilaPrestamos('Ticket', {
+      num_serie: ticket.num_serie,
+      num_ticket: ticket.num_ticket,
+      cliente: ticket.Prestamo?.Cliente?.nombre +" " + ticket.Prestamo?.Cliente?.apellido || '',
+      dni: ticket.Prestamo?.Cliente?.dni || '',
+      empleado: ticket.Empleado?.nombre +" " + ticket.Empleado?.apellidos || '',
+      articulo: ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.descripcion : (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
+      fechaPrestamo: this.formatDate(ticket.Prestamo?.fecha_prestamo) || '',
+      fechaDevolucion: this.formatDate(ticket.Prestamo?.fecha_devolucion) || '',
+      montoPrestamo: ticket.Prestamo?.monto_prestamo || '',
+      montoPago: ticket.Prestamo?.monto_pago || '',
+      observaciones: ticket.Prestamo?.Articulo?.observaciones|| '',
+      estado:ticket.Prestamo?.estado || ''
+    } );
+  }
 
 
   formatDate(date: string | Date): string {

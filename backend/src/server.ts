@@ -142,7 +142,7 @@ class Server {
         } finally {
           this.isRequesting = false;
         }
-      },72000000 ); // 60000 es 60 segundos para pruebas, 72000000 20 horas para producción
+      },120000 ); // 60000 es 60 segundos para pruebas, 72000000 20 horas para producción
   
     } catch (error) {
       console.log('Error en la configuración de WebSockets:', error);

@@ -17,7 +17,10 @@ import { getClientes,
          actualizarPrestamosAVenta,
          getComprobantesVenta,
          getTickets,
-         getTiposPago} from '../controllers/paginacion.controller';
+         getTiposPago,
+         getTicketsPrestamos,
+         getTicketsPagos,
+         getTicketsVentas} from '../controllers/paginacion.controller';
 
 const PaginacionRouter = Router();
 
@@ -44,6 +47,11 @@ PaginacionRouter.get('/inventario', getInventario);
 PaginacionRouter.get('/comprobantes_ventas', getComprobantesVenta);
 
 PaginacionRouter.get('/tickets', getTickets);
+
+PaginacionRouter.get('/ticketsprestamos', getTicketsPrestamos);
+PaginacionRouter.get('/ticketsventas', getTicketsVentas);
+
+PaginacionRouter.get('/ticketspagos', getTicketsPagos);
 
 PaginacionRouter.get('/tipospago', getTiposPago);
 
