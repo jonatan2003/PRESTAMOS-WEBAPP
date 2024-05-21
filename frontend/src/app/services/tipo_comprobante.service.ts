@@ -2,7 +2,7 @@ import { HttpClient,HttpParams  } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../enviroments/environment';
-import { Tipo_comprobante } from '../interfaces/tipo_comprobante.interface';
+import { TipoComprobante } from '../interfaces/tipo_comprobante.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -13,29 +13,29 @@ import { Tipo_comprobante } from '../interfaces/tipo_comprobante.interface';
       this.apiUrl = `${environment.endpoint}api/v1/tipocomprobantes`;
     }
   
-    getListTipocomprobantes(): Observable<Tipo_comprobante[]> {
-      return this.http.get<Tipo_comprobante[]>(this.apiUrl);
+    getListTipocomprobantes(): Observable<TipoComprobante[]> {
+      return this.http.get<TipoComprobante[]>(this.apiUrl);
     }
   
-    getTipocomprobante(id: number): Observable<Tipo_comprobante> {
-      return this.http.get<Tipo_comprobante>(`${this.apiUrl}/${id}`);
+    getTipocomprobante(id: number): Observable<TipoComprobante> {
+      return this.http.get<TipoComprobante>(`${this.apiUrl}/${id}`);
     }
   
-    saveTipocomprobante(tipocomprobante: Tipo_comprobante): Observable<Tipo_comprobante> {
-      return this.http.post<Tipo_comprobante>(this.apiUrl, tipocomprobante);
+    saveTipocomprobante(tipocomprobante: TipoComprobante): Observable<TipoComprobante> {
+      return this.http.post<TipoComprobante>(this.apiUrl, tipocomprobante);
     }
   
-    updateTipocomprobante(id: number, tipocomprobante: Tipo_comprobante): Observable<Tipo_comprobante> {
-      return this.http.put<Tipo_comprobante>(`${this.apiUrl}/${id}`, tipocomprobante);
+    updateTipocomprobante(id: number, tipocomprobante: TipoComprobante): Observable<TipoComprobante> {
+      return this.http.put<TipoComprobante>(`${this.apiUrl}/${id}`, tipocomprobante);
     }
   
     deleteTipocomprobante(id: number): Observable<void> {
       return this.http.delete<void>(`${this.apiUrl}/${id}`);
     }
   
-    searchTipocomprobante(searchTerm: string): Observable<Tipo_comprobante[]> {
+    searchTipocomprobante(searchTerm: string): Observable<TipoComprobante[]> {
       const params = new HttpParams().set('searchTerm', searchTerm);
-      return this.http.get<Tipo_comprobante[]>(`${this.apiUrl}/search/searchTerm=`, { params });
+      return this.http.get<TipoComprobante[]>(`${this.apiUrl}/search/searchTerm=`, { params });
     }
   }
   
