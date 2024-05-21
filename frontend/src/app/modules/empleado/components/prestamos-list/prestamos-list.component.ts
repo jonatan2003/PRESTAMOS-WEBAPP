@@ -337,7 +337,6 @@ montoRestante: number ;
 
                 const pago: Pago = {
  
-                  idprestamo: this.formPago.value.idprestamo,
                   tipo_pago: this.formPago.value.tipo_pago,
                   fecha_pago: this.fechaActual,
                   interes_pago: this.formPago.value.interes_pago,
@@ -398,7 +397,7 @@ montoRestante: number ;
       const lastIndex = this.listPagos.length - 1;
 
       // Llamar a la función para imprimir fila del último pago agregado
-     this.onImprimirFilaPagos(lastIndex);
+    //  this.onImprimirFilaPagos(lastIndex);
 
       // Redirigir después de guardar
       this.router.navigate(['admin/pagos-list']);
@@ -596,21 +595,21 @@ eliminarFilasDuplicadas(cuerpo: Array<any>): Array<any> {
   }
 
   
-  onImprimirFilaPagos(index: number) {
-    const pago = this.listPagos[index];
-    this.impresionService.imprimirFilaPagos('Pagos', {
-      cliente: pago.Prestamo.Cliente?.nombre +" " + pago.Prestamo.Cliente?.apellido || '',
-      dni: pago.Prestamo.Cliente?.dni || '',
-      empleado:pago.Prestamo.Empleado?.nombre +" " + pago.Prestamo.Empleado?.apellidos || '',
-      articulo: pago.Prestamo?.Articulo ? (pago.Prestamo?.Articulo.Vehiculo ? pago.Prestamo?.Articulo.Vehiculo.descripcion :  (pago.Prestamo?.Articulo.Electrodomestico ? pago.Prestamo?.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
-      tipo_pago: pago.tipo_pago || '',
-      fecha_pago: this.formatDate(pago.fecha_pago) || '',
-      interes_pago: pago.interes_pago || '',
-      monto_restante: pago.monto_restante || '',
-      capital_pago: pago.capital_pago || '',
-      estado: pago.Prestamo?.estado || ''
-    } );
-  }
+  // onImprimirFilaPagos(index: number) {
+  //   const pago = this.listPagos[index];
+  //   this.impresionService.imprimirFilaPagos('Pagos', {
+  //     cliente: pago.Prestamo.Cliente?.nombre +" " + pago.Prestamo.Cliente?.apellido || '',
+  //     dni: pago.Prestamo.Cliente?.dni || '',
+  //     empleado:pago.Prestamo.Empleado?.nombre +" " + pago.Prestamo.Empleado?.apellidos || '',
+  //     articulo: pago.Prestamo?.Articulo ? (pago.Prestamo?.Articulo.Vehiculo ? pago.Prestamo?.Articulo.Vehiculo.descripcion :  (pago.Prestamo?.Articulo.Electrodomestico ? pago.Prestamo?.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
+  //     tipo_pago: pago.tipo_pago || '',
+  //     fecha_pago: this.formatDate(pago.fecha_pago) || '',
+  //     interes_pago: pago.interes_pago || '',
+  //     monto_restante: pago.monto_restante || '',
+  //     capital_pago: pago.capital_pago || '',
+  //     estado: pago.Prestamo?.estado || ''
+  //   } );
+  // }
 
   
   

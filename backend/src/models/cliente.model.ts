@@ -18,6 +18,10 @@ const Cliente = db.define('Cliente', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  ruc: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   telefono: {
     type: DataTypes.STRING,
     allowNull: false,

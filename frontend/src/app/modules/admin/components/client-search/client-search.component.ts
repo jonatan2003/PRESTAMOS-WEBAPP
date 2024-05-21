@@ -159,6 +159,7 @@ export class ClientSearchComponent {
       apellido: this.form.value.apellido,
       direccion: this.form.value.direccion,
       dni: this.form.value.dni,
+      ruc:  this.form.value.dni,
       telefono: this.form.value.telefono,
       rubro: this.form.value.rubro,
       // ... Otros campos del formulario de clientes según la interfaz

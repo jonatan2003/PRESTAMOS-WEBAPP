@@ -148,10 +148,10 @@ totalPages: number = 0;   // Inicializa totalPages en 0
       
       this.listPago.forEach((pago) => {
         const fila: any[] = [
-          pago.Prestamo.Cliente?.nombre + ' ' + pago.Prestamo.Cliente?.apellido,
-          // pago.Prestamo.Empleado?.nombre + ' ' + pago.Prestamo.Empleado?.apellidos,
-          pago.Prestamo.Articulo ? (pago.Prestamo.Articulo.Vehiculo ? pago.Prestamo.Articulo.Vehiculo.descripcion : (pago.Prestamo.Articulo.Electrodomestico ? pago.Prestamo.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
-          pago.tipo_pago,
+          // pago.Prestamo.Cliente?.nombre + ' ' + pago.Prestamo.Cliente?.apellido,
+          // // pago.Prestamo.Empleado?.nombre + ' ' + pago.Prestamo.Empleado?.apellidos,
+          // pago.Prestamo.Articulo ? (pago.Prestamo.Articulo.Vehiculo ? pago.Prestamo.Articulo.Vehiculo.descripcion : (pago.Prestamo.Articulo.Electrodomestico ? pago.Prestamo.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
+          // pago.tipo_pago,
           pago.fecha_pago,
           pago.interes_pago,
           pago.monto_restante,
@@ -177,16 +177,16 @@ totalPages: number = 0;   // Inicializa totalPages en 0
   onImprimirFila(index: number) {
     const pago = this.listPago[index];
     this.impresionService.imprimirFilaPagos('Pagos', {
-      cliente: pago.Prestamo.Cliente?.nombre +" " + pago.Prestamo.Cliente?.apellido || '',
-      dni: pago.Prestamo.Cliente?.dni || '',
-      empleado:pago.Prestamo.Empleado?.nombre +" " + pago.Prestamo.Empleado?.apellidos || '',
-      articulo: pago.Prestamo?.Articulo ? (pago.Prestamo?.Articulo.Vehiculo ? pago.Prestamo?.Articulo.Vehiculo.descripcion :  (pago.Prestamo?.Articulo.Electrodomestico ? pago.Prestamo?.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
-      tipo_pago: pago.tipo_pago || '',
-      fecha_pago: pago.fecha_pago || '',
-      interes_pago: pago.interes_pago || '',
-      monto_restante: pago.monto_restante || '',
-      capital_pago: pago.capital_pago || '',
-      estado: pago.Prestamo?.estado || ''
+      // cliente: pago.Prestamo.Cliente?.nombre +" " + pago.Prestamo.Cliente?.apellido || '',
+      // dni: pago.Prestamo.Cliente?.dni || '',
+      // empleado:pago.Prestamo.Empleado?.nombre +" " + pago.Prestamo.Empleado?.apellidos || '',
+      // articulo: pago.Prestamo?.Articulo ? (pago.Prestamo?.Articulo.Vehiculo ? pago.Prestamo?.Articulo.Vehiculo.descripcion :  (pago.Prestamo?.Articulo.Electrodomestico ? pago.Prestamo?.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
+      // tipo_pago: pago.tipo_pago || '',
+      // fecha_pago: pago.fecha_pago || '',
+      // interes_pago: pago.interes_pago || '',
+      // monto_restante: pago.monto_restante || '',
+      // capital_pago: pago.capital_pago || '',
+      // estado: pago.Prestamo?.estado || ''
     } );
   }
 

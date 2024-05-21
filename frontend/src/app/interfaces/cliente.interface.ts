@@ -4,6 +4,7 @@ export interface Cliente {
   apellido: string;
   direccion: string;
   dni: string;
+  ruc: string;
   telefono: string;
   rubro: string;
 }

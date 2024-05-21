@@ -38,14 +38,14 @@
 						</thead>
 						<tbody>
 							<tr *ngFor="let pago of listPago let i = index " class="text-center" >
-								<td>{{ pago.Prestamo?.Cliente?.nombre  }} {{ pago.Prestamo?.Cliente?.apellido  }}</td>
+								<!-- <td>{{ pago.Prestamo?.Cliente?.nombre  }} {{ pago.Prestamo?.Cliente?.apellido  }}</td>
                 <td> {{ pago.Prestamo?.Articulo ?
                   (pago.Prestamo?.Articulo.Vehiculo ?
                   pago.Prestamo?.Articulo.Vehiculo.descripcion :
                     (pago.Prestamo?.Articulo.Electrodomestico ?
                     pago.Prestamo?.Articulo.Electrodomestico.descripcion :
                       'No hay descripción disponible')) :
-                  'No hay descripción disponible' }} </td>
+                  'No hay descripción disponible' }} </td> -->
 								<td>{{ pago.tipo_pago }}</td>
 								<td>{{ pago.fecha_pago }}</td>
 								<td>{{ pago.interes_pago }}</td>

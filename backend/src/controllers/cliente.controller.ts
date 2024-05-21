@@ -3,7 +3,7 @@ import Cliente from '../models/cliente.model';
 import { Op } from 'sequelize'; // Agregar esta línea
 
 export const createCliente = async (req: Request, res: Response) => {
-  const { nombre, apellido, direccion, dni, telefono,rubro } = req.body;
+  const { nombre, apellido, direccion, dni, ruc,telefono,rubro } = req.body;
 
   try {
     const nuevoCliente = await Cliente.create({
@@ -11,6 +11,7 @@ export const createCliente = async (req: Request, res: Response) => {
       apellido,
       direccion,
       dni,
+      ruc,
       telefono,
       rubro
     });

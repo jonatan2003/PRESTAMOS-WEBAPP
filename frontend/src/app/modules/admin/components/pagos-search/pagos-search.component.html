@@ -80,7 +80,7 @@
           <tbody>
             <tr class="text-center" *ngFor="let pago of pagos" >
 
-              <td>{{ pago.Prestamo?.Cliente?.nombre  }} {{ pago.Prestamo?.Cliente?.apellido  }}</td>
+              <!-- <td>{{ pago.Prestamo?.Cliente?.nombre  }} {{ pago.Prestamo?.Cliente?.apellido  }}</td>
               <td>{{ pago.Prestamo?.Empleado?.nombre  }} {{ pago.Prestamo?.Empleado?.apellidos  }}</td>
 
               <td> {{ pago.Prestamo?.Articulo ?
@@ -89,7 +89,7 @@
                   (pago.Prestamo?.Articulo.Electrodomestico ?
                   pago.Prestamo?.Articulo.Electrodomestico.descripcion :
                     'No hay descripción disponible')) :
-                'No hay descripción disponible' }} </td>
+                'No hay descripción disponible' }} </td> -->
               <td>{{ pago.tipo_pago }}</td>
               <td>{{ pago.fecha_pago }}</td>
               <td>{{ pago.interes_pago }}</td>

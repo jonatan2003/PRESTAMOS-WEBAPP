@@ -347,7 +347,6 @@ estado : string ;
 
                 const pago: Pago = {
  
-                  idprestamo: this.formPago.value.idprestamo,
                   tipo_pago: this.formPago.value.tipo_pago,
                   fecha_pago: this.fechaActual,
                   interes_pago: this.interes,

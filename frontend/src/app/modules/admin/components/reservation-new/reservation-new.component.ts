@@ -25,6 +25,8 @@ import { Vehiculo } from 'src/app/interfaces/vehiculo.interface';
 import { AuthService } from 'src/app/services/auth.service';
 import { ImpresionService } from 'src/app/shared/services/impresion.service';
 import { formatDate } from '@angular/common';
+import { ApiDniService } from 'src/app/services/apidni.service';
+import { ApiRucService } from 'src/app/services/apiruc.service';
 
 
 @Component({
@@ -91,6 +93,8 @@ id_articulo = null;
   constructor(private authService: AuthService,
      private _categoriasService: CategoriaService,
     private _electrodomesticoService: ElectrodomesticoService,
+    private apiDniService: ApiDniService, 
+    private apiRucService: ApiRucService,
     private _vehiculoService: VehiculoService,
     private fb: FormBuilder,
     private searchService: SearchService,
@@ -112,14 +116,16 @@ id_articulo = null;
     });
 
     this.formcliente = this.fb.group({
-      nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
-      direccion: ['', Validators.required],
+      tipoCliente: ['dni'],
+      nombre: [{ value: '', disabled: true }, Validators.required],
+      apellido: [{ value: '', disabled: true }, Validators.required],
+      direccion: [{ value: '', disabled: true }, Validators.required],
       dni: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(8), Validators.pattern("^[0-9]*$")]],
+      ruc: ['', [Validators.required, , Validators.maxLength(11), Validators.pattern("^[0-9]*$")]],
       telefono: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(9), Validators.pattern("^[0-9]*$")]],
-      rubro: ['', Validators.required],
-      // ... Otros campos del formulario de clientes
+      rubro: ['', [Validators.required, Validators.maxLength(25), ]],
     });
+  
 
 
     this.formVehiculo = this.fb.group({
@@ -156,6 +162,7 @@ this.fechaActual = new Date();
 // Formatear la fecha actual en el formato de fecha de HTML5 (YYYY-MM-DD)
 const fechaActualString = this.fechaActual.toISOString().slice(0, 10);
 // Establecer la fecha actual como valor inicial del campo de formulario
+this.onTipoClienteChange();
 
 
   if (this.id !== 0) {
@@ -164,18 +171,64 @@ const fechaActualString = this.fechaActual.toISOString().slice(0, 10);
    
 
   }
-  // this.getListCategorias();
 
+  // this.getListCategorias();
 }
 
-onTipoClienteChange(event: any) {
-  const tipoCliente = event.target.value;
+
+onTipoClienteChange() {
+  const tipoCliente = this.formcliente.get('tipoCliente').value;
   if (tipoCliente === 'ruc') {
     this.formcliente.controls['dni'].disable();
     this.formcliente.controls['ruc'].enable();
+    this.formcliente.controls['nombre'].enable();
+    this.formcliente.controls['apellido'].enable();
+    this.formcliente.controls['direccion'].enable();
+    this.formcliente.controls['rubro'].enable();
+    this.formcliente.controls['dni'].enable();
+
   } else {
     this.formcliente.controls['ruc'].disable();
     this.formcliente.controls['dni'].enable();
+    this.formcliente.controls['nombre'].enable();
+    this.formcliente.controls['apellido'].enable();
+    this.formcliente.controls['direccion'].enable();
+    this.formcliente.controls['rubro'].enable();
+  }
+}
+
+onDniChange() {
+  const dni = this.formcliente.get('dni').value;
+  if (dni.length === 8) {
+    this.apiDniService.getClienteByDni(dni).subscribe(data => {
+      const responseData = data.body; // Acceder al objeto 'body'
+      console.log(responseData);
+      this.formcliente.patchValue({
+        nombre: responseData.preNombres, // Acceder a las propiedades dentro de 'body'
+        apellido: responseData.apePaterno + "  "+responseData.apeMaterno,
+        direccion: responseData.desDireccion,
+      });
+    }, error => {
+      this.toastr.info('Mensaje de error', 'Título del error');
+      console.error(error);
+    });
+  }
+}
+
+
+
+onRucChange() {
+  const ruc = this.formcliente.get('ruc').value;
+  if (ruc.length === 11) {
+    this.apiRucService.getClienteByDni(ruc).subscribe(data => {
+      this.formcliente.patchValue({
+        nombre: data.nombre,
+        direccion: data.direccion,
+        rubro: data.rubro
+      });
+    }, error => {
+      console.error(error);
+    });
   }
 }
 
@@ -239,6 +292,7 @@ addCliente() {
     apellido: this.formcliente.value.apellido,
     direccion: this.formcliente.value.direccion,
     dni: this.formcliente.value.dni,
+    ruc: this.formcliente.value.ruc,
     telefono: this.formcliente.value.telefono,
     rubro: this.formcliente.value.rubro,
     // ... Otros campos del formulario de clientes según la interfaz
@@ -254,10 +308,10 @@ addCliente() {
       //this.router.navigate(['admin/client-list']);
       this.idClienteSeleccionado = clienteid.id;
       this.form.get('id_cliente').setValue(this.idClienteSeleccionado); // Suponiendo que el objeto empleado tiene un campo 'id'
-    
+      
       //this.idClienteSeleccionado = cliente.id;
       this.nombreClienteSeleccionado = this.formcliente.value.nombre + " " +  this.formcliente.value.apellido  ;
-      document.getElementById('ModalCliente').click();
+      this.guardarCliente();
     });
   
 }
