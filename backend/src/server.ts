@@ -29,6 +29,7 @@ import TipoPagoRouter from './routes/tipo_pago.router';
 import ComprobanteVentaRouter from './routes/comprobante_venta.router';
 import routerSUNAT from './routes/sunat.router';
 import routerRUC from './routes/apiruc.router';
+import CronogramaPagosRouter from './routes/cronograma_pagos.model';
 
 
 class Server {
@@ -91,6 +92,7 @@ class Server {
     this.app.use('/api/v1/paginacion', PaginacionRouter);
     this.app.use('/api/v1/inventario', InventarioRouter);
     this.app.use('/api/v1/tipopagos', TipoPagoRouter);
+    this.app.use('/api/v1/cronograma_pagos', CronogramaPagosRouter);
     this.app.use('/api/v1/comprobantes_ventas', ComprobanteVentaRouter);
     this.app.use('/api/v1/ticket', TicketRouter);
     this.app.use('/api/v1/dni', RouterDni);

@@ -17,6 +17,7 @@ import ComprobanteVenta from '../models/comprobante_venta.model';
 import TipoComprobante from '../models/tipo_comprobante.model';
 import Ticket from '../models/ticket.model';
 import TipoPago from '../models/tipo_pago.model';
+import CronogramaPagos from '../models/cronograma_pagos.model';
 
 export const getClientes = async (req: Request, res: Response) => {
     try {
@@ -1004,6 +1005,54 @@ export const actualizarPrestamosAVenta = async (req: Request, res: Response) => 
 //   }
 // }
 
+export const getTicketsPrestamosPendientes = async (req: Request, res: Response) => {
+  try {
+    // Parámetros de paginación
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+    const offset = (page - 1) * pageSize;
+
+    // Consulta principal con la paginación y las relaciones
+    const tickets = await Ticket.findAndCountAll({
+      limit: pageSize,
+      offset: offset,
+      include: [
+        { model: Empleado, as: 'Empleado' },
+        { model: Pago, as: 'Pago' },
+        {
+          model: Prestamo, as: 'Prestamo', where: { estado: 'pendiente' }, // Filtrar por préstamos en estado 'pendiente'
+          include: [
+            { model: Cliente, as: 'Cliente' },
+            {
+              model: Articulo, as: 'Articulo', include: [
+                { model: Categoria, as: 'Categoria' },
+                { model: Vehiculo, as: 'Vehiculo' },
+                { model: Electrodomestico, as: 'Electrodomestico' },
+              ]
+            },
+          ],
+        }
+      ],
+    });
+
+    // Calcular información de paginación
+    const totalItems = tickets.count;
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    // Enviar respuesta con los datos y la información de paginación
+    res.json({
+      page,
+      pageSize,
+      totalItems,
+      totalPages,
+      data: tickets.rows
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al obtener la lista de Tickets' });
+  }
+};
+
 
 export const getPrestamosVenta = async (req: Request, res: Response) => {
   try {
@@ -1051,35 +1100,40 @@ export const getPrestamosVenta = async (req: Request, res: Response) => {
   }
 };
 
-export const getPrestamosPendientes = async (req: Request, res: Response) => {
+
+export const getCronogramaPagosPendientes = async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string, 10) || 1;
     const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
     const offset = (page - 1) * pageSize;
 
-    const prestamosPendientes = await Prestamo.findAndCountAll({
-      where: {
-        estado: 'pendiente', // Filtrar por préstamos con estado "pendiente"
-      },
+    // Realiza la consulta paginada para obtener los cronogramas de pagos con préstamos en estado 'pendiente'
+    const cronogramaPagosPendientes = await CronogramaPagos.findAndCountAll({
       include: [
-        { model: Cliente, as: 'Cliente' },
-        { model: Empleado, as: 'Empleado' },
         {
-          model: Articulo,
-          as: 'Articulo',
+          model: Prestamo,
+          as: 'Prestamo',
+          where: { estado: 'pendiente' },
           include: [
-            { model: Categoria, as: 'Categoria' },
-            { model: Vehiculo, as: 'Vehiculo' },
-            { model: Electrodomestico, as: 'Electrodomestico' },
+            { model: Cliente, as: 'Cliente' },
+            {
+              model: Articulo,
+              as: 'Articulo',
+              include: [
+                { model: Categoria, as: 'Categoria' },
+                { model: Vehiculo, as: 'Vehiculo' },
+                { model: Electrodomestico, as: 'Electrodomestico' },
+              ],
+            },
           ],
         },
       ],
       limit: pageSize,
       offset: offset,
-      order: [['id', 'DESC']], // Ordenar por fecha de creación en orden descendente (o usar otro campo relevante)
+      order: [['id', 'DESC']],
     });
 
-    const totalItems = prestamosPendientes.count;
+    const totalItems = cronogramaPagosPendientes.count;
     const totalPages = Math.ceil(totalItems / pageSize);
 
     res.json({
@@ -1087,13 +1141,61 @@ export const getPrestamosPendientes = async (req: Request, res: Response) => {
       pageSize,
       totalItems,
       totalPages,
-      data: prestamosPendientes.rows,
+      data: cronogramaPagosPendientes.rows,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: 'Error al obtener los préstamos pendientes' });
+    console.error('Error al obtener cronogramas de pagos con préstamos en estado "pendiente" con paginación:', error);
+    res.status(500).json({ success: false, message: 'Error al obtener cronogramas de pagos con préstamos en estado "pendiente" con paginación.' });
   }
 };
+
+export const getPrestamosPendientes = async (req: Request, res: Response) => {
+    try {
+      // Parámetros de paginación
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+      const offset = (page - 1) * pageSize;
+  
+      // Consulta principal con la paginación y las relaciones
+      const tickets = await Ticket.findAndCountAll({
+        limit: pageSize,
+        offset: offset,
+        include: [
+          { model: Empleado, as: 'Empleado' },
+          { model: Pago, as: 'Pago' },
+          {
+            model: Prestamo, as: 'Prestamo', where: { estado: 'pendiente' }, // Filtrar por préstamos en estado 'pendiente'
+            include: [
+              { model: Cliente, as: 'Cliente' },
+              {
+                model: Articulo, as: 'Articulo', include: [
+                  { model: Categoria, as: 'Categoria' },
+                  { model: Vehiculo, as: 'Vehiculo' },
+                  { model: Electrodomestico, as: 'Electrodomestico' },
+                ]
+              },
+            ],
+          }
+        ],
+      });
+  
+      // Calcular información de paginación
+      const totalItems = tickets.count;
+      const totalPages = Math.ceil(totalItems / pageSize);
+  
+      // Enviar respuesta con los datos y la información de paginación
+      res.json({
+        page,
+        pageSize,
+        totalItems,
+        totalPages,
+        data: tickets.rows
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ msg: 'Error al obtener la lista de Tickets' });
+    }
+  };
 
 export const getPrestamosPagados = async (req: Request, res: Response) => {
   try {

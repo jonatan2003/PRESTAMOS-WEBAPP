@@ -18,6 +18,7 @@ import { PaginacionService } from 'src/app/services/paginacion.service';
 import { Date } from 'core-js';
 import { Pago } from 'src/app/interfaces/pago.interface';
 import { PagosService } from 'src/app/services/pago.service';
+import { Ticket } from 'src/app/interfaces/ticket.interface';
 
 
 @Component({
@@ -33,6 +34,7 @@ export class PrestamosPendingComponent {
   formVehiculo: FormGroup;
   id: number;
   listPrestamos: Prestamo[] = [];
+  listTickets: Ticket[] = [];
   loading: boolean = false;
   encabezado: string[] = [];
   cuerpo: string[][] = [];
@@ -85,7 +87,7 @@ estado : string ;
       tasa_interes:  [{ value: '', disabled: true }, ],
       monto_pago:  [{ value: '', disabled: true }, ],
       descripcion: [{ value: '', disabled: true }, ],
-      observacion: [{ value: '', disabled: true }, ],
+      observaciones: [{ value: '', disabled: true }, ],
       // ... Otros campos del formulario de articulos
     });
 
@@ -112,9 +114,9 @@ estado : string ;
               
                 // Ajusta el método para aceptar parámetros de paginación
                 this._paginacionService.getListPrestamosPendientes(this.currentPage, this.pageSize).subscribe((response: any) => {
-                  this.listPrestamos = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
+                  this.listTickets= response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
                   this.loading = false;
-              
+                console.log(this.listTickets);
                   // Utiliza totalItems del objeto de respuesta para calcular totalPages
                   this.totalPages = response.totalPages;
                 });

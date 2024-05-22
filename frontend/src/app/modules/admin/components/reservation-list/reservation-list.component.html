@@ -73,13 +73,13 @@
 									</button>
 								</td>
 								<td>
-									<!-- <button type="button" 
-											(click)="setSelectedPago(prestamos)" 
+									<button type="button" 
+											(click)="setSelectedPago(ticket.Prestamo)" 
 											class="btn btn-primary"
-											[disabled]="prestamos.estado.toLowerCase().trim() === 'pagado' || prestamos.estado.toLowerCase().trim() === 'vendido'">
-										<i class="fas fa-money-bill-alt"></i>
-									</button> -->
-								</td>
+											[disabled]="ticket.Prestamo?.estado?.toLowerCase().trim() === 'pagado' || ticket.Prestamo?.estado?.toLowerCase().trim() === 'vendido'">
+									  <i class="fas fa-money-bill-alt"></i>
+									</button>
+								  </td>
 								<!-- <td>
 									<button type="button" (click)="setSelectedPrestamo(prestamos)" class="btn btn-primary">
 										<i class="fas fa-sync-alt"></i>

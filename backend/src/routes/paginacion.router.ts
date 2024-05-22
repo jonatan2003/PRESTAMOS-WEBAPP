@@ -20,7 +20,9 @@ import { getClientes,
          getTiposPago,
          getTicketsPrestamos,
          getTicketsPagos,
-         getTicketsVentas} from '../controllers/paginacion.controller';
+         getTicketsVentas,
+         getTicketsPrestamosPendientes,
+         getCronogramaPagosPendientes} from '../controllers/paginacion.controller';
 
 const PaginacionRouter = Router();
 
@@ -48,7 +50,12 @@ PaginacionRouter.get('/comprobantes_ventas', getComprobantesVenta);
 
 PaginacionRouter.get('/tickets', getTickets);
 
+PaginacionRouter.get('/cronograma_pagos', getCronogramaPagosPendientes);
+
+
 PaginacionRouter.get('/ticketsprestamos', getTicketsPrestamos);
+PaginacionRouter.get('/tprestamospendientes', getTicketsPrestamosPendientes);
+
 PaginacionRouter.get('/ticketsventas', getTicketsVentas);
 
 PaginacionRouter.get('/ticketspagos', getTicketsPagos);

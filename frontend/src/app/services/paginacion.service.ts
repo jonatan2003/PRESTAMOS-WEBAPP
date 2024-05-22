@@ -14,6 +14,7 @@ import { Electrodomestico } from '../interfaces/electrodomestico.interface';
 import { Vehiculo } from '../interfaces/vehiculo.interface';
 import { Pago } from '../interfaces/pago.interface';
 import { Comprobante_venta } from '../interfaces/comprobante_venta.interface';
+import { CronogramaPago } from '../interfaces/cronograma_pagos.interface';
 @Injectable({
   providedIn: 'root'
 })
@@ -22,6 +23,12 @@ export class PaginacionService {
 
   constructor(private http: HttpClient) {
     this.apiUrl = `${environment.endpoint}api/v1/paginacion`;
+  }
+  getListCronogramaPagos(page: number, pageSize: number): Observable<CronogramaPago[]> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('page_size', pageSize.toString());
+    return this.http.get<CronogramaPago[]>(`${this.apiUrl}/cronograma_pagos`,{ params });
   }
 
   getListComprobanteventas(page: number, pageSize: number): Observable<Comprobante_venta[]> {
@@ -73,7 +80,7 @@ export class PaginacionService {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('page_size', pageSize.toString());
-    return this.http.get<Prestamo[]>(`${this.apiUrl}/prestamospendientes`,{ params });
+    return this.http.get<Prestamo[]>(`${this.apiUrl}/tprestamospendientes`,{ params });
   }
   getListPrestamosPagados(page: number, pageSize: number): Observable<Prestamo[]> {
     let params = new HttpParams()
