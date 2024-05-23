@@ -3,11 +3,6 @@ import db from '../db/connection.db';
 import Prestamo from '../models/prestamo.model';
 
 const CronogramaPagos = db.define('CronogramaPagos', {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  },
   id_prestamo: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -17,12 +12,8 @@ const CronogramaPagos = db.define('CronogramaPagos', {
     },
     onDelete: 'CASCADE',
   },
-  fecha_vencimiento: {
+  fecha_pago: {
     type: DataTypes.DATE,
-    allowNull: false,
-  },
-  monto: {
-    type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
   },
   monto_pagado: {

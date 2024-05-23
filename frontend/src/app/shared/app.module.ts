@@ -65,6 +65,7 @@ import { PagosSearchComponent } from '../modules/admin/components/pagos-search/p
 import { Pagos2SearchComponent } from '../modules/empleado/components/pagos2-search/pagos2-search.component';
 import { WebSocketService } from '../services/websocket.service';
 import { VentasList2Component } from '../modules/empleado/components/ventas-list2/ventas-list2.component';
+import { PagosNewComponent } from '../modules/admin/components/pagos-new/pagos-new.component';
 
 
 
@@ -97,6 +98,7 @@ import { VentasList2Component } from '../modules/empleado/components/ventas-list
     CategoriaListComponent,
     CategoriaNewComponent,
     CategoriaSearchComponent,
+    PagosNewComponent,
     //PARA EMPLEADOS
     EmpleadoListComponent,
     EmpleadoNewComponent,

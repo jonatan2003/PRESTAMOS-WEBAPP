@@ -11,6 +11,7 @@ import Vehiculo from '../models/vehiculo.model';
 import Electrodomestico from '../models/electrodometisco.model';
 import Pago from '../models/pago.model';
 import DetalleVenta from '../models/detalleventa.model';
+import CronogramaPagos from '../models/cronograma_pagos.model';
 //CLIENTES
 export const searchClientes = async (req: Request, res: Response) => {
   const { searchTerm } = req.query;
@@ -463,5 +464,68 @@ export const searchDetallesVenta = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error al obtener la lista de detalles de venta:', error);
     res.status(500).json({ msg: 'Error al obtener la lista de detalles de venta' });
+  }
+};
+
+
+export const searchCronogramaPagos = async (req: Request, res: Response) => {
+  const { searchTerm } = req.query;
+  const page = parseInt(req.query.page as string, 10) || 1;
+  const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+  const offset = (page - 1) * pageSize;
+
+  try {
+    // Busca los cronogramas de pagos asociados al cliente por DNI
+    const { count, rows } = await CronogramaPagos.findAndCountAll({
+      where: {
+        
+        '$Prestamo.Cliente.dni$': {
+          [Op.like]: `%${searchTerm}%`
+        }
+        
+
+      },
+      limit: pageSize,
+      offset: offset,
+      include: [
+        {
+          model: Prestamo,
+          as: 'Prestamo',
+          where: {
+            estado: 'pendiente',
+           
+          },
+          include: [
+            {
+              model: Cliente,
+              as: 'Cliente'
+            },
+            {
+              model: Articulo,
+              as: 'Articulo',
+              include: [
+                { model: Categoria, as: 'Categoria' },
+                { model: Vehiculo, as: 'Vehiculo' },
+                { model: Electrodomestico, as: 'Electrodomestico' },
+              ]
+            }
+          ]
+        }
+      ],
+    });
+
+    const totalItems = count;
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    res.json({
+      page,
+      pageSize,
+      totalItems,
+      totalPages,
+      data: rows,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error searching for payment schedules' });
   }
 };

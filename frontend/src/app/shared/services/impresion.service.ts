@@ -88,7 +88,9 @@ const nro_serie = `Serie: ${datos.num_serie}        Ticket:${datos.num_ticket} `
 
   const ruc =`                      R.U.C: 10785645876`;
   // Datos del préstamo
-  const cliente = `Cliente: ${datos.cliente}      Dni: ${datos.dni}`;
+  const cliente = `Cliente: ${datos.cliente}`;
+
+  const dni =`Dni: ${datos.dni}`;
   const empleado = `Empleado: ${datos.empleado} `;
   const descripcion = `Articulo                 Prestamo                  Pagar` ;
   const articulo = `${datos.articulo}                ${datos.montoPrestamo}                  S/.${datos.montoPago}`;
@@ -108,14 +110,13 @@ const nro_serie = `Serie: ${datos.num_serie}        Ticket:${datos.num_ticket} `
       [direccion], 
       [fechaPrestamo],
       [''],
-      [cliente],
       [empleado],
+      [cliente],
+      [dni],
       [''],
       [descripcion],
       [articulo],
       [estado],
-
-      [''],
       [''],
       [''],
       [''],
@@ -180,10 +181,17 @@ const nro_serie = `Serie: ${datos.num_serie}        Ticket:${datos.num_ticket} `
           } else if (data.row.index === 2 || data.row.index === 3) {
               // Si es la tercera o cuarta fila, no dibujar los bordes
               doc1.setLineWidth(0);
-          } else if (data.row.index === 4|| data.row.index === 7) {
+          } else if ( data.row.index === 5) {
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
-          }else if ( data.row.index === 8 || data.row.index === 11 ) {
+          } else if (data.row.index === 6|| data.row.index === 7) {
+            // Si es la tercera o cuarta fila, no dibujar los bordes
+            doc1.setLineWidth(0);
+          } else if (data.row.index === 8|| data.row.index === 10) {
+            // Si es la tercera o cuarta fila, no dibujar los bordes
+            doc1.setLineWidth(0);
+
+          }else if ( data.row.index === 11 ) {
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
           }  
@@ -195,6 +203,9 @@ const nro_serie = `Serie: ${datos.num_serie}        Ticket:${datos.num_ticket} `
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
           }else if ( data.row.index === 16 || data.row.index === 17 ) {
+            // Si es la tercera o cuarta fila, no dibujar los bordes
+            doc1.setLineWidth(0);
+          }else if ( data.row.index === 18 || data.row.index === 18 ) {
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
           }
@@ -448,10 +459,27 @@ const qrCodeDataURL = await QRCode.toDataURL(qrData);
 // Genera un número de serie único
 const nro_serie = `                           ${datos.serie}`;
 
+const tipo_comprobante = `${datos.tipo_comprobante}`;
+
+let boleta_factura ;
+
+if (tipo_comprobante =='boleta') {
+
+   boleta_factura ='          BOLETA DE VENTA ELECTRONICA ';
+  
+}else{
+
+   boleta_factura ='          FACTURA DE VENTA ELECTRONICA ';
+
+}
+
+
+   
 
 
   // Datos de la empresa
-  const boleta ='          BOLETA DE VENTA ELECTRONICA ';
+  const comprobante = boleta_factura;
+
   const empresa = '               CASA DE EMPEÑOS DON GATO';
   const direccion = `Calle: Principal 123, Ciudad    Teléfono: 987654233`;
   const ruc =`                      R.U.C: 10785645876`;
@@ -482,7 +510,7 @@ const nro_serie = `                           ${datos.serie}`;
   const cuerpo = [
       [direccion],
       [''],
-      [boleta], 
+      [comprobante], 
       [ruc], 
       [nro_serie],
       [''],

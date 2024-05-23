@@ -13,7 +13,6 @@ export interface Prestamo {
   monto_pago : number;
   estado: string;
   Cliente?: Cliente;
- 
   Articulo?: Articulo;
 }
 

@@ -175,6 +175,7 @@ export class VentaListComponent implements OnInit {
       igv: comprobante.igv,
       descuento: comprobante.descuento,
       tipo_comprobante: comprobante.TipoComprobante?.nombre,
+      
       serie: comprobante.num_serie
     });
   }

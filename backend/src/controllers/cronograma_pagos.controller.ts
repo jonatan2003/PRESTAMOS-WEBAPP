@@ -8,13 +8,12 @@ import Vehiculo from '../models/vehiculo.model';
 import Electrodomestico from '../models/electrodometisco.model';
 
 export const createCronogramaPago = async (req: Request, res: Response) => {
-  const { id_prestamo, fecha_vencimiento, monto, monto_pagado } = req.body;
+  const { id_prestamo, fecha_pago, monto_pagado } = req.body;
 
   try {
     const nuevoPago = await CronogramaPagos.create({
       id_prestamo,
-      fecha_vencimiento,
-      monto,
+      fecha_pago,
       monto_pagado,
     });
 
