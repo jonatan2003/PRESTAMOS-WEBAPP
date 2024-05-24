@@ -32,7 +32,7 @@ import { CronogramaPago } from 'src/app/interfaces/cronograma_pagos.interface';
 })
 export class PagosNewComponent {
   fechaActual: Date;
-  terminoBusqueda: string = '';
+  terminoBusqueda: string = ''; // Variable para almacenar el término de búsqueda
   formPago: FormGroup;
   formElectrodomestico: FormGroup;
   formVehiculo: FormGroup;
@@ -40,7 +40,7 @@ export class PagosNewComponent {
   listPrestamos: Prestamo[] = [];
   listPagos: Pago[] = [];
   listTickets: Ticket[] = [];
-  listCronogramaPagos : CronogramaPago[] = [];
+  listCronogramaPagos : CronogramaPago[] = []
   loading: boolean = false;
   encabezado: string[] = [];
   cuerpo: string[][] = [];
@@ -50,6 +50,7 @@ currentPage: number = 1;
 pageSize: number = 10; // Tamaño de la página
 totalItems: number;
 totalPages: number = 0;   // Inicializa totalPages en 0
+
   monto_pago: number ;
   monto_prestamo: number;
 nombreClienteSeleccionado: string ;
@@ -139,28 +140,36 @@ montoRestante: number ;
                 }
               }
             
-                // Método para realizar la búsqueda de clientes
-                buscarPagos(): void {
-                  this.loading = true; // Establecer loading en true para mostrar la carga
-              
-                  this.searchService.searchCronogramaPagos(this.currentPage, this.pageSize, this.terminoBusqueda).subscribe(
-                    (response: any) => {
-                      this.listCronogramaPagos = response.data; // Asignar los datos de cronograma de pagos a la propiedad listCronogramaPagos
-                      this.currentPage = response.page; // Actualizar currentPage con el número de página actual
-                      this.totalPages = response.totalPages; // Actualizar totalPages con el número total de páginas
-                      this.totalItems = response.totalItems; // Actualizar totalItems con el número total de elementos
-                      
-                      this.loading = false; // Establecer loading en false al finalizar la carga
-                      console.log(response.data);
-                    },
-                    error => {
-                      console.error('Error al buscar cronogramas de pagos:', error);
-                      this.loading = false; // Manejar el error y establecer loading en false
-                    }
-                  );
+              buscarPagos(): void {
+                // Verificar si this.terminoBusqueda está vacío
+                if (!this.terminoBusqueda.trim()) {
+                  this.toastr.warning('Por favor, ingrese un DNI.', '', { positionClass: 'toast-top-right' }); // Mostrar toast de advertencia
+                  return; // Salir de la función
                 }
               
-
+                this.loading = true; // Establecer loading en true para mostrar la carga
+              
+                this.searchService.searchCronogramaPagos(this.currentPage, this.pageSize, this.terminoBusqueda).subscribe(
+                  (response: any) => {
+                    this.listCronogramaPagos = response.data; // Asignar los datos de cronograma de pagos a la propiedad listCronogramaPagos
+                    this.currentPage = response.page; // Actualizar currentPage con el número de página actual
+                    this.totalPages = response.totalPages; // Actualizar totalPages con el número total de páginas
+                    this.totalItems = response.totalItems; // Actualizar totalItems con el número total de elementos
+                    
+                    this.loading = false; // Establecer loading en false al finalizar la carga
+              
+                    // Verificar si listCronogramaPagos está vacía
+                    if (this.listCronogramaPagos.length === 0) {
+                      this.toastr.warning('No se encontraron préstamos con ese DNI.', '', { positionClass: 'toast-top-right' }); // Mostrar toast de alerta en la parte superior derecha
+                    }
+                  },
+                  error => {
+                    console.error('Error al buscar cronogramas de pagos:', error);
+                    this.loading = false; // Manejar el error y establecer loading en false
+                  }
+                );
+              }
+              
   
   // Método para cambiar de página
   pageChanged(page: number) {

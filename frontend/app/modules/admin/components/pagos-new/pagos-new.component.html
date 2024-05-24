@@ -21,10 +21,7 @@
 </div>
 
 <!--CONTENT-->
-<div class="container-fluid">
-<div class="container-fluid form-neon">
-      <div class="container-fluid">
-       
+
         <div class="container-fluid">
           <form class="form-neon" (submit)="buscarPagos()" >
             <div class="container-fluid">
@@ -32,7 +29,7 @@
                 <div class="col-12 col-md-6">
                   <div class="form-group">
                     <label for="inputSearch" class="bmd-label-floating">INGRESE DNI DEL CLIENTE A PAGAR</label>
-                    <input type="text" class="form-control" name="busqueda_reservation" id="inputSearch" maxlength="30"  >
+                    <input type="text" class="form-control" name="busqueda_reservation" id="inputSearch" maxlength="30"  [(ngModel)]="terminoBusqueda">
                   </div>
                 </div>
                 <div class="col-12">
@@ -46,7 +43,7 @@
         </div>
 
 
-</div>
+
 
 
 <div class="container-fluid mt-3" *ngIf="listCronogramaPagos.length > 0">

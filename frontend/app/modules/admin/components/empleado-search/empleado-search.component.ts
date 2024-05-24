@@ -61,24 +61,29 @@ totalPages: number = 0;   // Inicializa totalPages en 0
     }
 
 
-  // Método para realizar la búsqueda de  empleados
-  buscarEmpleados() {
-    this.loading = true; // Establecer loading en true para mostrar la carga
-
-  this.searchService.searchEmpleados( this.currentPage, this.pageSize,this.terminoBusqueda,).subscribe(
-    (response: any) => {
-      this.empleados = response.data; // Asignar los datos de empleados a la propiedad empleados
-      this.currentPage = response.page; // Actualizar currentPage con el número de página actual
-      this.totalPages = response.totalPages; // Actualizar totalPages con el número total de páginas
-      this.totalItems = response.totalItems; // Actualizar totalItems con el número total de elementos
-      this.loading = false; // Establecer loading en false al finalizar la carga
-    },
-    error => {
-      console.error('Error al buscar empleado:', error);
-      this.loading = false; // Manejar el error y establecer loading en false
+    buscarEmpleados() {
+      this.loading = true; // Establecer loading en true para mostrar la carga
+  
+      this.searchService.searchEmpleados(this.currentPage, this.pageSize, this.terminoBusqueda).subscribe(
+        (response: any) => {
+          if (response.data && response.data.length > 0) {
+            this.empleados = response.data; // Asignar los datos de empleados a la propiedad empleados
+            this.currentPage = response.page; // Actualizar currentPage con el número de página actual
+            this.totalPages = response.totalPages; // Actualizar totalPages con el número total de páginas
+            this.totalItems = response.totalItems; // Actualizar totalItems con el número total de elementos
+          } else {
+            this.toastr.warning('No se encontraron empleados.'); // Mostrar toast de error si no hay datos
+          }
+          this.loading = false; // Establecer loading en false al finalizar la carga
+        },
+        error => {
+          console.error('Error al buscar empleado:', error);
+          this.toastr.warning('Error al buscar empleados.'); // Mostrar toast de error en caso de error
+          this.loading = false; // Manejar el error y establecer loading en false
+        }
+      );
     }
-  );
-  }
+  
 
   
   // Método para cambiar de página

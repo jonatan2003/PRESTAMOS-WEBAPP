@@ -475,16 +475,7 @@ export const searchCronogramaPagos = async (req: Request, res: Response) => {
   const offset = (page - 1) * pageSize;
 
   try {
-    // Busca los cronogramas de pagos asociados al cliente por DNI
     const { count, rows } = await CronogramaPagos.findAndCountAll({
-      where: {
-        
-        '$Prestamo.Cliente.dni$': {
-          [Op.like]: `%${searchTerm}%`
-        }
-        
-
-      },
       limit: pageSize,
       offset: offset,
       include: [
@@ -492,13 +483,17 @@ export const searchCronogramaPagos = async (req: Request, res: Response) => {
           model: Prestamo,
           as: 'Prestamo',
           where: {
-            estado: 'pendiente',
-           
+            estado: 'pendiente'
           },
           include: [
             {
               model: Cliente,
-              as: 'Cliente'
+              as: 'Cliente',
+              where: {
+                dni: {
+                  [Op.like]: `%${searchTerm}%`
+                }
+              }
             },
             {
               model: Articulo,
@@ -511,7 +506,7 @@ export const searchCronogramaPagos = async (req: Request, res: Response) => {
             }
           ]
         }
-      ],
+      ]
     });
 
     const totalItems = count;

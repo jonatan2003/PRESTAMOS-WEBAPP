@@ -52,14 +52,16 @@ export class PagosSearchComponent  {
    buscarPagos() {
     this.loading = true; // Establecer loading en true para mostrar la carga
 
-  this.searchService.searchPagos( this.currentPage, this.pageSize,this.terminoBusqueda,).subscribe(
+  this.searchService.searchCronogramaPagos( this.currentPage, this.pageSize,this.terminoBusqueda,).subscribe(
     (response: any) => {
       this.pagos = response.data; // Asignar los datos de empleados a la propiedad empleados
       this.currentPage = response.page; // Actualizar currentPage con el número de página actual
       this.totalPages = response.totalPages; // Actualizar totalPages con el número total de páginas
       this.totalItems = response.totalItems; // Actualizar totalItems con el número total de elementos
       this.loading = false; // Establecer loading en false al finalizar la carga
+      console.log(response.data)
     },
+
     error => {
       console.error('Error al buscar articulos:', error);
       this.loading = false; // Manejar el error y establecer loading en false
