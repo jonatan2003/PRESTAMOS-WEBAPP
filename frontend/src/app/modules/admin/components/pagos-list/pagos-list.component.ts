@@ -7,6 +7,7 @@ import { ImpresionService } from 'src/app/shared/services/impresion.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import Swal from 'sweetalert2';
+import { Ticket } from 'src/app/interfaces/ticket.interface';
 
 
 @Component({
@@ -19,7 +20,7 @@ export class PagosListComponent {
 
   listPago: Pago[] = []
   loading: boolean = false;
-
+  listTickets: Ticket [] = []
 // Define propiedades para la paginación
 currentPage: number = 1;
 pageSize: number = 10; // Tamaño de la página
@@ -27,29 +28,43 @@ totalItems: number;
 totalPages: number = 0;   // Inicializa totalPages en 0
   
 
-  constructor(private _pagoService: PagosService, 
+  constructor(
     private toastr: ToastrService,
     private router: Router,
    private aRouter: ActivatedRoute,
     private impresionService: ImpresionService,
+    private _pagosService: PagosService ,
     private _paginacionService: PaginacionService ,
 
   ) { }
 
   ngOnInit(): void {
     this.getListPagos();
+    this.verPagos();
   }
 
   getListPagos() {
     this.loading = true;
   
     // Ajusta el método para aceptar parámetros de paginación
-    this._paginacionService.getListPagos(this.currentPage, this.pageSize).subscribe((response: any) => {
-      this.listPago = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
+    this._paginacionService.getListTickets(this.currentPage, this.pageSize).subscribe((response: any) => {
+      this.listTickets = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
       this.loading = false;
   
       // Utiliza totalItems del objeto de respuesta para calcular totalPages
       this.totalPages = response.totalPages;
+    });
+  }
+
+  verPagos() {
+    this.loading = true;
+  
+    // Ajusta el método para aceptar parámetros de paginación
+    this._pagosService.getListPagos().subscribe((response: any) => {
+      this.listPago = response; // Asigna los datos de clientes del objeto devuelto por el servicio
+      this.loading = false;
+  
+      // Utiliza totalItems del objeto de respuesta para calcular totalPages
     });
   }
   
@@ -86,7 +101,7 @@ totalPages: number = 0;   // Inicializa totalPages en 0
 
   performDeletePago(id: number) {
     this.loading = true;
-    this._pagoService.deletePago(id).subscribe(() => {
+    this._pagosService.deletePago(id).subscribe(() => {
       this.getListPagos();
       this.toastr.warning('El Pago fue eliminado con exito', 'Pago eliminado');
     })

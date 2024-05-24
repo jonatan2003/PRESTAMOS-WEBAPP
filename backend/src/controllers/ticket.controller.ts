@@ -126,6 +126,48 @@ export const getTicketById = async (req: Request, res: Response) => {
   }
 };
 
+export const getTicketByPrestamoId = async (req: Request, res: Response) => {
+  const { idprestamo } = req.params;
+
+  try {
+    const ticket = await Ticket.findOne({
+      include: [
+        { model: Empleado, as: 'Empleado' },
+        {
+          model: Pago, as: 'Pago',
+          include: [
+            { model: TipoPago, as: 'TipoPago' },
+          ],
+        },
+        {
+          model: Prestamo, as: 'Prestamo',
+          where: { id: idprestamo }, // Condición para buscar por idPrestamo
+          include: [
+            { model: Cliente, as: 'Cliente' },
+            {
+              model: Articulo, as: 'Articulo',
+              include: [
+                { model: Categoria, as: 'Categoria' },
+                { model: Vehiculo, as: 'Vehiculo' },
+                { model: Electrodomestico, as: 'Electrodomestico' },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    if (!ticket) {
+      res.status(404).json({ msg: 'Ticket no encontrado' });
+    } else {
+      res.json(ticket);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al obtener el Ticket' });
+  }
+};
+
 export const updateTicket = async (req: Request, res: Response) => {
   const { body } = req;
   const { id } = req.params;

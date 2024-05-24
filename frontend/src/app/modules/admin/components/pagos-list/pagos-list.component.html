@@ -40,20 +40,20 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr *ngFor="let pago of listPago let i = index " class="text-center" >
-								<!-- <td>{{ pago.Prestamo?.Cliente?.nombre  }} {{ pago.Prestamo?.Cliente?.apellido  }}</td>
-                <td> {{ pago.Prestamo?.Articulo ?
-                  (pago.Prestamo?.Articulo.Vehiculo ?
-                  pago.Prestamo?.Articulo.Vehiculo.descripcion :
-                    (pago.Prestamo?.Articulo.Electrodomestico ?
-                    pago.Prestamo?.Articulo.Electrodomestico.descripcion :
+							<tr *ngFor="let ticket of listTickets let i = index " class="text-center" >
+								<td>{{ ticket.Prestamo?.Cliente?.nombre  }} {{ ticket.Prestamo?.Cliente?.apellido  }}</td>
+                <td> {{ ticket.Prestamo?.Articulo ?
+                  (ticket.Prestamo?.Articulo.Vehiculo ?
+                  ticket.Prestamo?.Articulo.Vehiculo.descripcion :
+                    (ticket.Prestamo?.Articulo.Electrodomestico ?
+                    ticket.Prestamo?.Articulo.Electrodomestico.descripcion :
                       'No hay descripción disponible')) :
-                  'No hay descripción disponible' }} </td> -->
-								<td>{{ pago.tipo_pago }}</td>
-								<td>{{ pago.fecha_pago }}</td>
-								<td>{{ pago.interes_pago }}</td>
-								<td>{{ pago.monto_restante }}</td>
-                				<td>{{ pago.capital_pago }}</td>
+                  'No hay descripción disponible' }} </td>
+								<td>{{ ticket.Pago?.id_tipopago }}</td>
+								<td>{{ ticket.Pago?.fecha_pago }}</td>
+								<td>{{ ticket.Pago?.interes_pago }}</td>
+								<td>{{ ticket.Pago?.monto_restante }}</td>
+                				<td>{{ ticket.Pago?.capital_pago }}</td>
 								
 								<td>
 									<button type="button" class="btn btn-danger" (click)="onImprimirFila(i)">
@@ -72,7 +72,7 @@
 								</td> -->
 								<td>
 									<form action="">
-										<button (click)="deletePago(pago.id)" type="button" class="btn btn-warning">
+										<button (click)="deletePago(ticket.id)" type="button" class="btn btn-warning">
 											<i class="far fa-trash-alt"></i>
 										</button>
 									</form>

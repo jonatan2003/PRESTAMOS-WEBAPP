@@ -22,6 +22,9 @@ import { formatDate } from '@angular/common';
 import { switchMap } from 'rxjs/operators';
 import { Ticket } from 'src/app/interfaces/ticket.interface';
 import { CronogramaPago } from 'src/app/interfaces/cronograma_pagos.interface';
+import { TicketService } from 'src/app/services/ticket.service';
+import { TipoPago } from 'src/app/interfaces/tipo_pago.interface';
+import { TipopagoService } from 'src/app/services/tipopago.service';
 
 
 
@@ -40,7 +43,9 @@ export class PagosNewComponent {
   listPrestamos: Prestamo[] = [];
   listPagos: Pago[] = [];
   listTickets: Ticket[] = [];
+  listTicketsPrestamo: Ticket[] = [];
   listCronogramaPagos : CronogramaPago[] = []
+  ListTipoPagos: TipoPago[] = []
   loading: boolean = false;
   encabezado: string[] = [];
   cuerpo: string[][] = [];
@@ -51,6 +56,9 @@ pageSize: number = 10; // Tamaño de la página
 totalItems: number;
 totalPages: number = 0;   // Inicializa totalPages en 0
 
+
+estadopago : string ;
+empleadoid : number;
   monto_pago: number ;
   monto_prestamo: number;
 nombreClienteSeleccionado: string ;
@@ -61,17 +69,21 @@ interes: number;
 pagoPrestamo: number;
 estado : string ;
 montoRestante: number ;
+
+
   constructor(private authService: AuthService,
     private _paginacionService: PaginacionService,
     private _categoriasService: CategoriaService,
    private _electrodomesticoService: ElectrodomesticoService,
    private _vehiculoService: VehiculoService,
+   private _ticketService: TicketService,
    private fb: FormBuilder,
    private searchService: SearchService,
    private _clientesService: ClienteService,
    private _articulosService: ArticulosService,
    private _empleadosService: EmpleadoService,
    private _prestamosService: PrestamoService,
+   private _TipoPagoService : TipopagoService,
    private _pagoService: PagosService,
    private router: Router,
    private toastr: ToastrService,
@@ -80,12 +92,9 @@ montoRestante: number ;
 
     this.formPago = this.fb.group({
       
-      idprestamo :  ['', Validators.required],
-      tipo_pago:  ['', Validators.required],
+      id_tipopago:  ['', Validators.required],
       fecha_pago:  ['', Validators.required],
-      interes_pago:   ['', Validators.required],
-      monto_restante:  ['', Validators.required],
-      capital_pago:  ['', Validators.required],
+      pago:  ['', [Validators.required, Validators.minLength(8), Validators.maxLength(8), Validators.pattern("^[0-9]*$")]],
       idcliente:  [{ value: '', disabled: true }, ],
       idarticulo:  [{ value: '', disabled: true }, ],
       fecha_prestamo: [{ value: '', disabled: true }, ],
@@ -94,7 +103,6 @@ montoRestante: number ;
       tasa_interes:  [{ value: '', disabled: true }, ],
       monto_pago:  [{ value: '', disabled: true }, ],
       descripcion: [{ value: '', disabled: true }, ],
-      observacion: [{ value: '', disabled: true }, ],
       // ... Otros campos del formulario de articulos
     });
 
@@ -107,8 +115,9 @@ montoRestante: number ;
 
                ngOnInit(): void {
                 this.fechaActual = new Date();
-
+                this.getTipoPagos();
                 //this.getListPrestamos();
+                this.formPago.controls['pago'].disable();
 
 
                 this.formPago.valueChanges.subscribe(() => {
@@ -116,28 +125,48 @@ montoRestante: number ;
                 });
               }
               setMontoRestante() {
-                const tipoPago = this.formPago.value.tipo_pago;
-                const interes = this.formPago.value.interes_pago || 0;
-                const capitalPago = this.formPago.value.capital_pago || 0;
-              
+                const tipoPago = this.formPago.get('id_tipopago').value;
+                const capitalPago = this.formPago.value.pago || 0;
+                 const monto_pago = this.monto_pago ;
+                 const monto_prestamo = this.monto_prestamo / 1.20;
+                 this.interes = this.monto_prestamo - monto_prestamo ;
+
                 let montoRestante = this.selectedPrestamo.monto_pago; // Iniciar con el monto total del préstamo
-              
-                if (tipoPago === 'interes') {
-                  montoRestante -= interes; // Restar el interés del monto restante
-                } else if (tipoPago === 'prestamo') {
+              if(monto_pago > this.interes){
+
+              }
+                if (tipoPago === 1) {
+                  montoRestante -= this.interes; // Restar el interés del monto restante
+                } else if (tipoPago === 2) {
                   montoRestante -= capitalPago; // Restar el capital de pago del monto restante
-                } else if (tipoPago === 'completo') {
-                  montoRestante -= (interes + capitalPago); // Restar ambos interés y capital de pago del monto restante
-                  this.formPago.get('estado').setValue('pagado'); // Establecer el estado como 'pagado'
+                } else if (tipoPago === 3) {
+                  montoRestante -= (this.interes + capitalPago); // Restar ambos interés y capital de pago del monto restante
+                  this.estado = "pagado";
                 }
-              
-                this.formPago.get('monto_restante').setValue(montoRestante);
+                 else if (tipoPago === 4) {
+                  this.formPago.controls['pago'].enable();
+                  this.formPago.get('pago')?.enable(); // Deshabilitar campo pago para otros tipos de pago
+
+                  montoRestante -= (this.interes + capitalPago); // Restar ambos interés y capital de pago del monto restante
+                  this.estado = "pagado";
+                    console.log(tipoPago, "tipo pago pe" );
+                }
+                this.montoRestante = montoRestante;
               
                 // Verificar si el monto restante es igual a cero para establecer el estado como 'pagado'
                 if (montoRestante === 0) {
                   this.estado = "pagado";
-                  this.formPago.get('estado').setValue('pagado');
                 }
+              }
+
+              isOptionDisabled(tipopago: any): boolean {
+                if (tipopago.nombre_tipo === 'interes') {
+                  return this.estadopago !== null;
+                }
+                
+                
+
+                return false;
               }
             
               buscarPagos(): void {
@@ -193,15 +222,42 @@ montoRestante: number ;
               getListPrestamos() {
                 // this.loading = true;
               
-                // Ajusta el método para aceptar parámetros de paginación
-                // this._paginacionService.getListPrestamosPendientes(this.currentPage, this.pageSize).subscribe((response: any) => {
-                //   this.listTickets = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
+                // this._ticketService.getListTicketPrestamo(id).subscribe((response: any) => {
+                //   this.listPrestamos = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
                 //   this.loading = false;
-                //   console.log(this.listTickets);
-                //   Utiliza totalItems del objeto de respuesta para calcular totalPages
-                //   this.totalPages = response.totalPages;
+                //   console.log(this.listPrestamos);
                 // });
               }
+
+              getTipoPagos(): void {
+                this.loading = true;
+                this._TipoPagoService.getListTipopagos().subscribe(
+                  (response: any) => {
+                    this.ListTipoPagos = response;
+                    this.loading = false;
+                  },
+                  error => {
+                    console.error('Error al obtener los tipos de pago:', error);
+                    this.toastr.error('Error al obtener los tipos de pago');
+                    this.loading = false;
+                  }
+                );
+              }
+              
+
+              getListTicketsPrestamos(idprestamo: number) {
+                this.loading = true;
+              
+                this._ticketService.getListTicketPrestamo(idprestamo).subscribe((response: any) => {
+                  this.listTicketsPrestamo = response; // Asigna los datos de clientes del objeto devuelto por el servicio
+                  this.nombresempleado = response.Empleado.nombre +" " +response.Empleado.apellidos ;
+                  this.empleadoid = response.Empleado.id;
+                  this.estadopago = response.idpago;
+                  this.loading = false;
+                });
+              }
+
+
               
               // // Método para cambiar de página
               // pageChanged(page: number) {
@@ -214,11 +270,23 @@ montoRestante: number ;
               //   // Retorna un array de números enteros del 1 al totalPages
               //   return Array.from({ length: this.totalPages }, (_, i) => i + 1);
               // }
+
+              onTipoPagoSelected(event: any): void {
+                const selectedTipoPagoId = event.target.value;
+                console.log('Selected Tipo Pago ID:', selectedTipoPagoId);
+
+                
+              }
             
               setSelectedPago(prestamo: Prestamo) {
                 this.selectedPrestamo = prestamo;
+                console.log (prestamo.id)
+                this.getListTicketsPrestamos(prestamo.id);
+                
                this.nombreClienteSeleccionado = prestamo.Cliente.nombre + " " +prestamo.Cliente.apellido ;
-            //  this.nombresempleado = prestamo.Empleado.nombre + " " +prestamo.Empleado.apellidos ;
+           // this.nombresempleado = this.listTicketsPrestamo.Empleado.nombre+ " " +listTicketsPrestamo.Empleado.apellidos ;
+           
+           console.log("nombre empleado " +this.nombresempleado);
              this.estado = "pendiente";
 
                
@@ -240,10 +308,11 @@ montoRestante: number ;
                     fecha_prestamo: prestamo.fecha_prestamo,
                     fecha_devolucion: prestamo.fecha_devolucion,
                     monto_prestamo: prestamo.monto_prestamo,
-                    estado: "pendiente"
-
+                    
 
                   });
+                  this.estado = "pendiente";
+
 
                 }else if (prestamo.Articulo.Categoria.id === 2 ){
 
@@ -252,7 +321,7 @@ montoRestante: number ;
                    +prestamo.Articulo.Electrodomestico.modelo + " " +prestamo.Articulo.Electrodomestico.numero_serie;
                  this.monto_pago = prestamo.monto_pago;
                  this.monto_prestamo = prestamo.monto_prestamo;
-
+ 
 
                   this.formPago.patchValue({
                     fecha_pago : this.fechaActual,
@@ -260,8 +329,9 @@ montoRestante: number ;
                     fecha_prestamo: prestamo.fecha_prestamo,
                     fecha_devolucion: prestamo.fecha_devolucion,
                     monto_prestamo: prestamo.monto_prestamo,
-                    estado: "pendiente"
+                   
                   });
+                  this.estado = "pendiente";
 
                 }
                   // Resetear el estado de validación del formulario y establecer formularioModificado a false
@@ -390,7 +460,7 @@ montoRestante: number ;
 
                 const pago: Pago = {
  
-                  tipo_pago: this.formPago.value.tipo_pago,
+                  id_tipopago: this.formPago.value.id_tipopago,
                   fecha_pago: this.fechaActual,
                   interes_pago: this.formPago.value.interes_pago,
                   monto_restante: this.formPago.value.monto_restante,

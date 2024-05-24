@@ -4,7 +4,8 @@ import {
   getTickets,
   getTicketById,
   updateTicket,
-  deleteTicket
+  deleteTicket,
+  getTicketByPrestamoId
 } from '../controllers/ticket.controller';
 
 const TicketRouter = Router();
@@ -12,6 +13,7 @@ const TicketRouter = Router();
 TicketRouter.post('/', createTicket); // Crear un nuevo ticket
 TicketRouter.get('/', getTickets); // Obtener la lista de tickets
 TicketRouter.get('/:id', getTicketById); // Obtener un ticket por ID
+TicketRouter.get('/prestamo/:idprestamo', getTicketByPrestamoId); // Obtener un ticket por ID
 TicketRouter.put('/:id', updateTicket); // Actualizar un ticket por ID
 TicketRouter.delete('/:id', deleteTicket); // Eliminar un ticket por ID
 

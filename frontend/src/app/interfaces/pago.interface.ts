@@ -2,7 +2,7 @@ import { TipoPago } from './tipo_pago.interface';
 
 export interface Pago {
   id?: number;
-  tipo_pago: string;
+  id_tipopago: string;
   fecha_pago: Date ;
   interes_pago: number ;
   monto_restante: number ;

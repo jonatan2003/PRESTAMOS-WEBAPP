@@ -338,7 +338,7 @@ montoRestante: number ;
 
                 const pago: Pago = {
  
-                  tipo_pago: this.formPago.value.tipo_pago,
+                  id_tipopago: this.formPago.value.tipo_pago,
                   fecha_pago: this.fechaActual,
                   interes_pago: this.formPago.value.interes_pago,
                   monto_restante: this.formPago.value.monto_restante,

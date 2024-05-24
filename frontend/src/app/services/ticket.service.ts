@@ -18,6 +18,9 @@ import { Ticket } from '../interfaces/ticket.interface';
     getListTickets(): Observable<Ticket[]> {
       return this.http.get<Ticket[]>(this.apiUrl);
     }
+    getListTicketPrestamo(idprestamo: number): Observable<any> {
+      return this.http.get<any>(`${this.apiUrl}/prestamo/${idprestamo}`);
+    }
   
     getTicket(id: number): Observable<Ticket> {
       return this.http.get<Ticket>(`${this.apiUrl}/${id}`);
