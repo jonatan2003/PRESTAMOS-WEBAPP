@@ -22,9 +22,9 @@ export class CronogramaPagosService {
     return this.http.get<CronogramaPago[]>(this.apiUrl);
   }
 
-  getCronogramaPagosByIdPrestamo(idPrestamo: number): Observable<CronogramaPago[]> {
-    const params = new HttpParams().set('id_prestamo', idPrestamo.toString());
-    return this.http.get<CronogramaPago[]>(`${this.apiUrl}/idprestamo`, { params });
+  getCronogramaPagosByIdPrestamo(idprestamo: number): Observable<any> {
+   
+    return this.http.get<any[]>(`${this.apiUrl}/${idprestamo}`);
   }
 
   updateCronogramaPago(id: number, cronogramaPago: CronogramaPago): Observable<CronogramaPago> {

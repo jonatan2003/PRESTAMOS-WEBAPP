@@ -99,11 +99,11 @@
          
           <td>
             <button type="button" 
-                (click)="setSelectedPago(cronogramapagos.Prestamo)" 
-                class="btn btn-primary"
-                [disabled]="cronogramapagos.Prestamo?.estado?.toLowerCase().trim() === 'pagado' || cronogramapagos.Prestamo?.estado?.toLowerCase().trim() === 'vendido'">
-              <i class="fas fa-money-bill-alt"></i>
-            </button>
+        (click)="setSelectedPago(cronogramapagos)" 
+        class="btn btn-primary"
+        [disabled]="shouldDisableButton(cronogramapagos)">
+          <i class="fas fa-money-bill-alt"></i>
+           </button>
             </td>
                
             <td>
@@ -223,14 +223,22 @@
                 <span *ngIf="formPago.get('tipo_pago').errors?.['required']" class="text-danger">Este campo es requerido</span>
                 </div>
             </div>
-            </div>					 -->
-            <select formControlName="id_tipopago" class="form-control mt-2" (change)="onTipoPagoSelected($event)">
-              <option value="" disabled selected>TIPO PAGO DE PRESTAMO</option>
-              <option *ngFor="let tipopago of ListTipoPagos" [value]="tipopago.id" [disabled]="isOptionDisabled(tipopago)">{{ tipopago.nombre_tipo }}</option>
-              <span *ngIf="formPago.get('id_tipopago')?.hasError('required') && formPago.get('id_tipopago')?.touched">
-                Seleccione un Cliente
-              </span>
-            </select>
+            </div>		
+          
+          			 -->
+
+                 <div class="col-12 col-md-4">
+                  <div class="form-group">
+                  <select formControlName="id_tipopago" class="form-control mt-2" (change)="onTipoPagoSelected($event)">
+                    <option value="" disabled selected>TIPO PAGO DE PRESTAMO</option>
+                    <option *ngFor="let tipopago of ListTipoPagos" [value]="tipopago.id" [disabled]="isOptionDisabled(tipopago)">{{ tipopago.nombre_tipo }}</option>
+                    <span *ngIf="formPago.get('id_tipopago')?.hasError('required') && formPago.get('id_tipopago')?.touched">
+                      Seleccione un Tipo de Pago de Prestamo
+                    </span>
+                  </select>
+                  </div>
+                </div>	
+            
           
             
 
@@ -269,7 +277,7 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button type="button" class="close" class="btn btn-warning" data-dismiss="modal" (click)="guardarPago()">Cerrar</button>
+      <button [disabled]="loading"  type="button" class="close" class="btn btn-warning" data-dismiss="modal" (click)="guardarPago()">Cerrar</button>
       </div>
     <br>
     </div>

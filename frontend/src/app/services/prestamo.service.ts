@@ -39,6 +39,12 @@ export class PrestamoService {
     return this.http.put<Prestamo>(`${this.apiUrl}/${id}`, prestamo);
   }
 
+  updatePrestamoEstado(id: number, prestamo: Partial<Prestamo>): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, prestamo);
+  }
+
+
+
   deletePrestamo(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

@@ -233,8 +233,9 @@ onRucChange() {
   }
 }
 
-
 addPrestamo() {
+  if (this.loading) return; // Evitar múltiples ejecuciones si ya está en progreso
+
   const prestamo: Prestamo = {
     idcliente: this.form.value.id_cliente,
     idarticulo: this.form.value.id_articulo,
@@ -272,7 +273,7 @@ addPrestamo() {
     // Llamar a la función para imprimir fila del último pago agregado
     this.onImprimirFila(lastIndex);
 
-    this.toastr.success(`El ticket fue registrado con éxito`, 'Ticket registrado');
+   // this.toastr.success(`El ticket fue registrado con éxito`, 'Ticket registrado');
     this.router.navigate(['admin/reservation-list']);
   }, error => {
     console.error('Error al procesar la solicitud:', error);
@@ -280,7 +281,6 @@ addPrestamo() {
     this.loading = false;
   });
 }
-
 
 
 addCliente() {
@@ -300,12 +300,16 @@ addCliente() {
     // Es agregar
     this._clientesService.saveCliente(cliente).subscribe((clienteid: Cliente) => {
       
-      this.toastr.success(`El cliente ${cliente.nombre} fue registrado con éxito`, 'Cliente registrado');
       this.loading = false;
       //this.router.navigate(['admin/client-list']);
       this.idClienteSeleccionado = clienteid.id;
       this.form.get('id_cliente').setValue(this.idClienteSeleccionado); // Suponiendo que el objeto empleado tiene un campo 'id'
-      
+      this.toastr.success(`El Cliente  fue registrado con éxito`, 'Cliente registrado', {
+        timeOut: 2000, // Duración en milisegundos (2 segundos en este caso)
+        progressBar: true, // Muestra la barra de progreso
+        progressAnimation: 'increasing', // Animación de la barra de progreso
+        positionClass: 'toast-top-right' // Posición del toastr en la pantalla
+      });
       //this.idClienteSeleccionado = cliente.id;
       this.nombreClienteSeleccionado = this.formcliente.value.nombre + " " +  this.formcliente.value.apellido  ;
       this.guardarCliente();
@@ -356,6 +360,7 @@ saveArticulo() {
     // Redireccionar a la lista de artículos u otro lugar según sea necesario
     //this.router.navigate(['/admin/reservation-new']);
     // this.idArticuloSeleccionado = articuloid.id;
+    
     this.idArticuloSeleccionado = response.id;
     this.form.get('id_articulo').setValue(this.idArticuloSeleccionado);
 
@@ -384,7 +389,13 @@ addVehiculo() {
 
   this._vehiculoService.saveVehiculo(vehiculo).subscribe(
     (response: any) => { // Aquí se define 'response' como el parámetro de la función de suscripción
-      this.toastr.success(`El vehículo ${vehiculo.descripcion} fue registrado con éxito`, 'Vehículo registrado');
+      this.toastr.success(`El vehículo ${vehiculo.descripcion} fue registrado con éxito`, 'Vehículo registrado', {
+        timeOut: 2000, // Duración en milisegundos (2 segundos en este caso)
+        progressBar: true, // Muestra la barra de progreso
+        progressAnimation: 'increasing', // Animación de la barra de progreso
+        positionClass: 'toast-top-right' // Posición del toastr en la pantalla
+      });
+      
       this.loading = false;
 
       // Obtener el ID del vehículo desde la respuesta del servicio
@@ -414,7 +425,12 @@ addElectrodomestico() {
 
   this._electrodomesticoService.saveElectrodomestico(electrodomestico).subscribe(
     (response: any) => { // Aquí se define 'response' como el parámetro de la función de suscripción
-      this.toastr.success(`El electrodoméstico ${electrodomestico.descripcion} fue registrado con éxito`, 'Electrodoméstico registrado');
+      this.toastr.success(`El electrodoméstico ${electrodomestico.descripcion} fue registrado con éxito`, 'Electrodoméstico registrado', {
+        timeOut: 2000, // Duración en milisegundos (2 segundos en este caso)
+        progressBar: true, // Muestra la barra de progreso
+        progressAnimation: 'increasing', // Animación de la barra de progreso
+        positionClass: 'toast-top-right' // Posición del toastr en la pantalla
+      });
       this.loading = false;
 
       // Obtener el ID del electrodoméstico desde la respuesta del servicio

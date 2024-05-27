@@ -165,6 +165,24 @@ export class VentaListComponent implements OnInit {
             comprobante.DetalleVenta?.Venta?.Articulo.Electrodomestico.descripcion :
             'No hay descripción disponible')) :
         'No hay descripción disponible',
+
+       marca:comprobante.DetalleVenta?.Venta?.Articulo ?
+       (comprobante.DetalleVenta?.Venta?.Articulo.Vehiculo ?
+         comprobante.DetalleVenta?.Venta?.Articulo.Vehiculo.marca :
+         (comprobante.DetalleVenta?.Venta?.Articulo.Electrodomestico ?
+           comprobante.DetalleVenta?.Venta?.Articulo.Electrodomestico.marca :
+           'No hay marca disponible')) :
+       'No hay marca disponible',
+
+       modelo: comprobante.DetalleVenta?.Venta?.Articulo ?
+       (comprobante.DetalleVenta?.Venta?.Articulo.Vehiculo ?
+         comprobante.DetalleVenta?.Venta?.Articulo.Vehiculo.modelo :
+         (comprobante.DetalleVenta?.Venta?.Articulo.Electrodomestico ?
+           comprobante.DetalleVenta?.Venta?.Articulo.Electrodomestico.modelo :
+           'No hay marca disponible')) :
+       'No hay marca disponible',
+
+
       dni: comprobante.DetalleVenta?.Venta?.Cliente.dni,
       fecha_venta: comprobante.DetalleVenta?.Venta?.fecha_venta || '',
       tipo_pago: comprobante.DetalleVenta?.Venta?.tipo_pago || '',

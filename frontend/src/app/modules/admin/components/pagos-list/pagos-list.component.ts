@@ -46,14 +46,23 @@ totalPages: number = 0;   // Inicializa totalPages en 0
   getListPagos() {
     this.loading = true;
   
-    // Ajusta el método para aceptar parámetros de paginación
-    this._paginacionService.getListTickets(this.currentPage, this.pageSize).subscribe((response: any) => {
-      this.listTickets = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
-      this.loading = false;
+    this._paginacionService.getListTickets(this.currentPage, this.pageSize).subscribe(
+      (response: any) => {
+        // Filtrar los tickets para mostrar solo aquellos que tienen un pago
+        this.listTickets = response.data.filter(ticket => ticket.Pago);
   
-      // Utiliza totalItems del objeto de respuesta para calcular totalPages
-      this.totalPages = response.totalPages;
-    });
+        this.loading = false;
+  
+        // Utiliza totalItems del objeto de respuesta para calcular totalPages
+        this.totalPages = response.totalPages;
+      },
+      error => {
+        console.error('Error al cargar los tickets:', error);
+        this.toastr.error('Hubo un error al cargar los tickets', 'Error');
+        this.loading = false;
+      }
+    );
+  
   }
 
   verPagos() {
@@ -189,27 +198,35 @@ totalPages: number = 0;   // Inicializa totalPages en 0
 
 
 
-  onImprimirFila(index: number) {
-    const pago = this.listPago[index];
-    this.impresionService.imprimirFilaPagos('Pagos', {
-      // cliente: pago.Prestamo.Cliente?.nombre +" " + pago.Prestamo.Cliente?.apellido || '',
-      // dni: pago.Prestamo.Cliente?.dni || '',
-      // empleado:pago.Prestamo.Empleado?.nombre +" " + pago.Prestamo.Empleado?.apellidos || '',
-      // articulo: pago.Prestamo?.Articulo ? (pago.Prestamo?.Articulo.Vehiculo ? pago.Prestamo?.Articulo.Vehiculo.descripcion :  (pago.Prestamo?.Articulo.Electrodomestico ? pago.Prestamo?.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
-      // tipo_pago: pago.tipo_pago || '',
-      // fecha_pago: pago.fecha_pago || '',
-      // interes_pago: pago.interes_pago || '',
-      // monto_restante: pago.monto_restante || '',
-      // capital_pago: pago.capital_pago || '',
-      // estado: pago.Prestamo?.estado || ''
-    } );
-  }
 
-
-
-
-
-
+    onImprimirFila(index: number) {
+      const ticket = this.listTickets[index];
+      this.impresionService.imprimirFilaPagos('Pagos', {
+        cliente: ticket.Prestamo.Cliente?.nombre +" " + ticket.Prestamo.Cliente?.apellido || '',
+        dni: ticket.Prestamo.Cliente?.dni || '',
+        empleado:ticket.Empleado?.nombre +" " + ticket.Empleado?.apellidos || '',
+        articulo: ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.descripcion : 
+           (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.descripcion 
+            : 'No hay descripción disponible')) : 'No hay descripción disponible',
+            
+        marca:ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.marca : 
+          (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.marca :
+             'No hay marca disponible')) : 'No hay marca disponible',
+  
+         modelo: ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.modelo : 
+          (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.modelo :
+             'No hay modelo disponible')) : 'No hay modelo disponible',
+        
+        tipo_pago: ticket.Pago?.TipoPago?.nombre_tipo || '',
+        fecha_pago: ticket.Pago?.fecha_pago || '',
+        interes_pago: ticket.Pago?.interes_pago || '',
+        monto_restante: ticket.Pago?.monto_restante || '',
+        capital_pago: ticket.Pago?.capital_pago || '',
+        num_serie: ticket.num_serie,
+        num_ticket: ticket.num_ticket
+      } );
+    }
+  
 
 
 }

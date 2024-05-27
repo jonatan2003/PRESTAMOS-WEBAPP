@@ -38,7 +38,7 @@
 								<th  scope="col">OBSERVACION</th>
 								<th  scope="col">ESTADO</th>
 								<th  scope="col">IMPRIMIR</th>
-								<th  scope="col">PAGOS</th>
+								<!-- <th  scope="col">PAGOS</th> -->
 								<!-- <th scope="col">ACTUALIZAR</th> -->
 								<th scope="col">ELIMINAR</th>
 
@@ -72,14 +72,14 @@
 										<i class="fas fa-file-pdf"></i>
 									</button>
 								</td>
-								<td>
+								<!-- <td>
 									<button type="button" 
 											(click)="setSelectedPago(ticket.Prestamo)" 
 											class="btn btn-primary"
 											[disabled]="ticket.Prestamo?.estado?.toLowerCase().trim() === 'pagado' || ticket.Prestamo?.estado?.toLowerCase().trim() === 'vendido'">
 									  <i class="fas fa-money-bill-alt"></i>
 									</button>
-								  </td>
+								  </td> -->
 								<!-- <td>
 									<button type="button" (click)="setSelectedPrestamo(prestamos)" class="btn btn-primary">
 										<i class="fas fa-sync-alt"></i>
