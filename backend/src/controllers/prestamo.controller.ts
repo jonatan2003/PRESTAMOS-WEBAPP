@@ -148,6 +148,7 @@ export const updatePrestamo = async (req: Request, res: Response) => {
   }
 };
 
+
 export const deletePrestamo = async (req: Request, res: Response) => {
   const { idPrestamo } = req.params;
 

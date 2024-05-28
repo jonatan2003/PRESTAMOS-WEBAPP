@@ -5,10 +5,11 @@ import { PaginacionService } from 'src/app/services/paginacion.service';
 import { PagosService } from 'src/app/services/pago.service';
 import { ImpresionService } from 'src/app/shared/services/impresion.service';
 import { ActivatedRoute, Router } from '@angular/router';
-
+import { formatDate } from '@angular/common';
 import Swal from 'sweetalert2';
 import { Ticket } from 'src/app/interfaces/ticket.interface';
-
+import { CronogramaPagosService } from 'src/app/services/cronograma_pagos.service';
+import { CronogramaPago } from 'src/app/interfaces/cronograma_pagos.interface';
 
 @Component({
   selector: 'app-pagos-list',
@@ -27,6 +28,7 @@ pageSize: number = 10; // Tamaño de la página
 totalItems: number;
 totalPages: number = 0;   // Inicializa totalPages en 0
   
+listCronogramaPago: CronogramaPago[] = [];
 
   constructor(
     private toastr: ToastrService,
@@ -35,6 +37,7 @@ totalPages: number = 0;   // Inicializa totalPages en 0
     private impresionService: ImpresionService,
     private _pagosService: PagosService ,
     private _paginacionService: PaginacionService ,
+    private _CronogramaPagos: CronogramaPagosService,
 
   ) { }
 
@@ -117,7 +120,17 @@ totalPages: number = 0;   // Inicializa totalPages en 0
     this.getListPagos();
   }
 
-
+  getCronogramaPagos(idPrestamo: number, callback: (cronograma: CronogramaPago[]) => void) {
+    this.loading = true;
+    
+    this._CronogramaPagos.getCronogramaPagosByIdPrestamo(idPrestamo).subscribe((response: CronogramaPago[]) => {
+      const cronograma = response.slice(0, 2); // Obtener solo los dos primeros registros
+      this.loading = false;
+      console.log(cronograma);
+      callback(cronograma); // Llamar al callback con los datos del cronograma
+    });
+  }
+  
 
   
   onImprimir() {
@@ -201,8 +214,16 @@ totalPages: number = 0;   // Inicializa totalPages en 0
 
     onImprimirFila(index: number) {
       const ticket = this.listTickets[index];
+      const idPrestamo = ticket.Prestamo?.id;
+      if (idPrestamo) {
+        this.getCronogramaPagos(idPrestamo, (cronograma) => {
+          const detallesCronograma = cronograma.map(( item) => ({
+            fechaPago: this.formatDate(item.fecha_pago),
+            montoPagado:item.monto_pagado,
+          }));
+
       this.impresionService.imprimirFilaPagos('Pagos', {
-        cliente: ticket.Prestamo.Cliente?.nombre +" " + ticket.Prestamo.Cliente?.apellido || '',
+        cliente:ticket.Prestamo.Cliente?.nombre+" "+ticket.Prestamo.Cliente?.apellido,
         dni: ticket.Prestamo.Cliente?.dni || '',
         empleado:ticket.Empleado?.nombre +" " + ticket.Empleado?.apellidos || '',
         articulo: ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.descripcion : 
@@ -217,16 +238,31 @@ totalPages: number = 0;   // Inicializa totalPages en 0
           (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.modelo :
              'No hay modelo disponible')) : 'No hay modelo disponible',
         
+
+
+             fechaPrestamo: this.formatDate(ticket.Prestamo?.fecha_prestamo) || '',
+             fechaDevolucion: this.formatDate(ticket.Prestamo?.fecha_devolucion) || '',
+
         tipo_pago: ticket.Pago?.TipoPago?.nombre_tipo || '',
         fecha_pago: ticket.Pago?.fecha_pago || '',
         interes_pago: ticket.Pago?.interes_pago || '',
         monto_restante: ticket.Pago?.monto_restante || '',
         capital_pago: ticket.Pago?.capital_pago || '',
         num_serie: ticket.num_serie,
-        num_ticket: ticket.num_ticket
-      } );
-    }
-  
+        num_ticket: ticket.num_ticket,
 
+        cronogramaPagos: detallesCronograma
+      } );
+    });
+  
+  } else {
+    console.error('ID del préstamo no encontrado');
+  }
+}
+  formatDate(date: string | Date): string {
+    // Utiliza la función formatDate de Angular para formatear la fecha
+    // Consulta la documentación de Angular para opciones de formato: https://angular.io/api/common/formatDate
+    return formatDate(date, 'yyyy-MM-dd', 'en-US');
+  }
 
 }

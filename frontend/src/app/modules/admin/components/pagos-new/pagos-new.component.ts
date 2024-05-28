@@ -25,7 +25,10 @@ import { TicketService } from 'src/app/services/ticket.service';
 import { TipoPago } from 'src/app/interfaces/tipo_pago.interface';
 import { TipopagoService } from 'src/app/services/tipopago.service';
 import { CronogramaPagosService } from 'src/app/services/cronograma_pagos.service';
-import { switchMap, tap } from 'rxjs/operators';
+import { Articulo } from 'src/app/interfaces/articulo.interface';
+import { catchError, switchMap, tap, finalize } from 'rxjs/operators';
+import {of, Observable } from 'rxjs';
+
 
 @Component({
   selector: 'app-pagos-new',
@@ -78,6 +81,7 @@ monto_inicial: number ;
 fecha_pago : Date ;
   constructor(private authService: AuthService,
     private _paginacionService: PaginacionService,
+    private _CronogramaPagos: CronogramaPagosService,
     private _categoriasService: CategoriaService,
    private _electrodomesticoService: ElectrodomesticoService,
    private _vehiculoService: VehiculoService,
@@ -105,8 +109,9 @@ fecha_pago : Date ;
       idarticulo:  [{ value: '', disabled: true }, ],
       fecha_prestamo: [{ value: '', disabled: true }, ],
       fecha_devolucion: [{ value: '', disabled: true }, ],
-      monto_prestamo:  [{ value: '', disabled: true }, ],
+      monto_restante:  [{ value: '', disabled: true }, ],
       tasa_interes:  [{ value: '', disabled: true }, ],
+      monto_prestamo:  [{ value: '', disabled: true }, ],
       monto_pago:  [{ value: '', disabled: true }, ],
       descripcion: [{ value: '', disabled: true }, ],
       // ... Otros campos del formulario de articulos
@@ -222,7 +227,10 @@ fecha_pago : Date ;
                 }
                 
                 if (tipopago.nombre_tipo === 'prestamo') {
-                  return this.sumaMontoPagado === this.monto_inicial;
+                  return this.sumaMontoPagado === this.monto_inicial || this.sumaMontoPagado > this.monto_inicial  || this.sumaMontoPagado > this.interes ;
+                }
+                if (tipopago.nombre_tipo === 'abono') {
+                  return this.sumaMontoPagado > this.interes;
                 }
 
 
@@ -391,6 +399,7 @@ fecha_pago : Date ;
                   fecha_prestamo: cronogramapagos.Prestamo.fecha_prestamo,
                   fecha_devolucion: cronogramapagos.Prestamo.fecha_devolucion,
                   monto_prestamo: cronogramapagos.Prestamo.monto_prestamo,
+                  monto_restante: this.montoRestanteFinal,
                 });
               
                 this.estado = "pendiente";
@@ -472,25 +481,22 @@ fecha_pago : Date ;
                   document.body.appendChild(backdrop);
                 }
               }
-            
+
               updatePrestamo() {
                 const prestamo: Partial<Prestamo> = {
                   estado: this.estado
                 };
               
-                console.log('Prestamo a actualizar:', prestamo); // Agregar registro de cliente a actualizar
-                console.log('ID del Prestamo a actualizar:', this.selectedCronogramapagos.Prestamo.id); // Agregar registro del ID del cliente a actualizar
+                console.log('Prestamo a actualizar:', prestamo); // Log del objeto a actualizar
+                console.log('ID del Prestamo a actualizar:', this.selectedCronogramapagos.Prestamo.id); // Log del ID del préstamo a actualizar
               
                 this.loading = true;
               
-                const prestamoId = this.selectedCronogramapagos.Prestamo.id;
-                this._prestamosService.updatePrestamoEstado(prestamoId, prestamo).subscribe(
+                const id = this.selectedCronogramapagos.Prestamo.id;
+                this._prestamosService.updatePrestamoEstado(id, prestamo).subscribe(
                   () => {
-                   
-              
                     this.loading = false;
-              
-                    console.log('Préstamo actualizado con éxito'); // Registro de cliente actualizado con éxito
+                    console.log('Préstamo actualizado con éxito'); // Log de éxito
                   },
                   error => {
                     console.error('Error al actualizar el Préstamo:', error); // Manejo de errores
@@ -499,14 +505,38 @@ fecha_pago : Date ;
                   }
                 );
               }
+
+              updateArticulo () {
+                const articulo: Partial<Articulo> = {
+                  estado: "devuelto"
+                };
+              
+                console.log('Articulo a actualizar:', articulo); // Log del objeto a actualizar
+              
+                this.loading = true;
+              
+                const idarticulo = this.selectedCronogramapagos.Prestamo.Articulo.id;
+                this._articulosService.updateArticuloEstado(idarticulo, articulo).subscribe(
+                  () => {
+                    this.loading = false;
+                    console.log('Articulo actualizado con éxito'); // Log de éxito
+                  },
+                  error => {
+                    console.error('Error al actualizar el Articulo:', error); // Manejo de errores
+                    this.toastr.error('Hubo un error al actualizar el Articulo', 'Error');
+                    this.loading = false;
+                  }
+                );
+              }
+              
+
+
               calcularMontoRestante(){
                 const pagado = this.formPago.get('pago').value;
                 this.montoRestante = this.montoRestanteFinal - pagado;
                 this.pagoPrestamo = this.formPago.get('pago').value;
                 // Verificar si el monto restante es igual a cero para establecer el estado como 'pagado'
-                if (this.montoRestante === 0) {
-                  this.estado = "pagado";
-                }
+                
 
               }
 
@@ -514,6 +544,13 @@ fecha_pago : Date ;
 
               addPago() {
                 this.calcularMontoRestante();
+                if (this.montoRestante === 0) {
+                  this.estado = "pagado";
+                  this.updateArticulo();
+
+
+
+                }
                 this.updatePrestamo();
                 
 
@@ -585,6 +622,7 @@ fecha_pago : Date ;
                   }
                 );
               }
+
             
             
               guardar() {
@@ -675,7 +713,16 @@ fecha_pago : Date ;
 
   }
 
-
+  getCronogramaPagos(idPrestamo: number, callback: (cronograma: CronogramaPago[]) => void) {
+    this.loading = true;
+    
+    this._CronogramaPagos.getCronogramaPagosByIdPrestamo(idPrestamo).subscribe((response: CronogramaPago[]) => {
+      const cronograma = response.slice(0, 2); // Obtener solo los dos primeros registros
+      this.loading = false;
+      console.log(cronograma);
+      callback(cronograma); // Llamar al callback con los datos del cronograma
+    });
+  }
 
   
 
@@ -776,33 +823,59 @@ eliminarFilasDuplicadas(cuerpo: Array<any>): Array<any> {
   }
 
   
-  
 
+  
   onImprimirFila(index: number) {
     const ticket = this.listTickets[index];
-    this.impresionService.imprimirFilaPrestamos('Ticket', {
+    const idPrestamo = ticket.Prestamo?.id;
+    if (idPrestamo) {
+      this.getCronogramaPagos(idPrestamo, (cronograma) => {
+        const detallesCronograma = cronograma.map(( item) => ({
+          fechaPago: this.formatDate(item.fecha_pago),
+          montoPagado:item.monto_pagado,
+        }));
+
+    this.impresionService.imprimirFilaPagos('Pagos', {
+      cliente:ticket.Prestamo.Cliente?.nombre+" "+ticket.Prestamo.Cliente?.apellido,
+      dni: ticket.Prestamo.Cliente?.dni || '',
+      empleado:ticket.Empleado?.nombre +" " + ticket.Empleado?.apellidos || '',
+      articulo: ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.descripcion : 
+         (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.descripcion 
+          : 'No hay descripción disponible')) : 'No hay descripción disponible',
+          
+      marca:ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.marca : 
+        (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.marca :
+           'No hay marca disponible')) : 'No hay marca disponible',
+
+       modelo: ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.modelo : 
+        (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.modelo :
+           'No hay modelo disponible')) : 'No hay modelo disponible',
+      
+
+
+           fechaPrestamo: this.formatDate(ticket.Prestamo?.fecha_prestamo) || '',
+           fechaDevolucion: this.formatDate(ticket.Prestamo?.fecha_devolucion) || '',
+
+      tipo_pago: ticket.Pago?.TipoPago?.nombre_tipo || '',
+      fecha_pago: ticket.Pago?.fecha_pago || '',
+      interes_pago: ticket.Pago?.interes_pago || '',
+      monto_restante: ticket.Pago?.monto_restante || '',
+      capital_pago: ticket.Pago?.capital_pago || '',
       num_serie: ticket.num_serie,
       num_ticket: ticket.num_ticket,
-      cliente: ticket.Prestamo?.Cliente?.nombre +" " + ticket.Prestamo?.Cliente?.apellido || '',
-      dni: ticket.Prestamo?.Cliente?.dni || '',
-      empleado: ticket.Empleado?.nombre +" " + ticket.Empleado?.apellidos || '',
-      articulo: ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.descripcion : (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
-      fechaPrestamo: this.formatDate(ticket.Prestamo?.fecha_prestamo) || '',
-      fechaDevolucion: this.formatDate(ticket.Prestamo?.fecha_devolucion) || '',
-      montoPrestamo: ticket.Prestamo?.monto_prestamo || '',
-      montoPago: ticket.Prestamo?.monto_pago || '',
-      observaciones: ticket.Prestamo?.Articulo?.observaciones|| '',
-      estado:ticket.Prestamo?.estado || ''
+
+      cronogramaPagos: detallesCronograma
     } );
-  }
+  });
 
-
-  formatDate(date: string | Date): string {
-    // Utiliza la función formatDate de Angular para formatear la fecha
-    // Consulta la documentación de Angular para opciones de formato: https://angular.io/api/common/formatDate
-    return formatDate(date, 'yyyy-MM-dd', 'en-US');
-  }
-  
-
+} else {
+  console.error('ID del préstamo no encontrado');
+}
+}
+formatDate(date: string | Date): string {
+  // Utiliza la función formatDate de Angular para formatear la fecha
+  // Consulta la documentación de Angular para opciones de formato: https://angular.io/api/common/formatDate
+  return formatDate(date, 'yyyy-MM-dd', 'en-US');
+}
 
 }

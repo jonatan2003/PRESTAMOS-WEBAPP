@@ -66,6 +66,8 @@ import { Pagos2SearchComponent } from '../modules/empleado/components/pagos2-sea
 import { WebSocketService } from '../services/websocket.service';
 import { VentasList2Component } from '../modules/empleado/components/ventas-list2/ventas-list2.component';
 import { PagosNewComponent } from '../modules/admin/components/pagos-new/pagos-new.component';
+import { InventarioListComponent } from '../modules/admin/components/inventario-list/inventario-list.component';
+import { InventarioSearchComponent } from '../modules/admin/components/inventario-search/inventario-search.component';
 
 
 
@@ -99,6 +101,8 @@ import { PagosNewComponent } from '../modules/admin/components/pagos-new/pagos-n
     CategoriaNewComponent,
     CategoriaSearchComponent,
     PagosNewComponent,
+    InventarioListComponent,
+    InventarioSearchComponent,
     //PARA EMPLEADOS
     EmpleadoListComponent,
     EmpleadoNewComponent,

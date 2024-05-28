@@ -29,7 +29,7 @@ import TipoPagoRouter from './routes/tipo_pago.router';
 import ComprobanteVentaRouter from './routes/comprobante_venta.router';
 import routerSUNAT from './routes/sunat.router';
 import routerRUC from './routes/apiruc.router';
-import CronogramaPagosRouter from './routes/cronograma_pagos.model';
+import CronogramaPagosRouter from './routes/cronograma_pagos.router';
 
 
 class Server {

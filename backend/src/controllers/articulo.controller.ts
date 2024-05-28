@@ -91,17 +91,20 @@ export const getArticuloById = async (req: Request, res: Response) => {
 // Actualizar un artículo
 export const updateArticulo = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { idcategoria, idvehiculo, idelectrodomestico } = req.body;
+  const { idcategoria, idvehiculo, idelectrodomestico, estado } = req.body;
 
   try {
     const articulo = await Articulo.findByPk(id);
     if (articulo) {
+      const updateData: any = {};
+
       // Verificar si la categoría asociada al artículo existe
       if (idcategoria) {
         const categoriaExistente = await Categoria.findByPk(idcategoria);
         if (!categoriaExistente) {
           return res.status(400).json({ msg: 'La categoría especificada no existe' });
         }
+        updateData.idcategoria = idcategoria;
       }
 
       // Verificar si el vehículo asociado al artículo existe
@@ -110,6 +113,7 @@ export const updateArticulo = async (req: Request, res: Response) => {
         if (!vehiculoExistente) {
           return res.status(400).json({ msg: 'El vehículo especificado no existe' });
         }
+        updateData.idvehiculo = idvehiculo;
       }
 
       // Verificar si el electrodoméstico asociado al artículo existe
@@ -118,9 +122,16 @@ export const updateArticulo = async (req: Request, res: Response) => {
         if (!electrodomesticoExistente) {
           return res.status(400).json({ msg: 'El electrodoméstico especificado no existe' });
         }
+        updateData.idelectrodomestico = idelectrodomestico;
       }
 
-      await articulo.update({ idcategoria, idvehiculo, idelectrodomestico });
+      // Actualizar estado si está presente en el request body
+      if (estado) {
+        updateData.estado = estado;
+      }
+
+      // Actualizar artículo solo con los campos proporcionados
+      await articulo.update(updateData);
       res.json({ msg: 'Artículo actualizado correctamente' });
     } else {
       res.status(404).json({ msg: 'Artículo no encontrado' });

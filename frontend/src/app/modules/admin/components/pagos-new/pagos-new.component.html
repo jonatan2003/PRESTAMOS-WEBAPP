@@ -95,7 +95,9 @@
                 'No hay descripción disponible')) :
             'No hay descripción disponible' }} </td>
           <td>{{ cronogramapagos.fecha_pago }}</td>
-          <td>{{ cronogramapagos.monto_pagado }}</td>
+          <td>{{ cronogramapagos.monto_pagado  }}</td>
+       
+
          
           <td>
             <button type="button" 
@@ -202,6 +204,14 @@
             <input formControlName="monto_prestamo" type="text" class="form-control" maxlength="50">
             </div>
           </div>	
+          <div class="col-12 col-md-4">
+            <div class="form-group">
+            <label for="monto_restante" >Monto Restante</label>
+            <input formControlName="monto_restante" type="text" class="form-control" maxlength="50">
+            </div>
+          </div>	
+
+          
 
           <!-- <div class="col-12 col-md-4">
             <div class="form-group">

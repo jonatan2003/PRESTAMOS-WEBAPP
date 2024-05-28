@@ -29,6 +29,9 @@ import { ApiDniService } from 'src/app/services/apidni.service';
 import { ApiRucService } from 'src/app/services/apiruc.service';
 import { TicketService } from 'src/app/services/ticket.service';
 import { Ticket } from 'src/app/interfaces/ticket.interface';
+import { CronogramaPagosService } from 'src/app/services/cronograma_pagos.service';
+import { CronogramaPago } from 'src/app/interfaces/cronograma_pagos.interface';
+
 
 
 @Component({
@@ -95,6 +98,7 @@ id_articulo = null;
   constructor(
     private ticketService : TicketService,
     private _electrodomesticoService: ElectrodomesticoService,
+    private _CronogramaPagos: CronogramaPagosService,
     private apiDniService: ApiDniService, 
     private apiRucService: ApiRucService,
     private _vehiculoService: VehiculoService,
@@ -629,6 +633,20 @@ limpiarFormulario() {
       }
     }
 
+
+    
+  getCronogramaPagos(idPrestamo: number, callback: (cronograma: CronogramaPago[]) => void) {
+    this.loading = true;
+    
+    this._CronogramaPagos.getCronogramaPagosByIdPrestamo(idPrestamo).subscribe((response: CronogramaPago[]) => {
+      const cronograma = response.slice(0, 2); // Obtener solo los dos primeros registros
+      this.loading = false;
+      console.log(cronograma);
+      callback(cronograma); // Llamar al callback con los datos del cronograma
+    });
+  }
+  
+
    
   
 onImprimir() {
@@ -695,29 +713,59 @@ getCuerpo(): string[][] {
 }
 
   
+onImprimirFila(index: number) {
+  const ticket = this.listTicket[index];
+  const idPrestamo = ticket.Prestamo?.id;
 
-  onImprimirFila(index: number) {
-    const ticket = this.listTicket[index];
-    this.impresionService.imprimirFilaPrestamos('Ticket', {
-      num_serie: ticket.num_serie,
-      num_ticket: ticket.num_ticket,
-      cliente: ticket.Prestamo?.Cliente?.nombre +" " + ticket.Prestamo?.Cliente?.apellido || '',
-      dni: ticket.Prestamo?.Cliente?.dni || '',
-      empleado: ticket.Empleado?.nombre +" " + ticket.Empleado?.apellidos || '',
-      articulo: ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.descripcion : (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
-      fechaPrestamo: this.formatDate(ticket.Prestamo?.fecha_prestamo) || '',
-      fechaDevolucion: this.formatDate(ticket.Prestamo?.fecha_devolucion) || '',
-      montoPrestamo: ticket.Prestamo?.monto_prestamo || '',
-      montoPago: ticket.Prestamo?.monto_pago || '',
-      observaciones: ticket.Prestamo?.Articulo?.observaciones|| '',
-      estado:ticket.Prestamo?.estado || ''
-    } );
+  if (idPrestamo) {
+    this.getCronogramaPagos(idPrestamo, (cronograma) => {
+      const detallesCronograma = cronograma.map(( item) => ({
+        fechaPago: this.formatDate(item.fecha_pago),
+        montoPagado:item.monto_pagado,
+      }));
+
+      this.impresionService.imprimirFilaPrestamos('Ticket', {
+        num_serie: ticket.num_serie,
+        num_ticket: ticket.num_ticket,
+        cliente:ticket.Prestamo?.Cliente?.nombre+" "+ticket.Prestamo?.Cliente?.apellido,
+        dni: ticket.Prestamo?.Cliente?.dni || '',
+        empleado: ticket.Empleado?.nombre + " " + ticket.Empleado?.apellidos || '',
+
+        articulo: ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.descripcion : 
+          (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.descripcion :
+            'No hay descripción disponible')) : 'No hay descripción disponible',
+
+        marca: ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.marca : 
+          (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.marca :
+            'No hay marca disponible')) : 'No hay marca disponible',
+
+        modelo: ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.modelo : 
+          (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.modelo :
+            'No hay modelo disponible')) : 'No hay modelo disponible',
+
+        fechaPrestamo: this.formatDate(ticket.Prestamo?.fecha_prestamo) || '',
+        fechaDevolucion: this.formatDate(ticket.Prestamo?.fecha_devolucion) || '',
+
+        montoPrestamo: ticket.Prestamo?.monto_prestamo || '',
+        montoPago: ticket.Prestamo?.monto_pago || '',
+        observaciones: ticket.Prestamo?.Articulo?.observaciones || '',
+        estado: ticket.Prestamo?.estado || '',
+
+        cronogramaPagos: detallesCronograma
+      });
+    });
+  } else {
+    console.error('ID del préstamo no encontrado');
   }
+}
+
 
 formatDate(date: string | Date): string {
   // Utiliza la función formatDate de Angular para formatear la fecha
   // Consulta la documentación de Angular para opciones de formato: https://angular.io/api/common/formatDate
   return formatDate(date, 'yyyy-MM-dd', 'en-US');
 }
+
+
 
 }

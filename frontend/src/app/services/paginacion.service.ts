@@ -16,6 +16,7 @@ import { Pago } from '../interfaces/pago.interface';
 import { Comprobante_venta } from '../interfaces/comprobante_venta.interface';
 import { CronogramaPago } from '../interfaces/cronograma_pagos.interface';
 import { Ticket } from '../interfaces/ticket.interface';
+import { Inventario } from '../interfaces/inventario.interface';
 @Injectable({
   providedIn: 'root'
 })
@@ -137,6 +138,13 @@ export class PaginacionService {
       .set('page', page.toString())
       .set('page_size', pageSize.toString());
     return this.http.get<Ticket[]>(`${this.apiUrl}/tickets`,{ params });
+  }
+
+  getListInventario(page: number, pageSize: number): Observable<Inventario[]> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('page_size', pageSize.toString());
+    return this.http.get<Inventario[]>(`${this.apiUrl}/invetario`,{ params });
   }
 
 

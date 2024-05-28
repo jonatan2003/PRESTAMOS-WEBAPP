@@ -145,12 +145,22 @@ montoRestante: number ;
                 this.loading = true;
               
                 // Ajusta el método para aceptar parámetros de paginación
-                this._paginacionService.getListPrestamos(this.currentPage, this.pageSize).subscribe((response: any) => {
-                  this.listTickets = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
-                  this.loading = false;
-                  // Utiliza totalItems del objeto de respuesta para calcular totalPages
-                  this.totalPages = response.totalPages;
-                });
+                this._paginacionService.getListPrestamos(this.currentPage, this.pageSize).subscribe(
+                  (response: any) => {
+                    // Filtrar los tickets para mostrar solo aquellos que tienen un préstamo y no tienen un pago
+                    this.listTickets = response.data.filter(ticket => ticket.Prestamo && !ticket.Pago);
+              
+                    this.loading = false;
+              
+                    // Utiliza totalItems del objeto de respuesta para calcular totalPages
+                    this.totalPages = response.totalPages;
+                  },
+                  error => {
+                    console.error('Error al cargar los préstamos:', error);
+                    this.toastr.error('Hubo un error al cargar los préstamos', 'Error');
+                    this.loading = false;
+                  }
+                );
               }
               
               // Método para cambiar de página
@@ -651,17 +661,15 @@ eliminarFilasDuplicadas(cuerpo: Array<any>): Array<any> {
   
     if (idPrestamo) {
       this.getCronogramaPagos(idPrestamo, (cronograma) => {
-        const detallesCronograma = cronograma.map((pago, idx) => ({
-          numero: idx + 1,
-          fechaPago: this.formatDate(pago.fecha_pago),
-          montoPagado: pago.monto_pagado,
-          estado: pago.Prestamo?.estado || '' // Ajustar según cómo se quiera mostrar el estado
+        const detallesCronograma = cronograma.map(( item) => ({
+          fechaPago: this.formatDate(item.fecha_pago),
+          montoPagado:item.monto_pagado,
         }));
   
         this.impresionService.imprimirFilaPrestamos('Ticket', {
           num_serie: ticket.num_serie,
           num_ticket: ticket.num_ticket,
-          cliente: ticket.Prestamo?.Cliente?.nombre + " " + ticket.Prestamo?.Cliente?.apellido || '',
+          cliente:ticket.Prestamo?.Cliente?.nombre+" "+ticket.Prestamo?.Cliente?.apellido,
           dni: ticket.Prestamo?.Cliente?.dni || '',
           empleado: ticket.Empleado?.nombre + " " + ticket.Empleado?.apellidos || '',
   
@@ -679,6 +687,7 @@ eliminarFilasDuplicadas(cuerpo: Array<any>): Array<any> {
   
           fechaPrestamo: this.formatDate(ticket.Prestamo?.fecha_prestamo) || '',
           fechaDevolucion: this.formatDate(ticket.Prestamo?.fecha_devolucion) || '',
+
           montoPrestamo: ticket.Prestamo?.monto_prestamo || '',
           montoPago: ticket.Prestamo?.monto_pago || '',
           observaciones: ticket.Prestamo?.Articulo?.observaciones || '',

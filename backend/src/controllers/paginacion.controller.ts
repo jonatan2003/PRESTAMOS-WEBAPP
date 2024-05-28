@@ -61,7 +61,6 @@ export const getClientes = async (req: Request, res: Response) => {
         order: [['id', 'DESC']],
         include: [
           { model: Cliente, as: 'Cliente' },
-          { model: Empleado, as: 'Empleado' },
           { model: Articulo, as: 'Articulo',
           include: [
             { 
@@ -98,7 +97,7 @@ export const getClientes = async (req: Request, res: Response) => {
     }
   };
 
-
+ 
   // Método de paginación para empleados
 export const getEmpleados = async (req: Request, res: Response) => {
   try {
@@ -584,7 +583,12 @@ export const getTickets = async (req: Request, res: Response) => {
       offset: offset,
       include: [
         { model: Empleado, as: 'Empleado' },
-        { model: Pago, as: 'Pago' },
+        { model: Pago, as: 'Pago',
+        include: [
+          { model: TipoPago, as: 'TipoPago',
+           },
+        ],
+         },
         {
           model: Prestamo, as: 'Prestamo', include: [
             { model: Cliente, as: 'Cliente' },

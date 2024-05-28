@@ -40,6 +40,9 @@ export class ArticulosService {
   updateArticulo(id: number, articulo: Articulo): Observable<Articulo> {
     return this.http.put<Articulo>(`${this.apiUrl}/${id}`, articulo);
   }
+  updateArticuloEstado(id: number, articulo: Partial<Articulo>): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, articulo);
+  }
 
   deleteArticulo(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);

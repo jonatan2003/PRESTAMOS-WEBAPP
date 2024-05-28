@@ -51,7 +51,7 @@ async imprimirFilaPrestamos(entidad: string, datos: any) {
   const doc1 = new jsPDF({
     orientation: 'portrait',
     unit: 'in',
-    format: [2.9, 7.4],
+    format: [2.9, 8.3],
   });
 
   // Generar el código QR único
@@ -69,7 +69,7 @@ async imprimirFilaPrestamos(entidad: string, datos: any) {
   const ruc = `                          R.U.C: 10785645876`;
 
   // Datos del préstamo
-  const cliente = `Cliente: ${datos.cliente}`;
+  const cliente = `Cliente:${datos.cliente}`;
   const dni = `Dni: ${datos.dni}`;
   const empleado = `                Empleado: ${datos.empleado} `;
   const descripcion = `Articulo                     Marca                     Modelo`;
@@ -78,7 +78,10 @@ async imprimirFilaPrestamos(entidad: string, datos: any) {
   const fechaPrestamo = `Fecha de Emision:                              ${datos.fechaPrestamo}`;
   const fechadevolucion = `Fecha de Devolucion:                         ${datos.fechaDevolucion}`;
   const estado = ` Prestamo                   Pagar                   Estado`;
-  const pago = ` S/.${datos.montoPrestamo}            S/.${datos.montoPago}          ${datos.estado}`;
+  const pago = ` S/.${datos.montoPrestamo}                 S/.${datos.montoPago}               ${datos.estado}`;
+
+
+
 
   // Contenido del encabezado
   const encabezado = [
@@ -101,22 +104,29 @@ async imprimirFilaPrestamos(entidad: string, datos: any) {
     [articulo],
     [estado],
     [pago],
-    [empleado],
-    [''],
-    ['Cronograma de Pagos'],
+    ['                   Cronograma de Pagos'],
+    ['Pago' + '            ' +'Fecha de Pago' + '           ' +'Monto Pagado'],
+   
   ];
 
-  datos.cronogramaPagos.forEach((pago: any, idx: number) => {
-    cuerpo.push([
-      `Pago ${idx + 1}:`,
-      `Fecha: ${pago.fechaPago}`,
-      `Monto Pagado: S/.${pago.montoPagado}`,
-      `Estado: ${pago.estado}`
-    ]);
-  });
+  
+  // datos.cronogramaPagos.forEach((item ) => {
+  //   cuerpo.push([item.fechaPago +'     ' + item.montoPagado]);
+  // });
 
-  cuerpo.push(['']);
-  cuerpo.push(['                     Gracias por tu Preferencia¡']);
+  let contador = 1;
+datos.cronogramaPagos.forEach((item) => {
+  cuerpo.push([contador + '                       ' + item.fechaPago + '                    ' + item.montoPagado]);
+  contador++;
+});
+
+    cuerpo.push([ empleado]);
+    cuerpo.push(['']);
+    cuerpo.push(['']);
+    cuerpo.push(['']);
+    cuerpo.push(['']);
+    cuerpo.push(['']);
+    cuerpo.push(['                     Gracias por tu Preferencia¡']);
 
   // Configuración de la tabla
   const margintop = 1.1;
@@ -130,7 +140,7 @@ async imprimirFilaPrestamos(entidad: string, datos: any) {
 
   // Ajustar las coordenadas del código QR para que aparezca en una esquina o en la parte inferior de la boleta
   const qrX = 0.8; // Coordenada X
-  const qrY = 5.7; // Coordenada Y
+  const qrY = 6.8; // Coordenada Y
 
   // Convertir la imagen a Base64
   const imgData = await this.getBase64ImageFromURL('/assets/img/login/gato.png');
@@ -162,7 +172,7 @@ async imprimirFilaPrestamos(entidad: string, datos: any) {
         data.cell.styles.fontStyle = 'bold';
       } else if (data.row.index === 12) {
         data.cell.styles.fontStyle = 'bold';
-      } else if (data.row.index === 14) {
+      } else if (data.row.index === 14 || data.row.index === 18) {
         data.cell.styles.fontStyle = 'bold';
       }
     },
@@ -204,7 +214,13 @@ async imprimirFilaPrestamos(entidad: string, datos: any) {
         } else if (data.row.index === 16 || data.row.index === 17) {
           // Si es la tercera o cuarta fila, no dibujar los bordes
           doc1.setLineWidth(0);
-        } else if (data.row.index === 18 || data.row.index === 19) {
+        } else if ( data.row.index === 19) {
+          // Si es la tercera o cuarta fila, no dibujar los bordes
+          doc1.setLineWidth(0);
+        } else if (data.row.index === 20 || data.row.index === 21) {
+          // Si es la tercera o cuarta fila, no dibujar los bordes
+          doc1.setLineWidth(0);
+        } else if (data.row.index === 22 || data.row.index === 23) {
           // Si es la tercera o cuarta fila, no dibujar los bordes
           doc1.setLineWidth(0);
         } else {
@@ -252,7 +268,7 @@ async imprimirFilaPagos(entidad: string, datos: any) {
   const doc1 = new jsPDF({
       orientation: 'portrait',
       unit: 'in',
-      format: [2.9, 7.3],
+      format: [2.9, 8.5],
   });
 
 
@@ -289,7 +305,7 @@ const nro_serie = `                            ${datos.num_serie}`;
   const ruc =`                          R.U.C: 10785645876`;
   const pago = `              TICKET DE PAGO ELECTRONICO`
   // Datos del préstamo
-  const cliente = `Cliente: ${datos.cliente}`;
+  const cliente =`Cliente:${datos.cliente}`;
   const dni = `Dni: ${datos.dni}`;
    const empleado = `                Empleado: ${datos.empleado} `;
   const descripcion = `Articulo                    Marca                      Modelo` ;
@@ -321,14 +337,23 @@ const estado = `Interes                   Pagado                     Restante`;
       [estado],
       [pagado],
       [tipo_pago],
-      [empleado],
-      [''],
-      [''],
-      [''],
-      [''],
-      [''],
-      ['                     Gracias por tu Preferencia¡'],
+      ['                   Cronograma de Pagos'],
+      ['Pago' + '            ' +'Fecha de Pago' + '           ' +'Monto Pagado'],
   ];
+
+  let contador = 1;
+  datos.cronogramaPagos.forEach((item) => {
+    cuerpo.push([contador + '                       ' + item.fechaPago + '                    ' + item.montoPagado]);
+    contador++;
+  });
+  
+      cuerpo.push([ empleado]);
+      cuerpo.push(['']);
+      cuerpo.push(['']);
+      cuerpo.push(['']);
+      cuerpo.push(['']);
+      cuerpo.push(['']);
+      cuerpo.push(['                     Gracias por tu Preferencia¡']);
 
   // Configuración de la tabla
   const margintop = 1.1;
@@ -342,7 +367,7 @@ const estado = `Interes                   Pagado                     Restante`;
 
   // Ajustar las coordenadas del código QR para que aparezca en una esquina o en la parte inferior de la boleta
   const qrX = 0.8; // Coordenada X
-  const qrY = 5.5; // Coordenada Y
+  const qrY = 6.7; // Coordenada Y
 
   // Convertir la imagen a Base64
   const imgData = await this.getBase64ImageFromURL('/assets/img/login/gato.png');
@@ -376,7 +401,7 @@ const estado = `Interes                   Pagado                     Restante`;
       else if (data.row.index === 1) {
         data.cell.styles.fontStyle = 'bold';
     } 
-    else if (data.row.index === 14) {
+    else if (data.row.index === 14 || data.row.index === 18) {
       data.cell.styles.fontStyle = 'bold';
   }
 
@@ -422,7 +447,15 @@ const estado = `Interes                   Pagado                     Restante`;
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
           }
-          else if ( data.row.index === 18 || data.row.index === 19 ) {
+          else if ( data.row.index === 19 ) {
+            // Si es la tercera o cuarta fila, no dibujar los bordes
+            doc1.setLineWidth(0);
+          }
+          else if ( data.row.index === 20 || data.row.index === 21 ) {
+            // Si es la tercera o cuarta fila, no dibujar los bordes
+            doc1.setLineWidth(0);
+          }
+          else if ( data.row.index === 22 || data.row.index === 23 ) {
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
           }else {

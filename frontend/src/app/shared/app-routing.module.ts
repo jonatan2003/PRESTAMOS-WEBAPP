@@ -52,6 +52,8 @@ import { PagosSearchComponent } from '../modules/admin/components/pagos-search/p
 import { Pagos2SearchComponent } from '../modules/empleado/components/pagos2-search/pagos2-search.component';
 import { VentasList2Component } from '../modules/empleado/components/ventas-list2/ventas-list2.component';
 import { PagosNewComponent } from '../modules/admin/components/pagos-new/pagos-new.component';
+import { InventarioListComponent } from '../modules/admin/components/inventario-list/inventario-list.component';
+import { InventarioSearchComponent } from '../modules/admin/components/inventario-search/inventario-search.component';
 
 
 const routes: Routes = [
@@ -72,6 +74,8 @@ const routes: Routes = [
       { path: 'item-list', component: ItemListComponent },
       { path: 'item-new', component: ItemNewComponent },
       { path: 'item-search', component: ItemSearchComponent },
+      { path: 'inventario-list', component: InventarioListComponent },
+      { path: 'inventario-search', component: InventarioSearchComponent },
       { path: 'pagos-new', component: PagosNewComponent},
       { path: 'pagos-list', component: PagosListComponent},
       { path: 'pagos-search', component: PagosSearchComponent},
