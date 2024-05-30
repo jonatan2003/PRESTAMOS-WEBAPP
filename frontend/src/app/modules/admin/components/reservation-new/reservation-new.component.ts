@@ -206,15 +206,15 @@ onDniChange() {
   const dni = this.formcliente.get('dni').value;
   if (dni.length === 8) {
     this.apiDniService.getClienteByDni(dni).subscribe(data => {
-      const responseData = data.body; // Acceder al objeto 'body'
-      console.log(responseData);
+      const responseData = data; // Acceder al objeto 'body'
+      console.log("hol"+responseData);
       this.formcliente.patchValue({
-        nombre: responseData.preNombres, // Acceder a las propiedades dentro de 'body'
-        apellido: responseData.apePaterno + "  "+responseData.apeMaterno,
-        direccion: responseData.desDireccion,
+        nombre: responseData.nombres, // Acceder a las propiedades dentro de 'body'
+        apellido: responseData.apellidoPaterno + "  "+responseData.apellidoMaterno,
+//        direccion: responseData.desDireccion,
       });
     }, error => {
-      this.toastr.info('Mensaje de error', 'Título del error');
+      this.toastr.info('DNI DESCONOCIDO', 'Título del error');
       console.error(error);
     });
   }
@@ -229,9 +229,10 @@ onRucChange() {
       this.formcliente.patchValue({
         nombre: data.nombre,
         direccion: data.direccion,
-        rubro: data.rubro
+        // rubro: data.rubro
       });
     }, error => {
+      this.toastr.info('RUC DESCONOCIDO', 'Título del error');
       console.error(error);
     });
   }

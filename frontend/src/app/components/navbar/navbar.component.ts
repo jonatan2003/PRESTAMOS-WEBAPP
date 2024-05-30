@@ -76,7 +76,7 @@ totalPages: number = 0;
     const { estado, cliente, empleado } = prestamo;
 
     this.toastr.info(
-      `${message} '${estado}': Cliente - ${cliente}, Empleado - ${empleado}`,
+      `${message} '${estado}': Cliente - ${cliente}`,
       'Préstamo Vencido',
       {
         timeOut: 0,

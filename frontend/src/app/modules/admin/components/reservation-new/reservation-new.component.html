@@ -151,8 +151,8 @@
 								<div class="form-group">
 									<label for="tipoCliente">Tipo de Cliente</label>
 									<select id="tipoCliente" formControlName="tipoCliente" class="form-control mt-2" (change)="onTipoClienteChange()">
-										<option value="dni">DNI</option>
-										<option value="ruc">RUC</option>
+										<option selected value="dni">DNI</option>
+									<!-- //	<option value="ruc">RUC</option> -->
 									</select>
 								</div>
 							</div>
@@ -200,6 +200,10 @@
 								<div class="form-group">
 								  <label for="direccion" >Direccion</label>
 								  <input formControlName="direccion" type="text" class="form-control mt-2" maxlength="100">
+								  <div class="alert alert-danger mt-2" [hidden]="formcliente.get('direccion').valid || formcliente.get('direccion').pristine">
+									<span *ngIf="formcliente.get('direccion').errors?.['required']" class="text-danger">Este campo es requerido</span>
+									
+								</div>
 								</div>
 							  </div>
 					  <div class="col-12 col-md-6">

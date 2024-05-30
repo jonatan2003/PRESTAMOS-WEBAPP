@@ -9,6 +9,7 @@ import {searchClientes,
         searchPagos,
         searchDetallesVenta,
         searchCronogramaPagos,
+        searchInventario,
 } from '../controllers/search.controller';
 
 const SearchRouter = Router();
@@ -18,6 +19,9 @@ SearchRouter.get('/clientes/:searchTerm', searchClientes); // Obtener la lista d
 SearchRouter.get('/empleados/:searchTerm', searchEmpleados); // Obtener la lista de empleados
 
 SearchRouter.get('/articulos/:searchTerm', searchArticulos); // Obtener la lista de articulos
+
+SearchRouter.get('/inventario/:searchTerm', searchInventario); // Obtener la lista de articulos
+
 
 SearchRouter.get('/categorias/:searchTerm', searchCategorias); // Obtener la lista de categorias
 

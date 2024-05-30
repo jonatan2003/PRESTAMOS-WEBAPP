@@ -12,6 +12,7 @@ import { Pago } from '../interfaces/pago.interface';
 import { DetalleVenta } from '../interfaces/detaventa.interface';
 import { Usuario } from '../interfaces/usuario.interface';
 import { CronogramaPago } from '../interfaces/cronograma_pagos.interface';
+import { Inventario } from '../interfaces/inventario.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -46,6 +47,14 @@ export class SearchService {
     .set('page_size', pageSize.toString());
     ;
     return this.http.get<Articulo[]>(`${this.apiUrl}/articulos/searchTerm=`, { params });
+  }
+
+  searchInventario(page: number, pageSize: number,searchTerm: string): Observable<Inventario[]> {
+    const params = new HttpParams().set('searchTerm', searchTerm)
+    .set('page', page.toString())
+    .set('page_size', pageSize.toString());
+    ;
+    return this.http.get<Inventario[]>(`${this.apiUrl}/inventario/searchTerm=`, { params });
   }
 
   searchPrestamos(page: number, pageSize: number,searchTerm: string): Observable<Prestamo[]> {

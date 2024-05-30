@@ -12,6 +12,7 @@ import Electrodomestico from '../models/electrodometisco.model';
 import Pago from '../models/pago.model';
 import DetalleVenta from '../models/detalleventa.model';
 import CronogramaPagos from '../models/cronograma_pagos.model';
+import Inventario from '../models/inventario.model';
 //CLIENTES
 export const searchClientes = async (req: Request, res: Response) => {
   const { searchTerm } = req.query;
@@ -104,6 +105,7 @@ export const searchArticulos = async (req: Request, res: Response) => {
           { id: { [Op.like]: `%${searchTerm}%` } },
           { '$Categoria.nombre$': { [Op.like]: `%${searchTerm}%` } },
           { '$Vehiculo.descripcion$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Electrodomestico.descripcion$': { [Op.like]: `%${searchTerm}%` } },
           { '$Electrodomestico.numero_serie$': { [Op.like]: `%${searchTerm}%` } },
           { '$Vehiculo.numero_serie$': { [Op.like]: `%${searchTerm}%` } },
           { '$Vehiculo.numero_motor$': { [Op.like]: `%${searchTerm}%` } },
@@ -134,6 +136,69 @@ export const searchArticulos = async (req: Request, res: Response) => {
     res.status(500).json({ msg: 'Error al realizar la búsqueda de artículos' });
   }
 };
+
+export const searchInventario = async (req: Request, res: Response) => {
+  const { searchTerm } = req.query;
+  const page = parseInt(req.query.page as string, 10) || 1;
+  const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+  const offset = (page - 1) * pageSize;
+
+  try {
+    const inventario = await Inventario.findAndCountAll({
+      include: [
+        {
+          model: Articulo,
+          as: 'Articulo',
+          include: [
+            { model: Categoria, as: 'Categoria' },
+            { model: Vehiculo, as: 'Vehiculo' },
+            { model: Electrodomestico, as: 'Electrodomestico' },
+          ],
+        },
+      ],
+      where: {
+        [Op.or]: [
+
+
+
+        { id: { [Op.like]: `%${searchTerm as String}%` } },
+        { idarticulo: { [Op.like]: `%${searchTerm as String}%` } },
+        { estado_articulo: { [Op.like]: `%${searchTerm as String}%` } },
+          { '$Articulo.id$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Articulo.Categoria.nombre$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Articulo.Vehiculo.descripcion$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Articulo.Electrodomestico.descripcion$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Articulo.Electrodomestico.numero_serie$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Articulo.Vehiculo.numero_serie$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Articulo.Vehiculo.numero_motor$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Articulo.Vehiculo.marca$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Articulo.Vehiculo.modelo$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Articulo.Vehiculo.color$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Articulo.Electrodomestico.color$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Articulo.Electrodomestico.marca$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Articulo.Electrodomestico.modelo$': { [Op.like]: `%${searchTerm}%` } },
+        ],
+      },
+      limit: pageSize,
+      offset: offset,
+    });
+
+    const totalItems = inventario.count;
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    res.json({
+      page,
+      pageSize,
+      totalItems,
+      totalPages,
+      data: inventario.rows,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al realizar la búsqueda de artículos en inventario' });
+  }
+};
+
     // PRESTAMOS
     export const searchPrestamos = async (req: Request, res: Response) => {
       const { searchTerm } = req.query;

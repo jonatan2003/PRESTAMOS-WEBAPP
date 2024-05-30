@@ -11,7 +11,7 @@ export const consultarDNI = async (req: Request, res: Response) => {
     const API_KEY = 'YX6xrS9emeD3b51rgzTCMo7avtrGNvFtss1zkIAMvu73RZO6RbI723KHutyyf6AA';
 
     try {
-        const response = await axios.get(`https://api.sunat.dev/dni/${dni}?apikey=${API_KEY}`);
+        const response = await axios.get(`https://api.apis.net.pe/v1/dni?numero=${dni}`);
 
         // Devuelve los datos de la respuesta de la API
         res.json(response.data);

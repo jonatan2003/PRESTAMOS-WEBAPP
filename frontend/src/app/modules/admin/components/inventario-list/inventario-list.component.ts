@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PaginacionService } from 'src/app/services/paginacion.service';
 import { Inventario } from 'src/app/interfaces/inventario.interface';
 import { InventarioService } from 'src/app/services/inventario.service';
+import { Articulo } from 'src/app/interfaces/articulo.interface';
 
 @Component({
   selector: 'app-inventario-list',
@@ -19,6 +20,9 @@ export class InventarioListComponent {
   id: number;
   inventarioSeleccionado: Inventario | null = null;
   selectedInventario: Inventario | null = null;
+  categoriaSeleccionada: number = 0; // Variable para almacenar la categoría seleccionada
+  listArticulosVehiculos: Articulo[] = [];
+  listArticulosElectrodomesticos: Articulo[] = [];
 
   listInventario: Inventario[] = []
   loading: boolean = false;
@@ -59,17 +63,71 @@ ngOnInit(): void {
   this.getListInventario();
 }
 
+onCategoriaSelected(event: any) {
+  const selectedCategoryId = Number(event.target.value);
+  this.categoriaSeleccionada = selectedCategoryId;
+  this.getListInventario(); // Llamada para cargar artículos según la categoría seleccionada
+}
+
+
 getListInventario() {
   this.loading = true;
 
-  // Ajusta el método para aceptar parámetros de paginación
-  this._paginacionService.getListInventario(this.currentPage, this.pageSize).subscribe((response: any) => {
-    this.listInventario = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
-    this.loading = false;
+  // Ajustar el método para aceptar parámetros de paginación
+  this._paginacionService.getListInventario(this.currentPage, this.pageSize).subscribe(
+    (response: any) => {
+      // Inicializar las listas
+      this.listArticulosVehiculos = [];
+      this.listArticulosElectrodomesticos = [];
 
-    // Utiliza totalItems del objeto de respuesta para calcular totalPages
-    this.totalPages = response.totalPages;
-  });
+      // Procesar los datos de acuerdo a la categoría seleccionada
+      response.data.forEach((inventario: any) => {
+        const articulo = inventario.Articulo;
+        if (articulo) {
+          if (articulo.idcategoria === 1) {
+            // Filtrar y mapear los artículos que son vehículos
+            this.listInventario.push({
+              id: inventario.id,
+              stock: inventario.stock,
+              estado_articulo: inventario.estado_articulo,
+              valor_venta: inventario.valor_venta,
+              valor_precio: inventario.valor_precio,
+              estado: articulo.estado,
+              observaciones: articulo.observaciones,
+              ...articulo.Vehiculo
+            });
+          } else if (articulo.idcategoria === 2) {
+            // Filtrar y mapear los artículos que son electrodomésticos
+            this.listInventario.push({
+              id: inventario.id,
+              stock: inventario.stock,
+              estado_articulo: inventario.estado_articulo,
+              valor_venta: inventario.valor_venta,
+              valor_precio: inventario.valor_precio,
+              estado: articulo.estado,
+              observaciones: articulo.observaciones,
+              ...articulo.Electrodomestico
+            });
+          }
+        }
+      });
+
+      console.log('Artículos Vehículos:', this.listArticulosVehiculos);
+      console.log('Artículos Electrodomésticos:', this.listArticulosElectrodomesticos);
+
+      // Actualiza el número total de páginas según la respuesta recibida
+      this.totalPages = response.totalPages;
+
+      // Indica que la carga ha finalizado
+      this.loading = false;
+    },
+    (error: any) => {
+      console.error('Error al obtener los artículos:', error);
+      this.loading = false;
+      // Manejar el error de manera apropiada, por ejemplo, mostrando un mensaje al usuario
+      // this.toastr.error('Error al obtener los artículos', 'Error');
+    }
+  );
 }
 
 // Método para cambiar de página
@@ -85,7 +143,7 @@ getPages(): number[] {
 }
 
 
-setSelectedEmpleado(inventario: Inventario) {
+setSelectedInventario(inventario: Inventario) {
   this.selectedInventario = inventario;
 
  

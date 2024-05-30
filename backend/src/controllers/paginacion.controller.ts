@@ -889,7 +889,7 @@ export const actualizarPrestamosAVenta = async (req: Request, res: Response) => 
 
     // Actualizar los préstamos vencidos y pendientes a estado 'venta'
     const [prestamosActualizadosCount] = await Prestamo.update(
-      { estado: 'vencido' },
+      { estado: 'venta' },
       {
         where: {
           id: {
@@ -926,10 +926,9 @@ export const actualizarPrestamosAVenta = async (req: Request, res: Response) => 
 
       const io = server.getIO(); // Obtener la instancia de io desde la instancia de Server
 
-      // Emitir un evento para cada préstamo actualizado
-      prestamosActualizadosDetails.forEach((prestamo: any) => {
-        const { id, estado, Articulo, Cliente } = prestamo;
-
+      // Emitir un evento para cada préstamo actualizado y actualizar artículos e inventarios
+      for (const prestamo of prestamosActualizadosDetails) {
+        const { id, estado, Articulo, Cliente, monto_prestamo } = prestamo.dataValues;
         let articuloDescripcion = 'No disponible';
         if (Articulo) {
           if (Articulo.Vehiculo) {
@@ -950,10 +949,31 @@ export const actualizarPrestamosAVenta = async (req: Request, res: Response) => 
 
         io.emit('prestamoActualizado', { message: mensaje, prestamo: evento });
         console.log('Evento emitido para préstamo actualizado:', evento); // Verificar el evento emitido
-      });
+
+        // Actualizar el estado del artículo a 'inventario'
+        if (Articulo) {
+          await Articulo.update(
+            { estado: 'inventario' },
+            { where: { id: Articulo.id } }
+          );
+
+          // Calcular valor_venta como un 50% más que monto_prestamo
+          const valor_venta = monto_prestamo * 1.5;
+
+          // Insertar el artículo en inventarios
+          await Inventario.create({
+            idarticulo: Articulo.id,
+            stock: 1, // Suponemos que se añade un artículo al inventario
+            estado_articulo: 'disponible',
+            valor_venta: valor_venta,
+            valor_precio: monto_prestamo
+          });
+
+          console.log(`Artículo ${Articulo.id} actualizado a inventario y añadido a inventarios.`);
+        }
+      }
 
       res.status(200).json({ success: true, message: 'Se han actualizado los préstamos a estado "venta" correctamente.' });
-      
     } else {
       res.status(404).json({ success: false, message: 'No se encontraron préstamos vencidos y pendientes para actualizar.' });
     }
