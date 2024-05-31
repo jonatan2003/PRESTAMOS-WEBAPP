@@ -21,9 +21,12 @@ export class DetaventaService {
   getDetaventa(id: number): Observable<DetalleVenta> {
     return this.http.get<DetalleVenta>(`${this.apiUrl}/${id}`);
   }
+  getDetaventabyIdVenta(idventa: number): Observable<DetalleVenta> {
+    return this.http.get<DetalleVenta>(`${this.apiUrl}/venta/${idventa}`);
+  }
 
-  saveDetaventa(DetalleVenta: DetalleVenta): Observable<DetalleVenta> {
-    return this.http.post<DetalleVenta>(this.apiUrl, DetalleVenta);
+  saveDetaventa(DetalleVenta: DetalleVenta[]): Observable<any> {
+    return this.http.post<any>(this.apiUrl, DetalleVenta);
   }
 
   updateDetaventa(id: number, DetalleVenta: DetalleVenta): Observable<DetalleVenta> {

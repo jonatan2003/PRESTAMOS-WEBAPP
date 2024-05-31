@@ -21,8 +21,8 @@ export class InventarioListComponent {
   inventarioSeleccionado: Inventario | null = null;
   selectedInventario: Inventario | null = null;
   categoriaSeleccionada: number = 0; // Variable para almacenar la categoría seleccionada
-  listArticulosVehiculos: Articulo[] = [];
-  listArticulosElectrodomesticos: Articulo[] = [];
+  listInventarioArticulosVehiculos: Inventario[] = [];
+  listInventarioArticulosElectrodomesticos: Inventario[] = [];
 
   listInventario: Inventario[] = []
   loading: boolean = false;
@@ -60,7 +60,7 @@ constructor(private _inventarioService: InventarioService,
 }
 
 ngOnInit(): void {
-  this.getListInventario();
+
 }
 
 onCategoriaSelected(event: any) {
@@ -69,51 +69,89 @@ onCategoriaSelected(event: any) {
   this.getListInventario(); // Llamada para cargar artículos según la categoría seleccionada
 }
 
-
 getListInventario() {
   this.loading = true;
 
-  // Ajustar el método para aceptar parámetros de paginación
+  // Ajusta el método para aceptar parámetros de paginación
   this._paginacionService.getListInventario(this.currentPage, this.pageSize).subscribe(
     (response: any) => {
-      // Inicializar las listas
-      this.listArticulosVehiculos = [];
-      this.listArticulosElectrodomesticos = [];
+      // Inicializar las listas de inventario
+      this.listInventarioArticulosElectrodomesticos = [];
+      this.listInventarioArticulosVehiculos = [];
 
-      // Procesar los datos de acuerdo a la categoría seleccionada
-      response.data.forEach((inventario: any) => {
-        const articulo = inventario.Articulo;
-        if (articulo) {
-          if (articulo.idcategoria === 1) {
-            // Filtrar y mapear los artículos que son vehículos
-            this.listInventario.push({
-              id: inventario.id,
+      if (this.categoriaSeleccionada === 1) {
+        // Procesar los datos de acuerdo a la categoría seleccionada
+        response.data.forEach((inventario: any) => {
+          const articulo = inventario.Articulo;
+          if (articulo && articulo.idcategoria === 1) {
+            const mappedArticulo: Inventario = {
+              idarticulo: inventario.idarticulo,
               stock: inventario.stock,
               estado_articulo: inventario.estado_articulo,
               valor_venta: inventario.valor_venta,
               valor_precio: inventario.valor_precio,
-              estado: articulo.estado,
-              observaciones: articulo.observaciones,
-              ...articulo.Vehiculo
-            });
-          } else if (articulo.idcategoria === 2) {
-            // Filtrar y mapear los artículos que son electrodomésticos
-            this.listInventario.push({
-              id: inventario.id,
-              stock: inventario.stock,
-              estado_articulo: inventario.estado_articulo,
-              valor_venta: inventario.valor_venta,
-              valor_precio: inventario.valor_precio,
-              estado: articulo.estado,
-              observaciones: articulo.observaciones,
-              ...articulo.Electrodomestico
-            });
+              Articulo: {
+                id: articulo.id,
+                estado: articulo.estado,
+                observaciones: articulo.observaciones,
+                idcategoria: articulo.idcategoria,
+                idelectrodomestico: undefined,
+                idvehiculo: articulo.idvehiculo,
+                Vehiculo: {
+                  id: articulo.idvehiculo,
+                  carroceria: articulo.Vehiculo?.carroceria || '',
+                  marca: articulo.Vehiculo?.marca || '',
+                  modelo: articulo.Vehiculo?.modelo || '',
+                  color: articulo.Vehiculo?.color || '',
+                  numero_serie: articulo.Vehiculo?.numero_serie || '',
+                  numero_motor: articulo.Vehiculo?.numero_motor || '',
+                  placa: articulo.Vehiculo?.placa || '',
+                  descripcion: articulo.Vehiculo?.descripcion || ''
+                },
+                Electrodomestico: undefined
+              }
+            };
+            // Agregar el artículo mapeado a la lista de vehículos
+            this.listInventarioArticulosVehiculos.push(mappedArticulo);
           }
-        }
-      });
+        });
+      } else if (this.categoriaSeleccionada === 2) {
+        // Procesar los datos de acuerdo a la categoría seleccionada
+        response.data.forEach((inventario: any) => {
+          const articulo = inventario.Articulo;
+          if (articulo && articulo.idcategoria === 2) {
+            const mappedArticulo: Inventario = {
+              idarticulo: inventario.idarticulo,
+              stock: inventario.stock,
+              estado_articulo: inventario.estado_articulo,
+              valor_venta: inventario.valor_venta,
+              valor_precio: inventario.valor_precio,
+              Articulo: {
+                id: articulo.id,
+                estado: articulo.estado,
+                observaciones: articulo.observaciones,
+                idcategoria: articulo.idcategoria,
+                idelectrodomestico: articulo.idelectrodomestico,
+                idvehiculo: undefined,
+                Vehiculo: undefined,
+                Electrodomestico: {
+                  id: articulo.idelectrodomestico,
+                  descripcion: articulo.Electrodomestico?.descripcion || '',
+                  marca: articulo.Electrodomestico?.marca || '',
+                  modelo: articulo.Electrodomestico?.modelo || '',
+                  color: articulo.Electrodomestico?.color || '',
+                  numero_serie: articulo.Electrodomestico?.numero_serie || ''
+                }
+              }
+            };
+            // Agregar el artículo mapeado a la lista de electrodomésticos
+            this.listInventarioArticulosElectrodomesticos.push(mappedArticulo);
+          }
+        });
+      }
 
-      console.log('Artículos Vehículos:', this.listArticulosVehiculos);
-      console.log('Artículos Electrodomésticos:', this.listArticulosElectrodomesticos);
+      console.log('Artículos Electrodomésticos:', this.listInventarioArticulosElectrodomesticos);
+      console.log('Artículos Vehículos:', this.listInventarioArticulosVehiculos);
 
       // Actualiza el número total de páginas según la respuesta recibida
       this.totalPages = response.totalPages;
@@ -129,7 +167,6 @@ getListInventario() {
     }
   );
 }
-
 // Método para cambiar de página
 pageChanged(page: number) {
   this.currentPage = page;
@@ -143,7 +180,7 @@ getPages(): number[] {
 }
 
 
-setSelectedInventario(inventario: Inventario) {
+setSelectedEmpleado(inventario: Inventario) {
   this.selectedInventario = inventario;
 
  

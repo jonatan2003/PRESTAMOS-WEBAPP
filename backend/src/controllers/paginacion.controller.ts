@@ -361,10 +361,6 @@ export const getComprobantesVenta = async (req: Request, res: Response) => {
           model: TipoComprobante, 
           as: 'TipoComprobante' 
         },
-        { 
-          model: DetalleVenta, 
-          as: 'DetalleVenta', 
-          include: [
             { 
               model: Venta, 
               as: 'Venta',
@@ -377,28 +373,11 @@ export const getComprobantesVenta = async (req: Request, res: Response) => {
                   model: Cliente, 
                   as: 'Cliente' 
                 },
-                { 
-                  model: Articulo, 
-                  as: 'Articulo' ,
-                  include: [
-                    { 
-                      model: Categoria, 
-                      as: 'Categoria' 
-                    },
-                    { 
-                      model: Vehiculo, 
-                      as: 'Vehiculo' 
-                    },
-                    { 
-                      model: Electrodomestico, 
-                      as: 'Electrodomestico' 
-                    },
-                  ]
-                },
+               
               ],
             },
-          ],
-        }
+           
+      
       ],
     });
 
@@ -758,15 +737,7 @@ export const getVentas = async (req: Request, res: Response) => {
       include: [
         { model: Empleado, as: 'Empleado' },
         { model: Cliente, as: 'Cliente' },
-        {
-          model: Articulo,
-          as: 'Articulo',
-          include: [
-            { model: Categoria, as: 'Categoria' },
-            { model: Vehiculo, as: 'Vehiculo' },
-            { model: Electrodomestico, as: 'Electrodomestico' },
-          ],
-        },
+       
       ],
     });
 
@@ -802,25 +773,26 @@ include: [
         include: [
           { model: Empleado, as: 'Empleado' },
           { model: Cliente, as: 'Cliente' },
-          { model: Articulo, as: 'Articulo' ,
-    
-              include: [
-                { 
-                  model: Categoria, // Relación con la tabla de Artículos
-                  as: 'Categoria' // Alias para la relación de Artículo
-                },
-                { 
-                  model: Vehiculo, // Relación con la tabla de Artículos
-                  as: 'Vehiculo' // Alias para la relación de Artículo
-                },
-                { 
-                  model: Electrodomestico, // Relación con la tabla de Artículos
-                  as: 'Electrodomestico' // Alias para la relación de Artículo
-                },
-              ]
-            },
+        
         ],
          },
+         { model: Articulo, as: 'Articulo' ,
+    
+         include: [
+           { 
+             model: Categoria, // Relación con la tabla de Artículos
+             as: 'Categoria' // Alias para la relación de Artículo
+           },
+           { 
+             model: Vehiculo, // Relación con la tabla de Artículos
+             as: 'Vehiculo' // Alias para la relación de Artículo
+           },
+           { 
+             model: Electrodomestico, // Relación con la tabla de Artículos
+             as: 'Electrodomestico' // Alias para la relación de Artículo
+           },
+         ]
+       },
         
       ],
     });
@@ -889,7 +861,7 @@ export const actualizarPrestamosAVenta = async (req: Request, res: Response) => 
 
     // Actualizar los préstamos vencidos y pendientes a estado 'venta'
     const [prestamosActualizadosCount] = await Prestamo.update(
-      { estado: 'venta' },
+      { estado: 'vencido' },
       {
         where: {
           id: {
@@ -1028,6 +1000,8 @@ export const actualizarPrestamosAVenta = async (req: Request, res: Response) => 
 //     return 'Error al obtener la descripción del electrodoméstico';
 //   }
 // }
+
+
 
 export const getTicketsPrestamosPendientes = async (req: Request, res: Response) => {
   try {

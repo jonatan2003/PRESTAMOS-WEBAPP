@@ -1,9 +1,17 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection.db';
 import TipoComprobante from './tipo_comprobante.model';
-import DetalleVenta from './detalleventa.model';
+import Venta from './venta.model';
 
 const ComprobanteVenta = db.define('ComprobanteVenta', {
+  idventa: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Venta,
+      key: 'id'
+    }
+  },
   igv: {
     type: DataTypes.DECIMAL(5, 2),
     allowNull: false,
@@ -12,14 +20,7 @@ const ComprobanteVenta = db.define('ComprobanteVenta', {
     type: DataTypes.DECIMAL(5, 2),
     allowNull: false,
   },
-  iddetalleventa: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: DetalleVenta,
-      key: 'id'
-    }
-  },
+ 
   idtipo_comprobante: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -39,7 +40,7 @@ const ComprobanteVenta = db.define('ComprobanteVenta', {
 });
 
 // Relaciones
-ComprobanteVenta.belongsTo(DetalleVenta, { foreignKey: 'iddetalleventa' ,as: 'DetalleVenta'});
+ComprobanteVenta.belongsTo(Venta, { foreignKey: 'idventa', as: 'Venta' });
 ComprobanteVenta.belongsTo(TipoComprobante, { foreignKey: 'idtipo_comprobante', as: 'TipoComprobante'});
 
 export default ComprobanteVenta;

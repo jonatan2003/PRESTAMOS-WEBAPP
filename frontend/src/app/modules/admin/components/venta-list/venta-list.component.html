@@ -43,15 +43,15 @@
 						</thead>
 						<tbody>
 							<tr *ngFor="let comprobante of listcomprobanteVenta  let i = index"  class="text-center"  >
-								<td>{{ comprobante.DetalleVenta?.Venta?.Empleado?.nombre}}</td>
+								<!-- <td>{{ comprobante.DetalleVenta?.Venta?.Empleado?.nombre}}</td>
 								<td>{{comprobante.DetalleVenta?.Venta?.Cliente?.nombre}}</td>
 								
 								<td> <span>
-									{{comprobante.DetalleVenta?.Venta?.Articulo ?
-										(comprobante.DetalleVenta?.Venta?.Articulo.Vehiculo ?
-										comprobante.DetalleVenta?.Venta?.Articulo.Vehiculo.descripcion :
-											(comprobante.DetalleVenta?.Venta?.Articulo.Electrodomestico ?
-											comprobante.DetalleVenta?.Venta?.Articulo.Electrodomestico.descripcion :
+									{{comprobante.DetalleVenta?.Articulo ?
+										(comprobante.DetalleVenta?.Articulo.Vehiculo ?
+										comprobante.DetalleVenta?.Articulo.Vehiculo.descripcion :
+											(comprobante.DetalleVenta?.Articulo.Electrodomestico ?
+											comprobante.DetalleVenta?.Articulo.Electrodomestico.descripcion :
 												'No hay descripción disponible')) :
 										'No hay descripción disponible' }}
 								</span></td>
@@ -60,7 +60,7 @@
 								<td>{{ comprobante.DetalleVenta?.cantidad }}</td>
 								<td>{{ comprobante.DetalleVenta?.precio_unitario }}</td>
 								<td>{{ comprobante.DetalleVenta?.subtotal }}</td>
-								<td>{{ comprobante.DetalleVenta?.Venta?.total }}</td>
+								<td>{{ comprobante.DetalleVenta?.Venta?.total }}</td> -->
 
 								<td>
 									<button type="button" class="btn btn-danger" (click)="onImprimirFila(i)">

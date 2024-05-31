@@ -164,7 +164,7 @@ export class VentasList2Component {
       const fila: any[] = [
         venta.Venta?.Empleado?.nombre + ' ' + venta.Venta?.Cliente?.apellido,
         venta.Venta?.Empleado?.nombre + ' ' + venta.Venta?.Empleado?.apellidos,
-        venta.Venta?.Articulo ? (venta.Venta?.Articulo.Vehiculo ? venta.Venta?.Articulo.Vehiculo.descripcion : (venta.Venta?.Articulo.Electrodomestico ? venta.Venta?.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
+        venta.Articulo ? (venta.Articulo.Vehiculo ? venta.Articulo.Vehiculo.descripcion : (venta.Articulo.Electrodomestico ? venta.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
         venta.Venta?.fecha_venta,
         venta.Venta?.tipo_pago,
         venta.cantidad,
@@ -191,11 +191,11 @@ export class VentasList2Component {
       this.impresionService.imprimirFilaVentas('Ventas', {
           empleado: detalleventa.Venta?.Empleado?.nombre +" " + detalleventa.Venta?.Empleado?.apellidos || '',
           cliente: detalleventa.Venta?.Cliente?.nombre || '',
-          articulo: detalleventa.Venta?.Articulo ?
-              (detalleventa.Venta?.Articulo.Vehiculo ?
-                  detalleventa.Venta?.Articulo.Vehiculo.descripcion :
-                      (detalleventa.Venta?.Articulo.Electrodomestico ?
-                          detalleventa.Venta?.Articulo.Electrodomestico.descripcion :
+          articulo: detalleventa.Articulo ?
+              (detalleventa.Articulo.Vehiculo ?
+                  detalleventa.Articulo.Vehiculo.descripcion :
+                      (detalleventa.Articulo.Electrodomestico ?
+                          detalleventa.Articulo.Electrodomestico.descripcion :
                               'No hay descripción disponible')) :
               'No hay descripción disponible',
               dni : detalleventa.Venta?.Cliente.dni,

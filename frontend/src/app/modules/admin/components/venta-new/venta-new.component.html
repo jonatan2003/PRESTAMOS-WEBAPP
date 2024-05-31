@@ -53,7 +53,8 @@
                                             <tr class="text-center">
                                                 <td>
                                                     <span>{{ nombreClienteSeleccionado }}</span><br>
-                                                    <input style="display: none;" formControlName="id_cliente" id="id_cliente">
+                                                    <input style="display: none;" formControlName="id_cliente" id="id_cliente" >
+
                                                 </td>
                                                 <td>
                                                     <span>{{ nombresempleado }}</span>
@@ -92,15 +93,15 @@
                                     <div class="row mt-3">
                                         <div class="col">
                                           <label for="subtotal">Subtotal:</label>
-                                          <span id="subtotal">{{ subtotal | currency }}</span>
+                                          <span id="subtotal">{{ subtotal | currency:"S/ "  }}</span>
                                         </div>
                                         <div class="col">
                                           <label for="igv">IGV (0%):</label>
-                                          <span id="igv">{{ igv | currency }}</span>
+                                          <span id="igv">{{ igv | currency:"S/ "  }}</span>
                                         </div>
                                         <div class="col">
                                           <label for="total">Total:</label>
-                                          <span id="total">{{ total | currency }}</span>
+                                          <span id="total">{{ total | currency:"S/ "  }}</span>
                                         </div>
                                       </div>
                                     
@@ -135,6 +136,9 @@
                                         <option value="yape">Yape</option>
                                         <option value="plin">Plin</option>
                                     </select>
+                                    <div class="alert alert-danger mt-2" [hidden]="form.get('tipo_pago').valid || form.get('tipo_pago').pristine">
+                                        <span *ngIf="form.get('tipo_pago').errors?.['required']" class="text-danger">Este campo es requerido</span>
+                                    </div>
                                 </div>
                             </div>
                             <!-- <div class="col-12 col-md-4">
@@ -150,7 +154,7 @@
                 <p class="text-center" style="margin-top: 40px;">
                     <button type="reset" class="btn btn-raised btn-secondary btn-sm"><i class="fas fa-paint-roller"></i> &nbsp; LIMPIAR</button>
                     &nbsp; &nbsp;
-                    <button [disabled]="form.invalid" type="submit" class="btn btn-raised btn-info btn-sm"><i class="far fa-save"></i> &nbsp; GUARDAR</button>
+                    <button [disabled]="form.invalid || !articuloAgregado || !clienteAgregado" type="submit" class="btn btn-raised btn-info btn-sm"><i class="far fa-save"></i> &nbsp; GUARDAR</button>
                 </p>
             </form>
         </div>
@@ -190,6 +194,7 @@
                                                 <td>
                                                     <span>{{ nombreClienteSeleccionado }}</span><br>
                                                     <input style="display: none;" formControlName="id_cliente" id="id_cliente">
+
                                                 </td>
                                                 <td>
                                                     <span>{{ nombresempleado }}</span>
@@ -288,7 +293,7 @@
 								<div class="form-group">
 									<label for="tipoCliente">Tipo de Cliente</label>
 									<select id="tipoCliente" formControlName="tipoCliente" class="form-control mt-2" (change)="onTipoClienteChange()">
-										<option value="dni">DNI</option>
+										<option selected value="dni">DNI</option>
 										<option value="ruc">RUC</option>
 									</select>
 								</div>

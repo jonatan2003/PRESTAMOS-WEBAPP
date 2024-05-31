@@ -1,12 +1,14 @@
-import { DetalleVenta } from "./detaventa.interface";
+import { Venta } from './venta.interface';
 import { TipoComprobante } from "./tipo_comprobante.interface";
+
 export interface Comprobante_venta {
+    
     id?: number;
+    idventa: number;
     igv: number ;
     descuento: number;
-    iddetalleventa: number;
     idtipo_comprobante: number;
     num_serie: string ;
-    DetalleVenta?:DetalleVenta;
+    Venta?: Venta;
     TipoComprobante?:TipoComprobante;
 }

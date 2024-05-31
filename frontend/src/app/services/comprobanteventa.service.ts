@@ -10,7 +10,7 @@ import { Comprobante_venta } from '../interfaces/comprobante_venta.interface';
     private apiUrl: string;
   
     constructor(private http: HttpClient) {
-      this.apiUrl = `${environment.endpoint}api/v1/comprobantesventas`;
+      this.apiUrl = `${environment.endpoint}api/v1/comprobantes_ventas`;
     }
   
     getListComprobanteventas(): Observable<Comprobante_venta[]> {
@@ -20,6 +20,7 @@ import { Comprobante_venta } from '../interfaces/comprobante_venta.interface';
     getComprobanteventa(id: number): Observable<Comprobante_venta> {
       return this.http.get<Comprobante_venta>(`${this.apiUrl}/${id}`);
     }
+    
   
     saveComprobanteventa(comprobanteventa: Comprobante_venta): Observable<Comprobante_venta> {
       return this.http.post<Comprobante_venta>(this.apiUrl, comprobanteventa);

@@ -11,10 +11,10 @@ import Vehiculo from '../models/vehiculo.model';
 import Electrodomestico from '../models/electrodometisco.model';
 
 export const createComprobanteVenta = async (req: Request, res: Response) => {
-  const { igv, descuento, iddetalleventa, idtipo_comprobante, num_serie } = req.body;
+  const { igv, descuento, idventa, idtipo_comprobante, num_serie } = req.body;
 
   try {
-    const nuevoComprobanteVenta = await ComprobanteVenta.create({ igv, descuento, iddetalleventa, idtipo_comprobante, num_serie });
+    const nuevoComprobanteVenta = await ComprobanteVenta.create({ igv, descuento, idventa, idtipo_comprobante, num_serie });
     res.status(201).json(nuevoComprobanteVenta);
   } catch (error) {
     console.error(error);
@@ -29,10 +29,6 @@ export const getComprobantesVenta = async (req: Request, res: Response) => {
             model: TipoComprobante, 
             as: 'TipoComprobante' 
           },
-          { 
-            model: DetalleVenta, 
-            as: 'DetalleVenta', 
-            include: [
               { 
                 model: Venta, 
                 as: 'Venta',
@@ -45,28 +41,11 @@ export const getComprobantesVenta = async (req: Request, res: Response) => {
                     model: Cliente, 
                     as: 'Cliente' 
                   },
-                  { 
-                    model: Articulo, 
-                    as: 'Articulo' ,
-                    include: [
-                      { 
-                        model: Categoria, 
-                        as: 'Categoria' 
-                      },
-                      { 
-                        model: Vehiculo, 
-                        as: 'Vehiculo' 
-                      },
-                      { 
-                        model: Electrodomestico, 
-                        as: 'Electrodomestico' 
-                      },
-                    ]
-                  },
+                 
                 ],
               },
-            ],
-          }
+             
+        
         ],
       });
       res.json(comprobantesVenta);
@@ -81,51 +60,30 @@ export const getComprobanteVentaById = async (req: Request, res: Response) => {
 
   try {
     const comprobanteVenta = await ComprobanteVenta.findByPk(id, {
-        include: [
+      include: [
+        { 
+          model: TipoComprobante, 
+          as: 'TipoComprobante' 
+        },
             { 
-              model: TipoComprobante, 
-              as: 'TipoComprobante' 
-            },
-            { 
-              model: DetalleVenta, 
-              as: 'DetalleVenta', 
+              model: Venta, 
+              as: 'Venta',
               include: [
                 { 
-                  model: Venta, 
-                  as: 'Venta',
-                  include: [
-                    { 
-                      model: Empleado, 
-                      as: 'Empleado' 
-                    },
-                    { 
-                      model: Cliente, 
-                      as: 'Cliente' 
-                    },
-                    { 
-                      model: Articulo, 
-                      as: 'Articulo' ,
-                      include: [
-                        { 
-                          model: Categoria, 
-                          as: 'Categoria' 
-                        },
-                        { 
-                          model: Vehiculo, 
-                          as: 'Vehiculo' 
-                        },
-                        { 
-                          model: Electrodomestico, 
-                          as: 'Electrodomestico' 
-                        },
-                      ]
-                    },
-                  ],
+                  model: Empleado, 
+                  as: 'Empleado' 
                 },
+                { 
+                  model: Cliente, 
+                  as: 'Cliente' 
+                },
+               
               ],
-            }
-          ],
-        });
+            },
+           
+      
+      ],
+    });
 
     if (!comprobanteVenta) {
       res.status(404).json({ msg: 'Comprobante de Venta no encontrado' });

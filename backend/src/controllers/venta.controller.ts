@@ -9,7 +9,7 @@ import Electrodomestico from '../models/electrodometisco.model';
 
 
 export const createVenta = async (req: Request, res: Response) => {
-  const { idempleado, idcliente,idarticulo,
+  const { idempleado, idcliente,
     fecha_venta,total, tipo_pago } = req.body;
 
   try {
@@ -24,7 +24,6 @@ export const createVenta = async (req: Request, res: Response) => {
     const nuevaVenta = await Venta.create({
       idempleado,
       idcliente,
-      idarticulo,
       fecha_venta,
       total,
       tipo_pago,
@@ -43,23 +42,7 @@ export const getVentas = async (req: Request, res: Response) => {
       include: [
         { model: Empleado, as: 'Empleado' },
         { model: Cliente, as: 'Cliente' },
-        { model: Articulo, as: 'Articulo' ,
-  
-            include: [
-              { 
-                model: Categoria, // Relación con la tabla de Artículos
-                as: 'Categoria' // Alias para la relación de Artículo
-              },
-              { 
-                model: Vehiculo, // Relación con la tabla de Artículos
-                as: 'Vehiculo' // Alias para la relación de Artículo
-              },
-              { 
-                model: Electrodomestico, // Relación con la tabla de Artículos
-                as: 'Electrodomestico' // Alias para la relación de Artículo
-              },
-            ]
-          },
+       
       ],
     });
     res.json(ventas);
@@ -77,23 +60,7 @@ export const getVentaById = async (req: Request, res: Response) => {
       include: [
         { model: Empleado, as: 'Empleado' },
         { model: Cliente, as: 'Cliente' },
-        { model: Articulo, as: 'Articulo' ,
-  
-            include: [
-              { 
-                model: Categoria, // Relación con la tabla de Artículos
-                as: 'Categoria' // Alias para la relación de Artículo
-              },
-              { 
-                model: Vehiculo, // Relación con la tabla de Artículos
-                as: 'Vehiculo' // Alias para la relación de Artículo
-              },
-              { 
-                model: Electrodomestico, // Relación con la tabla de Artículos
-                as: 'Electrodomestico' // Alias para la relación de Artículo
-              },
-            ]
-          },
+       
       ],
     });
 

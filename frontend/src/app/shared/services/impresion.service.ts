@@ -486,53 +486,40 @@ async imprimirFilaVentas(entidad: string, datos: any) {
       format: [2.9, 8.2],
   });
 
-
-// Función para generar un número aleatorio de 4 dígitos
-function generateRandomNumber() {
-  return Math.floor(10000 + Math.random() * 90000); // Genera un número aleatorio entre 1000 y 9999
-}
-
-// Función para generar una cadena aleatoria de 5 caracteres
-function generateRandomString(length) {
-  const characters = '0123456789';
-  let result = '';
-  const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  // Función para generar un número aleatorio de 4 dígitos
+  function generateRandomNumber() {
+    return Math.floor(10000 + Math.random() * 90000); // Genera un número aleatorio entre 1000 y 9999
   }
-  return result;
-}
 
-// Generar el código QR único
-const qrData = `Datos de la Venta: ${JSON.stringify(datos)}`;
-const qrCodeDataURL = await QRCode.toDataURL(qrData);
+  // Función para generar una cadena aleatoria de 5 caracteres
+  function generateRandomString(length) {
+    const characters = '0123456789';
+    let result = '';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
 
+  // Generar el código QR único
+  const qrData = `Datos de la Venta: ${JSON.stringify(datos)}`;
+  const qrCodeDataURL = await QRCode.toDataURL(qrData);
 
+  // Genera un número de serie único
+  const nro_serie = `                           ${datos.serie}`;
 
-// Genera un número de serie único
-const nro_serie = `                           ${datos.serie}`;
+  const tipo_comprobante = `${datos.tipo_comprobante}`;
+  let boleta_factura ;
 
-const tipo_comprobante = `${datos.tipo_comprobante}`;
-
-let boleta_factura ;
-
-if (tipo_comprobante =='boleta') {
-
-   boleta_factura ='          BOLETA DE VENTA ELECTRONICA ';
-  
-}else{
-
-   boleta_factura ='          FACTURA DE VENTA ELECTRONICA ';
-
-}
-
-
-   
-
+  if (tipo_comprobante =='boleta') {
+     boleta_factura ='          BOLETA DE VENTA ELECTRONICA ';
+  } else {
+     boleta_factura ='          FACTURA DE VENTA ELECTRONICA ';
+  }
 
   // Datos de la empresa
   const comprobante = boleta_factura;
-
   const empresa = '               CASA DE EMPEÑOS DON GATO';
   const direccion = `Calle: Principal 123, Ciudad    Teléfono: 987654233`;
   const ruc =`                      R.U.C: 10785645876`;
@@ -542,17 +529,36 @@ if (tipo_comprobante =='boleta') {
   const dni = `Dni: ${datos.dni}`;
   const empleado = `                  Empleado: ${datos.empleado} `;
   const descripcion = `Articulo                  Marca                  Modelo` ;
-  const articulo = `${datos.articulo}                      ${datos.marca}                ${datos.modelo}`;
-  
-  const fecha_venta = `Fecha de emision:                              ${datos.fecha_venta}`;
 
+  let articuloDescripcion = [];
+  let articuloMarca = [];
+  let articuloModelo = [];
+  
+  if (Array.isArray(datos.articulo)) {
+    // Si hay múltiples detalles de venta, iterar sobre ellos
+    datos.articulo.forEach((articulo: any) => {
+      articuloDescripcion.push(articulo.articulo);
+      articuloMarca.push(articulo.marca);
+      articuloModelo.push(articulo.modelo);
+    });
+  } else {
+    if (datos.articulo.Vehiculo) {
+      articuloDescripcion.push(datos.articulo.Vehiculo.descripcion || '');
+      articuloMarca.push(datos.articulo.Vehiculo.marca || '');
+      articuloModelo.push(datos.articulo.Vehiculo.modelo || '');
+    } else if (datos.articulo.Electrodomestico) {
+      articuloDescripcion.push(datos.articulo.Electrodomestico.descripcion || '');
+      articuloMarca.push(datos.articulo.Electrodomestico.marca || '');
+      articuloModelo.push(datos.articulo.Electrodomestico.modelo || '');
+    }
+  }
+
+  const fecha_venta = `Fecha de emision:                              ${datos.fecha_venta}`;
   const tipo_pago = `Tipo de Pago         Cantidad          Precio Unitario`;               
- const pago = `${datos.tipo_pago}                         ${datos.cantidad}                      S/.${datos.precio_unitario} `;  
+  const pago = `${datos.tipo_pago}                         ${datos.cantidad}                      S/.${datos.precio_unitario} `;  
   const IGV =`                                                    IGV:         S/.${datos.igv}`;
   const descuento =`                                 Total  Descuento:       S/.${datos.descuento}`;
-
   const total =`                                      Importe Total:     S/.${datos.total}`;
-
 
   // Contenido del encabezado
   const encabezado = [
@@ -571,7 +577,9 @@ if (tipo_comprobante =='boleta') {
       [cliente],
       [''],
       [descripcion],
-      [articulo],
+      [articuloDescripcion],
+      [articuloMarca],
+      [articuloModelo],
       ['__________________________________________'],
       [tipo_pago],
       [pago],
@@ -585,7 +593,9 @@ if (tipo_comprobante =='boleta') {
       [''],
       [''],
       [''],
-      
+      [''],
+      [''],
+      [''],   
       ['                     Gracias por tu Preferencia¡'],
   ];
 
@@ -619,8 +629,7 @@ if (tipo_comprobante =='boleta') {
         fontSize: 8, // Tamaño de la letra de hoja
         halign: 'justify', // Alineación horizontal justificada
         textColor: [0, 0, 0], // Color del texto en RGB (negro)
-
-    },
+      },
 
       theme: 'plain',
       tableWidth: doc1.internal.pageSize.width - 0.2 , // Ancho de la tabla
@@ -636,11 +645,10 @@ if (tipo_comprobante =='boleta') {
       }
       else if (data.row.index === 1 || data.row.index === 18) {
         data.cell.styles.fontStyle = 'bold';
-    } 
-    else if (data.row.index === 4 || data.row.index === 11) {
-      data.cell.styles.fontStyle = 'bold';
-  } 
-
+      } 
+      else if (data.row.index === 4 || data.row.index === 11) {
+        data.cell.styles.fontStyle = 'bold';
+      } 
     },
 
     didDrawCell: (data) => {

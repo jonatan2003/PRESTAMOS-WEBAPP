@@ -251,51 +251,7 @@ estado : string ;
                 console.log("Capital Pago dentro de setSelectTipodePago:", );
               }
 
-              addDetalleVenta() {
-                const detalleVenta: DetalleVenta = {
-                  idventa: this.ventaid,
-                  cantidad: 1,
-                  precio_unitario: this.formVenta.value.precio_unitario,
-                  subtotal: this.formVenta.value.total,
-                };
-              
-                this.loading = true;
-              
-                this._detalleventaService.saveDetaventa(detalleVenta).pipe(
-                  switchMap((response: any) => {
-                    // Aquí puedes acceder al ID del detalle de venta guardado en 'response.id'
-                    this.toastr.success(`La venta fue registrada con éxito`, 'VENTA REALIZADA');
-                    this.loading = false;
-              
-                    // Llamar al servicio para obtener el detalle de venta por su ID
-                    return this._detalleventaService.getDetaventa(response.id);
-                  })
-                ).subscribe(
-                  (detalleVentaGuardado: DetalleVenta) => {
-                    // Agregar el detalle de venta guardado a la lista de detalleVentas
-                    this.listdetalleVentas.push(detalleVentaGuardado);
-                    this.loading = false;
-                   this.updatePrestamo();
-                   this.guardarVenta();
-                    // Obtener el índice del último elemento agregado
-                    const lastIndex = this.listdetalleVentas.length - 1;
-                    // Llamar a la función para imprimir fila del último pago agregado
-                    this.onImprimirFila(lastIndex);
-        
-                    // Realizar cualquier acción adicional que necesites con el detalleVentaGuardado
-                    // Por ejemplo, actualizar otras partes de tu aplicación o realizar cálculos adicionales
-                    
-                    // Redirigir después de guardar
-                    this.router.navigate(['admin/venta-list']);
-                  },
-                  (error: any) => {
-                    console.error('Error al guardar el detalle de venta:', error);
-                    this.toastr.error('Error al guardar el detalle de venta', 'Error');
-                    this.loading = false;
-                  }
-                );
-              }
-              
+             
 
 
              addVenta(){
@@ -304,7 +260,6 @@ estado : string ;
                 {
                   idempleado: this.idempleado,
                   idcliente: this.idClienteSeleccionado,
-                  idarticulo: this.idarticulo,
                   fecha_venta: this.fechaActual,
                   tipo_pago: this.formVenta.value.tipo_pago,
                   total: this.formVenta.value.total
@@ -323,7 +278,6 @@ estado : string ;
             
                     // Asignar el valor de idelectrodomestico como null ya que no se está guardando un electrodoméstico
                     // Llamar a la función saveArticulo() después de obtener los IDs
-                    this.addDetalleVenta();
                   },
                   (error: any) => { // Manejo de errores
                     console.error('Error al guardar el vehículo:', error);
@@ -658,11 +612,11 @@ estado : string ;
     this.impresionService.imprimirFilaVentas('Ventas', {
         empleado: detalleventa.Venta?.Empleado?.nombre +" " + detalleventa.Venta?.Empleado?.apellidos || '',
         cliente: detalleventa.Venta?.Cliente?.nombre || '',
-        articulo: detalleventa.Venta?.Articulo ?
-            (detalleventa.Venta?.Articulo.Vehiculo ?
-                detalleventa.Venta?.Articulo.Vehiculo.descripcion :
-                    (detalleventa.Venta?.Articulo.Electrodomestico ?
-                        detalleventa.Venta?.Articulo.Electrodomestico.descripcion :
+        articulo: detalleventa.Articulo ?
+            (detalleventa.Articulo.Vehiculo ?
+                detalleventa.Articulo.Vehiculo.descripcion :
+                    (detalleventa.Articulo.Electrodomestico ?
+                        detalleventa.Articulo.Electrodomestico.descripcion :
                             'No hay descripción disponible')) :
             'No hay descripción disponible',
             dni : detalleventa.Venta?.Cliente.dni,

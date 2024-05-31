@@ -10,24 +10,32 @@ import Vehiculo from '../models/vehiculo.model';
 import Electrodomestico from '../models/electrodometisco.model';
 
 export const createDetalleVenta = async (req: Request, res: Response) => {
-  const { idventa, cantidad, precio_unitario,subtotal } = req.body;
+  const detallesVenta = req.body; // Se espera un array de detalles de venta
 
   try {
-    const nuevoDetalleVenta = await DetallesVenta.create({
-      idventa,
-      cantidad,
-      precio_unitario,
-      subtotal,
-      
-      
-    });
+    // Itera sobre cada detalle de venta y créalo en la base de datos
+    const nuevosDetallesVenta= await Promise.all(
+      detallesVenta.map(async (detalle: any) => {
+        const nuevoDetalleVenta = await DetallesVenta.create({
+          idventa: detalle.idventa,
+          idarticulo: detalle.idarticulo,
+          cantidad: detalle.cantidad,
+          precio_unitario: detalle.precio_unitario,
+          subtotal: detalle.subtotal,
+          // Otras propiedades del detalle de venta, si las hay
+        });
+        return nuevoDetalleVenta;
+      })
+    );
 
-    res.status(201).json(nuevoDetalleVenta);
+    res.status(201).json(nuevosDetallesVenta);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ msg: 'Ocurrió un error al crear el detalle de venta' });
+    res.status(500).json({ msg: 'Ocurrió un error al crear los detalles de venta' });
   }
 };
+
+
 
 export const getDetalleVentaById = async (req: Request, res: Response) => {
   const { idDetalleVenta } = req.params;
@@ -35,27 +43,29 @@ export const getDetalleVentaById = async (req: Request, res: Response) => {
   try {
     const detalleVenta = await DetallesVenta.findByPk(idDetalleVenta,{
       include: [
+        { model: Articulo, as: 'Articulo' ,
+    
+        include: [
+          { 
+            model: Categoria, // Relación con la tabla de Artículos
+            as: 'Categoria' // Alias para la relación de Artículo
+          },
+          { 
+            model: Vehiculo, // Relación con la tabla de Artículos
+            as: 'Vehiculo' // Alias para la relación de Artículo
+          },
+          { 
+            model: Electrodomestico, // Relación con la tabla de Artículos
+            as: 'Electrodomestico' // Alias para la relación de Artículo
+          },
+        ]
+      },
         { model: Venta, as: 'Venta',
+
         include: [
           { model: Empleado, as: 'Empleado' },
           { model: Cliente, as: 'Cliente' },
-          { model: Articulo, as: 'Articulo' ,
-    
-              include: [
-                { 
-                  model: Categoria, // Relación con la tabla de Artículos
-                  as: 'Categoria' // Alias para la relación de Artículo
-                },
-                { 
-                  model: Vehiculo, // Relación con la tabla de Artículos
-                  as: 'Vehiculo' // Alias para la relación de Artículo
-                },
-                { 
-                  model: Electrodomestico, // Relación con la tabla de Artículos
-                  as: 'Electrodomestico' // Alias para la relación de Artículo
-                },
-              ]
-            },
+        
         ],
          },
         
@@ -70,6 +80,49 @@ export const getDetalleVentaById = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Error al obtener el detalle de venta' });
+  }
+};
+
+export const getDetalleVentaByVentaId = async (req: Request, res: Response) => {
+  const { idVenta } = req.params;
+
+  try {
+    const detallesVenta = await DetallesVenta.findAll({
+      where: { idVenta }, // Busca los detalles de venta que corresponden a la idVenta proporcionada
+      include: [
+        { model: Articulo, as: 'Articulo' ,
+          include: [
+            { 
+              model: Categoria, // Relación con la tabla de Artículos
+              as: 'Categoria' // Alias para la relación de Artículo
+            },
+            { 
+              model: Vehiculo, // Relación con la tabla de Artículos
+              as: 'Vehiculo' // Alias para la relación de Artículo
+            },
+            { 
+              model: Electrodomestico, // Relación con la tabla de Artículos
+              as: 'Electrodomestico' // Alias para la relación de Artículo
+            },
+          ]
+        },
+        { model: Venta, as: 'Venta',
+          include: [
+            { model: Empleado, as: 'Empleado' },
+            { model: Cliente, as: 'Cliente' },
+          ],
+        },
+      ],
+    });
+
+    if (!detallesVenta || detallesVenta.length === 0) {
+      return res.status(404).json({ msg: 'No se encontraron detalles de venta para la idVenta proporcionada' });
+    } else {
+      return res.json(detallesVenta);
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: 'Error al obtener los detalles de venta' });
   }
 };
 
@@ -114,32 +167,35 @@ export const getDetallesVenta = async (req: Request, res: Response) => {
   try {
     const detallesVenta = await DetallesVenta.findAll({
       include: [
+        { model: Articulo, as: 'Articulo' ,
+    
+        include: [
+          { 
+            model: Categoria, // Relación con la tabla de Artículos
+            as: 'Categoria' // Alias para la relación de Artículo
+          },
+          { 
+            model: Vehiculo, // Relación con la tabla de Artículos
+            as: 'Vehiculo' // Alias para la relación de Artículo
+          },
+          { 
+            model: Electrodomestico, // Relación con la tabla de Artículos
+            as: 'Electrodomestico' // Alias para la relación de Artículo
+          },
+        ]
+      },
         { model: Venta, as: 'Venta',
+
         include: [
           { model: Empleado, as: 'Empleado' },
           { model: Cliente, as: 'Cliente' },
-          { model: Articulo, as: 'Articulo' ,
-    
-              include: [
-                { 
-                  model: Categoria, // Relación con la tabla de Artículos
-                  as: 'Categoria' // Alias para la relación de Artículo
-                },
-                { 
-                  model: Vehiculo, // Relación con la tabla de Artículos
-                  as: 'Vehiculo' // Alias para la relación de Artículo
-                },
-                { 
-                  model: Electrodomestico, // Relación con la tabla de Artículos
-                  as: 'Electrodomestico' // Alias para la relación de Artículo
-                },
-              ]
-            },
+        
         ],
          },
         
       ],
     });
+    
     res.json(detallesVenta);
   } catch (error) {
     console.error(error);

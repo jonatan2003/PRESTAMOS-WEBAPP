@@ -48,11 +48,11 @@
 								<td>{{detalleventas.Venta?.Cliente?.nombre}}</td>
 								
 								<td> <span>
-									{{ detalleventas.Venta?.Articulo ?
-										(detalleventas.Venta?.Articulo.Vehiculo ?
-										detalleventas.Venta?.Articulo.Vehiculo.descripcion :
-											(detalleventas.Venta?.Articulo.Electrodomestico ?
-											detalleventas.Venta?.Articulo.Electrodomestico.descripcion :
+									{{ detalleventas.Articulo ?
+										(detalleventas.Articulo.Vehiculo ?
+										detalleventas.Articulo.Vehiculo.descripcion :
+											(detalleventas.Articulo.Electrodomestico ?
+											detalleventas.Articulo.Electrodomestico.descripcion :
 												'No hay descripción disponible')) :
 										'No hay descripción disponible' }}
 								</span></td>

@@ -130,11 +130,11 @@ export class VentaListComponent implements OnInit {
       const fila: any[] = [
         venta.Venta?.Empleado?.nombre + ' ' + venta.Venta?.Empleado?.apellidos,
         venta.Venta?.Cliente?.nombre,
-        venta.Venta?.Articulo ?
-          (venta.Venta?.Articulo.Vehiculo ?
-            venta.Venta?.Articulo.Vehiculo.descripcion :
-            (venta.Venta?.Articulo.Electrodomestico ?
-              venta.Venta?.Articulo.Electrodomestico.descripcion :
+        venta.Articulo ?
+          (venta.Articulo.Vehiculo ?
+            venta.Articulo.Vehiculo.descripcion :
+            (venta.Articulo.Electrodomestico ?
+              venta.Articulo.Electrodomestico.descripcion :
               'No hay descripción disponible')) :
           'No hay descripción disponible',
         venta.Venta?.fecha_venta,
@@ -154,48 +154,48 @@ export class VentaListComponent implements OnInit {
   }
 
   onImprimirFila(index: number) {
-    const comprobante = this.listcomprobanteVenta[index];
-    this.impresionService.imprimirFilaVentas('Ventas', {
-      empleado: comprobante.DetalleVenta?.Venta?.Empleado?.nombre + " " + comprobante?.DetalleVenta?.Venta?.Empleado?.apellidos || '',
-      cliente: comprobante.DetalleVenta?.Venta?.Cliente?.apellido + " " +  comprobante.DetalleVenta?.Venta?.Cliente?.nombre|| '',
-      articulo: comprobante.DetalleVenta?.Venta?.Articulo ?
-        (comprobante.DetalleVenta?.Venta?.Articulo.Vehiculo ?
-          comprobante.DetalleVenta?.Venta?.Articulo.Vehiculo.descripcion :
-          (comprobante.DetalleVenta?.Venta?.Articulo.Electrodomestico ?
-            comprobante.DetalleVenta?.Venta?.Articulo.Electrodomestico.descripcion :
-            'No hay descripción disponible')) :
-        'No hay descripción disponible',
+    // const comprobante = this.listcomprobanteVenta[index];
+    // this.impresionService.imprimirFilaVentas('Ventas', {
+    //   empleado: comprobante.DetalleVenta?.Venta?.Empleado?.nombre + " " + comprobante?.DetalleVenta?.Venta?.Empleado?.apellidos || '',
+    //   cliente: comprobante.DetalleVenta?.Venta?.Cliente?.apellido + " " +  comprobante.DetalleVenta?.Venta?.Cliente?.nombre|| '',
+    //   articulo: comprobante.DetalleVenta.Articulo ?
+    //     (comprobante.DetalleVenta?.Articulo.Vehiculo ?
+    //       comprobante.DetalleVenta?.Articulo.Vehiculo.descripcion :
+    //       (comprobante.DetalleVenta?.Articulo.Electrodomestico ?
+    //         comprobante.DetalleVenta?.Articulo.Electrodomestico.descripcion :
+    //         'No hay descripción disponible')) :
+    //     'No hay descripción disponible',
 
-       marca:comprobante.DetalleVenta?.Venta?.Articulo ?
-       (comprobante.DetalleVenta?.Venta?.Articulo.Vehiculo ?
-         comprobante.DetalleVenta?.Venta?.Articulo.Vehiculo.marca :
-         (comprobante.DetalleVenta?.Venta?.Articulo.Electrodomestico ?
-           comprobante.DetalleVenta?.Venta?.Articulo.Electrodomestico.marca :
-           'No hay marca disponible')) :
-       'No hay marca disponible',
+    //    marca:comprobante.DetalleVenta?.Articulo ?
+    //    (comprobante.DetalleVenta?.Articulo.Vehiculo ?
+    //      comprobante.DetalleVenta?.Articulo.Vehiculo.marca :
+    //      (comprobante.DetalleVenta?.Articulo.Electrodomestico ?
+    //        comprobante.DetalleVenta?.Articulo.Electrodomestico.marca :
+    //        'No hay marca disponible')) :
+    //    'No hay marca disponible',
 
-       modelo: comprobante.DetalleVenta?.Venta?.Articulo ?
-       (comprobante.DetalleVenta?.Venta?.Articulo.Vehiculo ?
-         comprobante.DetalleVenta?.Venta?.Articulo.Vehiculo.modelo :
-         (comprobante.DetalleVenta?.Venta?.Articulo.Electrodomestico ?
-           comprobante.DetalleVenta?.Venta?.Articulo.Electrodomestico.modelo :
-           'No hay marca disponible')) :
-       'No hay marca disponible',
+    //    modelo: comprobante.DetalleVenta?.Articulo ?
+    //    (comprobante.DetalleVenta?.Articulo.Vehiculo ?
+    //      comprobante.DetalleVenta?.Articulo.Vehiculo.modelo :
+    //      (comprobante.DetalleVenta?.Articulo.Electrodomestico ?
+    //        comprobante.DetalleVenta?.Articulo.Electrodomestico.modelo :
+    //        'No hay marca disponible')) :
+    //    'No hay marca disponible',
 
 
-      dni: comprobante.DetalleVenta?.Venta?.Cliente.dni,
-      fecha_venta: comprobante.DetalleVenta?.Venta?.fecha_venta || '',
-      tipo_pago: comprobante.DetalleVenta?.Venta?.tipo_pago || '',
-      cantidad: comprobante.DetalleVenta?.cantidad || '',
-      precio_unitario: comprobante.DetalleVenta?.precio_unitario || '',
-      subtotal: comprobante.DetalleVenta?.subtotal || '',
-      total: comprobante.DetalleVenta?.Venta?.total || '',
-      igv: comprobante.igv,
-      descuento: comprobante.descuento,
-      tipo_comprobante: comprobante.TipoComprobante?.nombre,
+    //   dni: comprobante.DetalleVenta?.Venta?.Cliente.dni,
+    //   fecha_venta: comprobante.DetalleVenta?.Venta?.fecha_venta || '',
+    //   tipo_pago: comprobante.DetalleVenta?.Venta?.tipo_pago || '',
+    //   cantidad: comprobante.DetalleVenta?.cantidad || '',
+    //   precio_unitario: comprobante.DetalleVenta?.precio_unitario || '',
+    //   subtotal: comprobante.DetalleVenta?.subtotal || '',
+    //   total: comprobante.DetalleVenta?.Venta?.total || '',
+    //   igv: comprobante.igv,
+    //   descuento: comprobante.descuento,
+    //   tipo_comprobante: comprobante.TipoComprobante?.nombre,
       
-      serie: comprobante.num_serie
-    });
+    //   serie: comprobante.num_serie
+    // });
   }
 
 

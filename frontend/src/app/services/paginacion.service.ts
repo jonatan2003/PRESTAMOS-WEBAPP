@@ -144,7 +144,7 @@ export class PaginacionService {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('page_size', pageSize.toString());
-    return this.http.get<Inventario[]>(`${this.apiUrl}/invetario`,{ params });
+    return this.http.get<Inventario[]>(`${this.apiUrl}/inventario`,{ params });
   }
 
 
