@@ -205,38 +205,45 @@ onTipoClienteChange() {
 onDniChange() {
   const dni = this.formcliente.get('dni').value;
   if (dni.length === 8) {
+    this.toastr.info('Buscando DNI...', 'Información');
     this.apiDniService.getClienteByDni(dni).subscribe(data => {
+    this.toastr.info('DNI ENCONTRADO', 'Información');
+
       const responseData = data; // Acceder al objeto 'body'
-      console.log("hol"+responseData);
       this.formcliente.patchValue({
         nombre: responseData.nombres, // Acceder a las propiedades dentro de 'body'
-        apellido: responseData.apellidoPaterno + "  "+responseData.apellidoMaterno,
-//        direccion: responseData.desDireccion,
+        apellido: responseData.apellidoPaterno + "  " + responseData.apellidoMaterno,
+        razon_social: "no"
+        // direccion: responseData.desDireccion,
       });
     }, error => {
-      this.toastr.info('DNI DESCONOCIDO', 'Título del error');
+      this.toastr.error('DNI DESCONOCIDO', 'NO ENCONTRADO');
       console.error(error);
     });
   }
 }
-
-
 
 onRucChange() {
   const ruc = this.formcliente.get('ruc').value;
   if (ruc.length === 11) {
+    this.toastr.info('Buscando RUC...', 'Información');
     this.apiRucService.getClienteByDni(ruc).subscribe(data => {
+      this.toastr.info('RUC ENCONTRADO', 'Información');
       this.formcliente.patchValue({
-        nombre: data.nombre,
+        nombre: "no",
+        apellido: "no",
         direccion: data.direccion,
+        razon_social: data.nombre
         // rubro: data.rubro
       });
     }, error => {
-      this.toastr.info('RUC DESCONOCIDO', 'Título del error');
+      this.toastr.error('RUC DESCONOCIDO', 'NO ENCONTRADO');
       console.error(error);
     });
   }
 }
+
+
 
 addPrestamo() {
   if (this.loading) return; // Evitar múltiples ejecuciones si ya está en progreso
@@ -295,7 +302,8 @@ addCliente() {
     direccion: this.formcliente.value.direccion,
     dni: this.formcliente.value.dni,
     ruc: this.formcliente.value.ruc,
-    telefono: this.formcliente.value.telefono,
+    razon_social: this.formcliente.value.razon_social,
+     telefono: this.formcliente.value.telefono,
     rubro: this.formcliente.value.rubro,
     // ... Otros campos del formulario de clientes según la interfaz
   };

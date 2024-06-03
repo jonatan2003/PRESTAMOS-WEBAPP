@@ -478,29 +478,13 @@ const estado = `Interes                   Pagado                     Restante`;
 
    
 // IMPRESION DE LA VENTA
-
 async imprimirFilaVentas(entidad: string, datos: any) {
   const doc1 = new jsPDF({
-      orientation: 'portrait',
-      unit: 'in',
-      format: [2.9, 8.2],
+    orientation: 'portrait',
+    unit: 'in',
+    format: [2.9, 8.2],
   });
 
-  // Función para generar un número aleatorio de 4 dígitos
-  function generateRandomNumber() {
-    return Math.floor(10000 + Math.random() * 90000); // Genera un número aleatorio entre 1000 y 9999
-  }
-
-  // Función para generar una cadena aleatoria de 5 caracteres
-  function generateRandomString(length) {
-    const characters = '0123456789';
-    let result = '';
-    const charactersLength = characters.length;
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-  }
 
   // Generar el código QR único
   const qrData = `Datos de la Venta: ${JSON.stringify(datos)}`;
@@ -510,55 +494,35 @@ async imprimirFilaVentas(entidad: string, datos: any) {
   const nro_serie = `                           ${datos.serie}`;
 
   const tipo_comprobante = `${datos.tipo_comprobante}`;
-  let boleta_factura ;
+  let boleta_factura;
 
-  if (tipo_comprobante =='boleta') {
-     boleta_factura ='          BOLETA DE VENTA ELECTRONICA ';
+  if (tipo_comprobante == 'boleta') {
+    boleta_factura = '          BOLETA DE VENTA ELECTRONICA ';
   } else {
-     boleta_factura ='          FACTURA DE VENTA ELECTRONICA ';
+    boleta_factura = '          FACTURA DE VENTA ELECTRONICA ';
   }
 
   // Datos de la empresa
   const comprobante = boleta_factura;
   const empresa = '               CASA DE EMPEÑOS DON GATO';
   const direccion = `Calle: Principal 123, Ciudad    Teléfono: 987654233`;
-  const ruc =`                      R.U.C: 10785645876`;
+  const ruc = `                      R.U.C: 10785645876`;
 
   // Datos del préstamo
   const cliente = `Cliente: ${datos.cliente}`;
   const dni = `Dni: ${datos.dni}`;
   const empleado = `                  Empleado: ${datos.empleado} `;
-  const descripcion = `Articulo                  Marca                  Modelo` ;
+  const descripcion = `Articulo                  Marca                  Modelo`;
 
-  let articuloDescripcion = [];
-  let articuloMarca = [];
-  let articuloModelo = [];
-  
-  if (Array.isArray(datos.articulo)) {
-    // Si hay múltiples detalles de venta, iterar sobre ellos
-    datos.articulo.forEach((articulo: any) => {
-      articuloDescripcion.push(articulo.articulo);
-      articuloMarca.push(articulo.marca);
-      articuloModelo.push(articulo.modelo);
-    });
-  } else {
-    if (datos.articulo.Vehiculo) {
-      articuloDescripcion.push(datos.articulo.Vehiculo.descripcion || '');
-      articuloMarca.push(datos.articulo.Vehiculo.marca || '');
-      articuloModelo.push(datos.articulo.Vehiculo.modelo || '');
-    } else if (datos.articulo.Electrodomestico) {
-      articuloDescripcion.push(datos.articulo.Electrodomestico.descripcion || '');
-      articuloMarca.push(datos.articulo.Electrodomestico.marca || '');
-      articuloModelo.push(datos.articulo.Electrodomestico.modelo || '');
-    }
-  }
+  // Crear una constante articulos
+  const articulos = Array.isArray(datos.articulos) ? datos.articulos : [];
 
   const fecha_venta = `Fecha de emision:                              ${datos.fecha_venta}`;
-  const tipo_pago = `Tipo de Pago         Cantidad          Precio Unitario`;               
-  const pago = `${datos.tipo_pago}                         ${datos.cantidad}                      S/.${datos.precio_unitario} `;  
-  const IGV =`                                                    IGV:         S/.${datos.igv}`;
-  const descuento =`                                 Total  Descuento:       S/.${datos.descuento}`;
-  const total =`                                      Importe Total:     S/.${datos.total}`;
+  const tipo_pago = `Tipo de Pago         Cantidad          Precio Unitario`;
+  const pago = `${datos.tipo_pago}                         ${datos.cantidad}                      S/.${datos.precio_unitario} `;
+  const IGV = `                                                    IGV:         S/.${datos.igv}`;
+  const descuento = `                                 Total  Descuento:       S/.${datos.descuento}`;
+  const total = `                                      Importe Total:     S/.${datos.total}`;
 
   // Contenido del encabezado
   const encabezado = [
@@ -567,37 +531,42 @@ async imprimirFilaVentas(entidad: string, datos: any) {
 
   // Contenido del cuerpo
   const cuerpo = [
-      [direccion],
-      [comprobante], 
-      [ruc], 
-      [nro_serie],
-      ['__________________________________________'],
-      [fecha_venta],
-      [dni],
-      [cliente],
-      [''],
-      [descripcion],
-      [articuloDescripcion],
-      [articuloMarca],
-      [articuloModelo],
-      ['__________________________________________'],
-      [tipo_pago],
-      [pago],
-      [IGV],
-      [descuento],
-      [total],
-      [''],
-      [empleado],
-      [''],
-      [''],
-      [''],
-      [''],
-      [''],
-      [''],
-      [''],
-      [''],   
-      ['                     Gracias por tu Preferencia¡'],
+    [direccion],
+    [comprobante],
+    [ruc],
+    [nro_serie],
+    ['__________________________________________'],
+    [fecha_venta],
+    [dni],
+    [cliente],
+    [''],
+    [descripcion],
   ];
+
+  // Añadir artículos al cuerpo
+  articulos.forEach(articulo => {
+    cuerpo.push([articulo.descripcion, articulo.marca, articulo.modelo]);
+  });
+
+  cuerpo.push(
+    ['__________________________________________'],
+    [tipo_pago],
+    [pago],
+    [IGV],
+    [descuento],
+    [total],
+    [''],
+    [empleado],
+    [''],
+    [''],
+    [''],
+    [''],
+    [''],
+    [''],
+    [''],
+    [''],
+    ['                     Gracias por tu Preferencia¡'],
+  );
 
   // Configuración de la tabla
   const margintop = 1.1;
@@ -615,29 +584,28 @@ async imprimirFilaVentas(entidad: string, datos: any) {
 
   // Convertir la imagen a Base64
   const imgData = await this.getBase64ImageFromURL('/assets/img/login/gato.png');
-  // doc1.addImage(imgData, 'PNG', 1.5, 0.2, 1.1, 1.1); // Ajusta las coordenadas (0.5, 0.5) y el tamaño de la imagen (3, 1)
   doc1.addImage(imgData, 'PNG', 0.9, 0, 1.1, 1);
 
   doc1.addImage(qrCodeDataURL, 'PNG', qrX, qrY, qrWidth, qrHeight);
 
   autoTable(doc1, {
-      startY: margintop,
-      head: encabezado ,
-      body: cuerpo,
+    startY: margintop,
+    head: encabezado,
+    body: cuerpo,
 
-      styles: {
-        fontSize: 8, // Tamaño de la letra de hoja
-        halign: 'justify', // Alineación horizontal justificada
-        textColor: [0, 0, 0], // Color del texto en RGB (negro)
-      },
+    styles: {
+      fontSize: 8, // Tamaño de la letra de hoja
+      halign: 'justify', // Alineación horizontal justificada
+      textColor: [0, 0, 0], // Color del texto en RGB (negro)
+    },
 
-      theme: 'plain',
-      tableWidth: doc1.internal.pageSize.width - 0.2 , // Ancho de la tabla
-      margin: { // Adjust the margins
-        top: margintop,
-        bottom: marginBottom,
-        left: marginleft + 0.1,
-        right: marginright +0
+    theme: 'plain',
+    tableWidth: doc1.internal.pageSize.width - 0.2, // Ancho de la tabla
+    margin: { // Adjust the margins
+      top: margintop,
+      bottom: marginBottom,
+      left: marginleft + 0.1,
+      right: marginright + 0
     },
     didParseCell: (data) => {
       if (data.row.index === 9 || data.row.index === 12) { // Cambia el índice a la fila que contiene 'descripcion'
@@ -645,76 +613,73 @@ async imprimirFilaVentas(entidad: string, datos: any) {
       }
       else if (data.row.index === 1 || data.row.index === 18) {
         data.cell.styles.fontStyle = 'bold';
-      } 
+      }
       else if (data.row.index === 4 || data.row.index === 11) {
         data.cell.styles.fontStyle = 'bold';
-      } 
+      }
     },
 
     didDrawCell: (data) => {
       if (data.section === 'body') {
 
-
-          // Establecer color de los bordes
-          doc1.setDrawColor(0); // Color negro
-            // Dibujar borde superior
-            if (data.row.index === 0) {
-              // Si es la primera fila, no dibujar el borde superior
-              doc1.setLineWidth(0);
-          } else if (data.row.index === cuerpo.length - 1) {
-              // Si es la última fila, no dibujar el borde inferior
-              doc1.setLineWidth(0);
-          } else if (data.row.index === 1 || data.row.index === 2 ) {
-              // Si es la tercera o cuarta fila, no dibujar los bordes
-              doc1.setLineWidth(-1);
-          }else if (data.row.index === 3 || data.row.index === 4 ) {
-            // Si es la tercera o cuarta fila, no dibujar los bordes
-            doc1.setLineWidth(0);
+        // Establecer color de los bordes
+        doc1.setDrawColor(0); // Color negro
+        // Dibujar borde superior
+        if (data.row.index === 0) {
+          // Si es la primera fila, no dibujar el borde superior
+          doc1.setLineWidth(0);
+        } else if (data.row.index === cuerpo.length - 1) {
+          // Si es la última fila, no dibujar el borde inferior
+          doc1.setLineWidth(0);
+        } else if (data.row.index === 1 || data.row.index === 2) {
+          // Si es la tercera o cuarta fila, no dibujar los bordes
+          doc1.setLineWidth(-1);
+        } else if (data.row.index === 3 || data.row.index === 4) {
+          // Si es la tercera o cuarta fila, no dibujar los bordes
+          doc1.setLineWidth(0);
         } else if (data.row.index === 5 || data.row.index === 6) {
-            // Si es la tercera o cuarta fila, no dibujar los bordes
-            doc1.setLineWidth(0);
-          }else if ( data.row.index === 7 || data.row.index === 8) {
-            // Si es la tercera o cuarta fila, no dibujar los bordes
-            doc1.setLineWidth(0);
-          } else if ( data.row.index === 10 ) {
-            // Si es la tercera o cuarta fila, no dibujar los bordes
-            doc1.setLineWidth(0);
-          }else if (data.row.index === 11 || data.row.index === 12 || data.row.index === 13) {
-            // Si es la tercera o cuarta fila, no dibujar los bordes
-            doc1.setLineWidth(0);
-          }
-          else if ( data.row.index === 14 || data.row.index === 15  ) {
-            // Si es la tercera o cuarta fila, no dibujar los bordes
-            doc1.setLineWidth(0);
-          }else if ( data.row.index === 16 || data.row.index === 17) {
-            // Si es la tercera o cuarta fila, no dibujar los bordes
-            doc1.setLineWidth(0);
-          }else if ( data.row.index === 19 || data.row.index === 20) {
-            // Si es la tercera o cuarta fila, no dibujar los bordes
-            doc1.setLineWidth(0);
-          }else if ( data.row.index === 21 || data.row.index === 22) {
-            // Si es la tercera o cuarta fila, no dibujar los bordes
-            doc1.setLineWidth(0);
-          }else if ( data.row.index === 23 || data.row.index === 24) {
-            // Si es la tercera o cuarta fila, no dibujar los bordes
-            doc1.setLineWidth(0);
-          }else {
-              // Si no es la primera ni la última fila, dibujar los bordes
-              doc1.line(data.cell.x, data.cell.y, data.cell.x + data.cell.width, data.cell.y); // Borde superior
-              doc1.line(data.cell.x, data.cell.y + data.cell.height, data.cell.x + data.cell.width, data.cell.y + data.cell.height); // Borde inferior
-          }
+          // Si es la tercera o cuarta fila, no dibujar los bordes
+          doc1.setLineWidth(0);
+        } else if (data.row.index === 7 || data.row.index === 8) {
+          // Si es la tercera o cuarta fila, no dibujar los bordes
+          doc1.setLineWidth(0);
+        } else if (data.row.index === 10) {
+          // Si es la tercera o cuarta fila, no dibujar los bordes
+          doc1.setLineWidth(0);
+        } else if (data.row.index === 11 || data.row.index === 12 || data.row.index === 13) {
+          // Si es la tercera o cuarta fila, no dibujar los bordes
+          doc1.setLineWidth(0);
+        }
+        else if (data.row.index === 14 || data.row.index === 15) {
+          // Si es la tercera o cuarta fila, no dibujar los bordes
+          doc1.setLineWidth(0);
+        } else if (data.row.index === 16 || data.row.index === 17) {
+          // Si es la tercera o cuarta fila, no dibujar los bordes
+          doc1.setLineWidth(0);
+        } else if (data.row.index === 19 || data.row.index === 20) {
+          // Si es la tercera o cuarta fila, no dibujar los bordes
+          doc1.setLineWidth(0);
+        } else if (data.row.index === 21 || data.row.index === 22) {
+          // Si es la tercera o cuarta fila, no dibujar los bordes
+          doc1.setLineWidth(0);
+        } else if (data.row.index === 23 || data.row.index === 24) {
+          // Si es la tercera o cuarta fila, no dibujar los bordes
+          doc1.setLineWidth(0);
+        } else {
+          // Si no es la primera ni la última fila, dibujar los bordes
+          doc1.line(data.cell.x, data.cell.y, data.cell.x + data.cell.width, data.cell.y); // Borde superior
+          doc1.line(data.cell.x, data.cell.y + data.cell.height, data.cell.x + data.cell.width, data.cell.y + data.cell.height); // Borde inferior
+        }
       }
     }
   });
 
+  // Guardar o mostrar el documento
+  const hoy = new Date();
+  doc1.save(entidad + "_" + hoy.getDate() + (hoy.getMonth() + 1) + hoy.getFullYear() + "_" + hoy.getTime() + '.pdf');
+}
 
 
- // Guardar o mostrar el documento
-    const hoy = new Date();
-    doc1.save(entidad + "_" + hoy.getDate() + (hoy.getMonth()+1) + hoy.getFullYear()+ "_" + hoy.getTime() + '.pdf')
-
-
-  }
 
 
 

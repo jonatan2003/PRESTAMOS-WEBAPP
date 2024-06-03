@@ -20,6 +20,9 @@ import { Comprobante_venta } from '../interfaces/comprobante_venta.interface';
     getComprobanteventa(id: number): Observable<Comprobante_venta> {
       return this.http.get<Comprobante_venta>(`${this.apiUrl}/${id}`);
     }
+    getComprobanteventabyVentaID(idventa: number): Observable<Comprobante_venta> {
+      return this.http.get<Comprobante_venta>(`${this.apiUrl}/venta/${idventa}`);
+    }
     
   
     saveComprobanteventa(comprobanteventa: Comprobante_venta): Observable<Comprobante_venta> {

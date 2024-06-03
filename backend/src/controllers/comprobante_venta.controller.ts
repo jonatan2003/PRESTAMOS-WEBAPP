@@ -96,6 +96,48 @@ export const getComprobanteVentaById = async (req: Request, res: Response) => {
   }
 };
 
+
+export const getComprobanteVentaByIdVenta = async (req: Request, res: Response) => {
+  const { idventa } = req.params;
+
+  try {
+    const comprobanteVenta = await ComprobanteVenta.findOne({
+      where: { idventa },
+      include: [
+        { 
+          model: TipoComprobante, 
+          as: 'TipoComprobante' 
+        },
+        { 
+          model: Venta, 
+          as: 'Venta',
+          include: [
+            { 
+              model: Empleado, 
+              as: 'Empleado' 
+            },
+            { 
+              model: Cliente, 
+              as: 'Cliente' 
+            },
+           
+          ],
+        }
+      ],
+    });
+
+    if (!comprobanteVenta) {
+      res.status(404).json({ msg: 'Comprobante de Venta no encontrado' });
+    } else {
+      res.json(comprobanteVenta);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al obtener el Comprobante de Venta' });
+  }
+};
+
+
 export const updateComprobanteVenta = async (req: Request, res: Response) => {
   const { body } = req;
   const { id } = req.params;

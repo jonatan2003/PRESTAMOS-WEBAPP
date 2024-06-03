@@ -5,6 +5,7 @@ export interface Cliente {
   direccion: string;
   dni: string;
   ruc: string;
+  razon_social: string;
   telefono: string;
   rubro: string;
 }

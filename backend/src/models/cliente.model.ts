@@ -22,6 +22,10 @@ const Cliente = db.define('Cliente', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  razon_social: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   telefono: {
     type: DataTypes.STRING,
     allowNull: false,

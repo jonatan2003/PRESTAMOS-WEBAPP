@@ -141,6 +141,7 @@ totalPages: number = 0;   // Inicializa totalPages en 0
       direccion: [{ value: '', disabled: true }, Validators.required],
       dni: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(8), Validators.pattern("^[0-9]*$")]],
       ruc: ['', [Validators.required, Validators.maxLength(11), Validators.pattern("^[0-9]*$")]],
+      razon_social: ['', [Validators.required, Validators.maxLength(25)]],
       telefono: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(9), Validators.pattern("^[0-9]*$")]],
       rubro: ['', [Validators.required, Validators.maxLength(25)]],
     });
@@ -369,6 +370,7 @@ calcularTotales(): void {
       direccion: this.formcliente.value.direccion,
       dni: this.formcliente.value.dni,
       ruc: this.formcliente.value.ruc,
+      razon_social:this.formcliente.value.razon_social,
       telefono: this.formcliente.value.telefono,
       rubro: this.formcliente.value.rubro,
     };
@@ -398,8 +400,9 @@ calcularTotales(): void {
     if (tipoCliente === 'ruc') {
       this.formcliente.controls['dni'].disable();
       this.formcliente.controls['ruc'].enable();
-      this.formcliente.controls['nombre'].enable();
-      this.formcliente.controls['apellido'].enable();
+      this.formcliente.controls['razon_social'].enable();
+      this.formcliente.controls['nombre'].disable();
+      this.formcliente.controls['apellido'].disable();
       this.formcliente.controls['direccion'].enable();
       this.formcliente.controls['rubro'].enable();
     } else {
@@ -415,36 +418,39 @@ calcularTotales(): void {
   onDniChange() {
     const dni = this.formcliente.get('dni').value;
     if (dni.length === 8) {
+      this.toastr.info('Buscando DNI...', 'Información');
       this.apiDniService.getClienteByDni(dni).subscribe(data => {
+      this.toastr.info('DNI ENCONTRADO', 'Información');
+
         const responseData = data; // Acceder al objeto 'body'
-        console.log("hol"+responseData);
         this.formcliente.patchValue({
           nombre: responseData.nombres, // Acceder a las propiedades dentro de 'body'
-          apellido: responseData.apellidoPaterno + "  "+responseData.apellidoMaterno,
-  //        direccion: responseData.desDireccion,
+          apellido: responseData.apellidoPaterno + "  " + responseData.apellidoMaterno,
+          razon_social: "no"
+          // direccion: responseData.desDireccion,
         });
       }, error => {
-        this.toastr.info('DNI DESCONOCIDO', 'Título del error');
+        this.toastr.error('DNI DESCONOCIDO', 'NO ENCONTRADO');
         console.error(error);
       });
     }
   }
   
-
-
-  
-  
   onRucChange() {
     const ruc = this.formcliente.get('ruc').value;
     if (ruc.length === 11) {
+      this.toastr.info('Buscando RUC...', 'Información');
       this.apiRucService.getClienteByDni(ruc).subscribe(data => {
+        this.toastr.info('RUC ENCONTRADO', 'Información');
         this.formcliente.patchValue({
-          nombre: data.nombre,
+          nombre: "no",
+          apellido: "no",
           direccion: data.direccion,
+          razon_social: data.nombre
           // rubro: data.rubro
         });
       }, error => {
-        this.toastr.info('RUC DESCONOCIDO', 'Título del error');
+        this.toastr.error('RUC DESCONOCIDO', 'NO ENCONTRADO');
         console.error(error);
       });
     }
@@ -506,7 +512,7 @@ addDetallesVenta(idVenta: number) {
   return this._detaventasService.saveDetaventa(detallesVenta).pipe(
     switchMap(() => this._detaventasService.getDetaventabyIdVenta(idVenta)),
     tap((detalleVenta) => {
-      this.listDetalleVenta.push(detalleVenta);
+      this.listDetalleVenta.push(detalleVenta [0]);
       console.log('Detalle de venta por ID de venta:', detalleVenta);
     })
   );
@@ -554,55 +560,65 @@ mostrarFormularioFactura(tipo: string): void {
 }
 
 
-onImprimirFila(index: number) {
-  const comprobante = this.listComprobantes[index];
-  const detalleVenta = this.listDetalleVenta.find(detalle => detalle.idventa === comprobante.idventa);
+async onImprimirFila(index: number) {
+  const detalleVenta = this.listDetalleVenta[index];
+  const idventa = detalleVenta.idventa;
 
-  // Verificar si los detalles de la venta están disponibles
-  if (detalleVenta) {
-    // Los detalles de la venta están disponibles, proceder a la impresión
-    this.imprimirFila(comprobante, detalleVenta);
-  } else {
-    // Los detalles de la venta no están disponibles, obtenerlos
-    this.getDetalleVentaByIdVenta(comprobante.idventa);
+  try {
+    // Obtener el comprobante de venta
+    const comprobante = await this._comprobanteventasService.getComprobanteventabyVentaID(idventa).toPromise();
+
+    // Obtener los detalles de venta
+    const detallesVenta: DetalleVenta[] = await this._detaventasService.getDetaventabyIdVenta(idventa).toPromise();
+
+    // Imprimir la fila con los datos obtenidos
+    this.imprimirFila(comprobante, detallesVenta);
+  } catch (error) {
+    console.error('Error al obtener los datos:', error);
   }
 }
 
-private imprimirFila(comprobante: Comprobante_venta, detalleVenta: DetalleVenta) {
+private imprimirFila(comprobante: Comprobante_venta, detallesVenta: DetalleVenta[]) {
   const empleadoNombre = comprobante.Venta?.Empleado?.nombre || '';
   const empleadoApellidos = comprobante.Venta?.Empleado?.apellidos || '';
   const clienteNombre = comprobante.Venta?.Cliente?.nombre || '';
   const clienteApellido = comprobante.Venta?.Cliente?.apellido || '';
   const clienteDNI = comprobante.Venta?.Cliente?.dni || '';
 
-  let articuloDescripcion = 'No hay descripción disponible';
-  let articuloMarca = 'No hay marca disponible';
-  let articuloModelo = 'No hay modelo disponible';
+  const articulos = detallesVenta.map(detalle => {
+    let descripcion = 'No hay descripción disponible';
+    let marca = 'No hay marca disponible';
+    let modelo = 'No hay modelo disponible';
 
-  if (detalleVenta.Articulo) {
-    if (detalleVenta.Articulo.Vehiculo) {
-      articuloDescripcion = detalleVenta.Articulo.Vehiculo.descripcion || '';
-      articuloMarca = detalleVenta.Articulo.Vehiculo.marca || '';
-      articuloModelo = detalleVenta.Articulo.Vehiculo.modelo || '';
-    } else if (detalleVenta.Articulo.Electrodomestico) {
-      articuloDescripcion = detalleVenta.Articulo.Electrodomestico.descripcion || '';
-      articuloMarca = detalleVenta.Articulo.Electrodomestico.marca || '';
-      articuloModelo = detalleVenta.Articulo.Electrodomestico.modelo || '';
+    if (detalle.Articulo) {
+      if (detalle.Articulo.Vehiculo) {
+        descripcion = detalle.Articulo.Vehiculo.descripcion || '';
+        marca = detalle.Articulo.Vehiculo.marca || '';
+        modelo = detalle.Articulo.Vehiculo.modelo || '';
+      } else if (detalle.Articulo.Electrodomestico) {
+        descripcion = detalle.Articulo.Electrodomestico.descripcion || '';
+        marca = detalle.Articulo.Electrodomestico.marca || '';
+        modelo = detalle.Articulo.Electrodomestico.modelo || '';
+      }
     }
-  }
+
+    return {
+      descripcion,
+      marca,
+      modelo
+    };
+  });
 
   this.impresionService.imprimirFilaVentas('Ventas', {
     empleado: `${empleadoNombre} ${empleadoApellidos}`,
     cliente: `${clienteNombre} ${clienteApellido}`,
-    articulo: articuloDescripcion,
-    marca: articuloMarca,
-    modelo: articuloModelo,
+    articulos,
     dni: clienteDNI,
     fecha_venta: comprobante.Venta?.fecha_venta || '',
     tipo_pago: comprobante.Venta?.tipo_pago || '',
-    cantidad: detalleVenta.cantidad || '',
-    precio_unitario: detalleVenta.precio_unitario || '',
-    subtotal: detalleVenta.subtotal || '',
+    cantidad: detallesVenta.reduce((sum, detalle) => sum + (detalle.cantidad || 0), 0),
+    precio_unitario: detallesVenta.reduce((sum, detalle) => sum + (detalle.precio_unitario || 0), 0),
+    subtotal: detallesVenta.reduce((sum, detalle) => sum + (detalle.subtotal || 0), 0),
     total: comprobante.Venta?.total || '',
     igv: comprobante.igv || 0,
     descuento: comprobante.descuento || 0,
@@ -611,16 +627,15 @@ private imprimirFila(comprobante: Comprobante_venta, detalleVenta: DetalleVenta)
   });
 }
 
-// Agregar una función para obtener los detalles de la venta por ID de venta
 getDetalleVentaByIdVenta(idventa: number) {
   this._detaventasService.getDetaventabyIdVenta(idventa).subscribe(
-    (detalleVenta: DetalleVenta) => {
-      this.listDetalleVenta.push(detalleVenta);
-      console.log('Detalle de venta por ID de venta:', detalleVenta);
+    (detallesVenta: DetalleVenta[]) => { // Cambiado a detallesVenta en plural
+      this.listDetalleVenta = detallesVenta; // Asignar los detalles de venta obtenidos directamente
+      console.log('Detalles de venta por ID de venta:', detallesVenta);
       // Llamar a la función para imprimir la fila una vez que los detalles de la venta estén disponibles
       const comprobante = this.listComprobantes.find(comprobante => comprobante.idventa === idventa);
       if (comprobante) {
-        this.imprimirFila(comprobante, detalleVenta);
+        this.imprimirFila(comprobante, this.listDetalleVenta); // Pasar listdetalleVentas que ahora contiene todos los detalles de venta
       }
     },
     (error) => {

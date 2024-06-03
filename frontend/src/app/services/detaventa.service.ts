@@ -21,8 +21,8 @@ export class DetaventaService {
   getDetaventa(id: number): Observable<DetalleVenta> {
     return this.http.get<DetalleVenta>(`${this.apiUrl}/${id}`);
   }
-  getDetaventabyIdVenta(idventa: number): Observable<DetalleVenta> {
-    return this.http.get<DetalleVenta>(`${this.apiUrl}/venta/${idventa}`);
+  getDetaventabyIdVenta(idventa: number): Observable<DetalleVenta []> {
+    return this.http.get<DetalleVenta[]>(`${this.apiUrl}/venta/${idventa}`);
   }
 
   saveDetaventa(DetalleVenta: DetalleVenta[]): Observable<any> {

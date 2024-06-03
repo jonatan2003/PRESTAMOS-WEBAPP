@@ -7,6 +7,7 @@ import { PaginacionService } from 'src/app/services/paginacion.service';
 import { DetalleVenta } from 'src/app/interfaces/detaventa.interface';
 import { Comprobante_venta } from 'src/app/interfaces/comprobante_venta.interface';
 import { ComprobanteventaService } from 'src/app/services/comprobanteventa.service';
+import { DetaventaService } from 'src/app/services/detaventa.service';
 
 @Component({
   selector: 'app-venta-list',
@@ -25,6 +26,7 @@ export class VentaListComponent implements OnInit {
 
   constructor(
     private _ventaService: VentaService, 
+    private _detalleventaService: DetaventaService,
     private _comprobanteventaService: ComprobanteventaService,
     private _paginacionService: PaginacionService,
     private toastr: ToastrService,
@@ -39,10 +41,10 @@ export class VentaListComponent implements OnInit {
 
   getListComprobanteventas() {
     this.loading = true;
-    this._paginacionService.getListComprobanteventas(this.currentPage, this.pageSize).subscribe(
+    this._paginacionService.getListDetaVentas(this.currentPage, this.pageSize).subscribe(
       (response: any) => {
         console.log('Comprobante Ventas Response:', response);  // Debugging line
-        this.listcomprobanteVenta = response.data;
+        this.listdetalleVentas = response.data;
         this.totalPages = response.totalPages;
         this.loading = false;
       },
@@ -153,49 +155,108 @@ export class VentaListComponent implements OnInit {
     return cuerpo;
   }
 
-  onImprimirFila(index: number) {
-    // const comprobante = this.listcomprobanteVenta[index];
-    // this.impresionService.imprimirFilaVentas('Ventas', {
-    //   empleado: comprobante.DetalleVenta?.Venta?.Empleado?.nombre + " " + comprobante?.DetalleVenta?.Venta?.Empleado?.apellidos || '',
-    //   cliente: comprobante.DetalleVenta?.Venta?.Cliente?.apellido + " " +  comprobante.DetalleVenta?.Venta?.Cliente?.nombre|| '',
-    //   articulo: comprobante.DetalleVenta.Articulo ?
-    //     (comprobante.DetalleVenta?.Articulo.Vehiculo ?
-    //       comprobante.DetalleVenta?.Articulo.Vehiculo.descripcion :
-    //       (comprobante.DetalleVenta?.Articulo.Electrodomestico ?
-    //         comprobante.DetalleVenta?.Articulo.Electrodomestico.descripcion :
-    //         'No hay descripción disponible')) :
-    //     'No hay descripción disponible',
 
-    //    marca:comprobante.DetalleVenta?.Articulo ?
-    //    (comprobante.DetalleVenta?.Articulo.Vehiculo ?
-    //      comprobante.DetalleVenta?.Articulo.Vehiculo.marca :
-    //      (comprobante.DetalleVenta?.Articulo.Electrodomestico ?
-    //        comprobante.DetalleVenta?.Articulo.Electrodomestico.marca :
-    //        'No hay marca disponible')) :
-    //    'No hay marca disponible',
-
-    //    modelo: comprobante.DetalleVenta?.Articulo ?
-    //    (comprobante.DetalleVenta?.Articulo.Vehiculo ?
-    //      comprobante.DetalleVenta?.Articulo.Vehiculo.modelo :
-    //      (comprobante.DetalleVenta?.Articulo.Electrodomestico ?
-    //        comprobante.DetalleVenta?.Articulo.Electrodomestico.modelo :
-    //        'No hay marca disponible')) :
-    //    'No hay marca disponible',
+  obtenerDatos(idventa: number) {
+    this._comprobanteventaService.getComprobanteventabyVentaID(idventa).subscribe((comprobante: Comprobante_venta) => {
+      // Guardar el resultado en this.listcomprobanteVentas
+      const index = this.listcomprobanteVenta.findIndex(c => c.idventa === idventa);
+      if (index !== -1) {
+        this.listcomprobanteVenta[index] = comprobante;
+      } else {
+        this.listcomprobanteVenta.push(comprobante);
+      }
+    });
 
 
-    //   dni: comprobante.DetalleVenta?.Venta?.Cliente.dni,
-    //   fecha_venta: comprobante.DetalleVenta?.Venta?.fecha_venta || '',
-    //   tipo_pago: comprobante.DetalleVenta?.Venta?.tipo_pago || '',
-    //   cantidad: comprobante.DetalleVenta?.cantidad || '',
-    //   precio_unitario: comprobante.DetalleVenta?.precio_unitario || '',
-    //   subtotal: comprobante.DetalleVenta?.subtotal || '',
-    //   total: comprobante.DetalleVenta?.Venta?.total || '',
-    //   igv: comprobante.igv,
-    //   descuento: comprobante.descuento,
-    //   tipo_comprobante: comprobante.TipoComprobante?.nombre,
-      
-    //   serie: comprobante.num_serie
-    // });
+    this._detalleventaService.getDetaventabyIdVenta(idventa).subscribe((detalleventa : DetalleVenta[]) => {
+    this.listdetalleVentas.push(detalleventa[0]);
+
+    });
+  }
+
+  
+  async onImprimirFila(index: number) {
+    const detalleVenta = this.listdetalleVentas[index];
+    const idventa = detalleVenta.idventa;
+  
+    try {
+      // Obtener el comprobante de venta
+      const comprobante = await this._comprobanteventaService.getComprobanteventabyVentaID(idventa).toPromise();
+  
+      // Obtener los detalles de venta
+      const detallesVenta: DetalleVenta[] = await this._detalleventaService.getDetaventabyIdVenta(idventa).toPromise();
+  
+      // Imprimir la fila con los datos obtenidos
+      this.imprimirFila(comprobante, detallesVenta);
+    } catch (error) {
+      console.error('Error al obtener los datos:', error);
+    }
+  }
+  
+  private imprimirFila(comprobante: Comprobante_venta, detallesVenta: DetalleVenta[]) {
+    const empleadoNombre = comprobante.Venta?.Empleado?.nombre || '';
+    const empleadoApellidos = comprobante.Venta?.Empleado?.apellidos || '';
+    const clienteNombre = comprobante.Venta?.Cliente?.nombre || '';
+    const clienteApellido = comprobante.Venta?.Cliente?.apellido || '';
+    const clienteDNI = comprobante.Venta?.Cliente?.dni || '';
+  
+    const articulos = detallesVenta.map(detalle => {
+      let descripcion = 'No hay descripción disponible';
+      let marca = 'No hay marca disponible';
+      let modelo = 'No hay modelo disponible';
+  
+      if (detalle.Articulo) {
+        if (detalle.Articulo.Vehiculo) {
+          descripcion = detalle.Articulo.Vehiculo.descripcion || '';
+          marca = detalle.Articulo.Vehiculo.marca || '';
+          modelo = detalle.Articulo.Vehiculo.modelo || '';
+        } else if (detalle.Articulo.Electrodomestico) {
+          descripcion = detalle.Articulo.Electrodomestico.descripcion || '';
+          marca = detalle.Articulo.Electrodomestico.marca || '';
+          modelo = detalle.Articulo.Electrodomestico.modelo || '';
+        }
+      }
+  
+      return {
+        descripcion,
+        marca,
+        modelo
+      };
+    });
+  
+    this.impresionService.imprimirFilaVentas('Ventas', {
+      empleado: `${empleadoNombre} ${empleadoApellidos}`,
+      cliente: `${clienteNombre} ${clienteApellido}`,
+      articulos,
+      dni: clienteDNI,
+      fecha_venta: comprobante.Venta?.fecha_venta || '',
+      tipo_pago: comprobante.Venta?.tipo_pago || '',
+      cantidad: detallesVenta.reduce((sum, detalle) => sum + (detalle.cantidad || 0), 0),
+      precio_unitario: detallesVenta.reduce((sum, detalle) => sum + (detalle.precio_unitario || 0), 0),
+      subtotal: detallesVenta.reduce((sum, detalle) => sum + (detalle.subtotal || 0), 0),
+      total: comprobante.Venta?.total || '',
+      igv: comprobante.igv || 0,
+      descuento: comprobante.descuento || 0,
+      tipo_comprobante: comprobante.TipoComprobante?.nombre || '',
+      serie: comprobante.num_serie || ''
+    });
+  }
+  
+  getDetalleVentaByIdVenta(idventa: number) {
+    this._detalleventaService.getDetaventabyIdVenta(idventa).subscribe(
+      (detallesVenta: DetalleVenta[]) => { // Cambiado a detallesVenta en plural
+        this.listdetalleVentas = detallesVenta; // Asignar los detalles de venta obtenidos directamente
+        console.log('Detalles de venta por ID de venta:', detallesVenta);
+        // Llamar a la función para imprimir la fila una vez que los detalles de la venta estén disponibles
+        const comprobante = this.listcomprobanteVenta.find(comprobante => comprobante.idventa === idventa);
+        if (comprobante) {
+          this.imprimirFila(comprobante, this.listdetalleVentas); // Pasar listdetalleVentas que ahora contiene todos los detalles de venta
+        }
+      },
+      (error) => {
+        console.error('Error al obtener los detalles de la venta:', error);
+      }
+    );
   }
 
 

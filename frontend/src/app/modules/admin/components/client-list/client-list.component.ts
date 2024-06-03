@@ -137,7 +137,8 @@ totalPages: number = 0;   // Inicializa totalPages en 0
       apellido: this.form.value.apellido,
       direccion: this.form.value.direccion,
       dni: this.form.value.dni,
-      ruc:  this.form.value.dni,
+      ruc: this.form.value.ruc,
+      razon_social: this.form.value.razon_social,
       telefono: this.form.value.telefono,
       rubro: this.form.value.rubro,
       // ... Otros campos del formulario de clientes según la interfaz

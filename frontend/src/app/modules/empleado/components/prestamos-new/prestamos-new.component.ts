@@ -225,7 +225,8 @@ addCliente() {
     apellido: this.formcliente.value.apellido,
     direccion: this.formcliente.value.direccion,
     dni: this.formcliente.value.dni,
-    ruc: this.formcliente.value.dni,
+    ruc: "no",
+    razon_social: "no",
     telefono: this.formcliente.value.telefono,
     rubro: this.formcliente.value.rubro,
     // ... Otros campos del formulario de clientes según la interfaz
