@@ -247,14 +247,21 @@ onRucChange() {
 
 addPrestamo() {
   if (this.loading) return; // Evitar múltiples ejecuciones si ya está en progreso
+ // Convertir el valor del monto del préstamo a un número
+ let valorprestamo = parseFloat(this.form.value.monto_prestamo);
+
+ // Calcular el interés y el monto total a pagar
+ let interes = valorprestamo * 0.20;
+ let pagar = valorprestamo + interes;
 
   const prestamo: Prestamo = {
     idcliente: this.form.value.id_cliente,
     idarticulo: this.form.value.id_articulo,
     fecha_prestamo: this.fechaActual,
-    fecha_devolucion: this.form.value.fecha_devolucion,
+    fecha_devolucion:
+     this.form.value.fecha_devolucion,
     monto_prestamo: this.form.value.monto_prestamo,
-    monto_pago: this.form.value.monto_prestamo,
+    monto_pago: pagar,
     estado: 'pendiente'
   };
 

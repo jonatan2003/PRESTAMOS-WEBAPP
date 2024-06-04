@@ -124,293 +124,214 @@ fecha_pago : Date ;
 
    }
 
-               ngOnInit(): void {
-                this.fechaActual = new Date();
-                this.getTipoPagos();
-                //this.getListPrestamos();
-                
-
-
-                this.formPago.valueChanges.subscribe(() => {
-                  this.setMontoRestante(); // Llama a la función para actualizar el monto restante
-                });
-              }
-
-              shouldDisableButton(cronogramapagos: any): boolean {
-                const estado = cronogramapagos.Prestamo?.estado?.toLowerCase().trim();
-                const fechaPago = new Date(cronogramapagos.fecha_pago);
-                const fechaActualDate = new Date(this.fechaActual);
-                
-                return estado === 'pagado' || 
-                       estado === 'vendido' || 
-                       cronogramapagos.monto_pagado > 0 || 
-                       fechaPago.getTime() < fechaActualDate.getTime();
-              }
-
-              setMontoRestanInicial(){
-                this.fecha_pago  = this.selectedCronogramapagos.fecha_pago;
-                this.idcronogramapagos = this.selectedCronogramapagos.id;
-                this.selectedPrestamo = this.selectedCronogramapagos.Prestamo;
-                this.monto_pagado = this.selectedCronogramapagos.monto_pagado;
-                console.log (this.selectedCronogramapagos.Prestamo.id)
-                this.getListTicketsPrestamos(this.selectedCronogramapagos.Prestamo.id);
-                console.log(this.idcronogramapagos);
-
-               this.nombreClienteSeleccionado = this.selectedCronogramapagos.Prestamo.Cliente.nombre + " " +this.selectedCronogramapagos.Prestamo.Cliente.apellido ;
-              
-           // this.nombresempleado = this.listTicketsPrestamo.Empleado.nombre+ " " +listTicketsPrestamo.Empleado.apellidos ;
-           
-             this.estado = "pendiente";
-             
-           
-              }
-
-              setMontoRestante() {
-                let tipoPago = this.formPago.get('id_tipopago').value;
-             
-               let monto_restante = this.montoRestanteFinal
-                
-                  switch (tipoPago) {
-                    
-                    case "1":
-                  monto_restante -= this.interes; // Restar el interés del monto restante
-                  this.formPago.patchValue({ pago:  this.interes }, { emitEvent: false });
-                  this.capital_pago = 0;
-                  this.interesfinal = this.formPago.get('pago').value;
-                  this.pagoPrestamo= this.formPago.get('pago').value;
-                  console.log(this.interes,{ emitEvent: false });
-                  break;
-                  case "2":
-                  if (this.montoRestanteFinal < this.monto_inicial){
-
-                    this.formPago.patchValue({ pago: this.montoRestanteFinal }, { emitEvent: false });
-
-
-                  }
-                  else if (this.montoRestanteFinal > this.monto_inicial){
-
-                    this.formPago.patchValue({ pago: this.monto_inicial }, { emitEvent: false });
-
-
-                  }
-                   
-                
-
-                  this.capital_pago = this.formPago.value.pago;
-                  this.interesfinal = 0;
-                  this.pagoPrestamo= this.formPago.value.pago;
-                  break;
-                  case "3":
-                
-                  this.formPago.patchValue({ pago: this.montoRestanteFinal }, { emitEvent: false });
-                 
-                  this.capital_pago = this.montoRestanteFinal;
-                  this.interesfinal = 0;
-                  this.pagoPrestamo= this.formPago.value.pago;
-                  break;
-                  case "4":
-                  const pago = this.formPago.get('pago').value;
-                   if (pago > this.interes){
-                      this.capital_pago = pago - this.interes;
-                      this.interesfinal = pago - this.capital_pago ;
-                      this.pagoPrestamo= this.formPago.value.pago;
-                   }
-                   break;
-                  }
-                
-              }
-
-              isOptionDisabled(tipopago: any): boolean {
-
-                if (tipopago.nombre_tipo === 'interes') {
-                  return this.sumaMontoPagado > this.interes;
-                }
-                
-                if (tipopago.nombre_tipo === 'prestamo') {
-                  return this.sumaMontoPagado === this.monto_inicial || this.sumaMontoPagado > this.monto_inicial  || this.sumaMontoPagado > this.interes ;
-                }
-                if (tipopago.nombre_tipo === 'abono') {
-                  return this.sumaMontoPagado > this.interes;
-                }
-
-
-                
-                
-
-                return false;
-              }
-            
-              buscarPagos(): void {
-                // Verificar si this.terminoBusqueda está vacío
-                if (!this.terminoBusqueda.trim()) {
-                  this.toastr.warning('Por favor, ingrese un DNI.', '', { positionClass: 'toast-top-right' }); // Mostrar toast de advertencia
-                  return; // Salir de la función
-                }
-              
-                this.loading = true; // Establecer loading en true para mostrar la carga
-              
-                this.searchService.searchCronogramaPagos(this.currentPage, this.pageSize, this.terminoBusqueda).subscribe(
-                  (response: any) => {
-                    this.listCronogramaPagos = response.data; // Asignar los datos de cronograma de pagos a la propiedad listCronogramaPagos
-                    this.currentPage = response.page; // Actualizar currentPage con el número de página actual
-                    this.totalPages = response.totalPages; // Actualizar totalPages con el número total de páginas
-                    this.totalItems = response.totalItems; // Actualizar totalItems con el número total de elementos
-                    this.loading = false; // Establecer loading en false al finalizar la carga
-              
-
-                    
-        // Calcular la suma del campo monto_pagado
-        this.sumaMontoPagado = this.listCronogramaPagos.reduce((sum, cronograma) => sum + Number(cronograma.monto_pagado), 0);
-
-          console.log(this.sumaMontoPagado);
-                    // Verificar si listCronogramaPagos está vacía
-                    if (this.listCronogramaPagos.length === 0) {
-                      this.toastr.warning('No se encontraron préstamos con ese DNI.', '', { positionClass: 'toast-top-right' }); // Mostrar toast de alerta en la parte superior derecha
-                    }
-                  },
-                  error => {
-                    console.error('Error al buscar cronogramas de pagos:', error);
-                    this.loading = false; // Manejar el error y establecer loading en false
-                  }
-                );
-              }
-              
+   ngOnInit(): void {
+    this.fechaActual = new Date();
+    this.getTipoPagos();
   
-  // Método para cambiar de página
+    // Asegúrate de que el formulario está inicializado correctamente
+    this.formPago.valueChanges.subscribe(() => {
+      this.setMontoRestante(); // Llama a la función para actualizar el monto restante
+    });
+  }
+  
+  shouldDisableButton(cronogramapagos: any): boolean {
+    const estado = cronogramapagos.Prestamo?.estado?.toLowerCase().trim();
+    const fechaPago = new Date(cronogramapagos.fecha_pago);
+    const fechaActualDate = new Date(this.fechaActual);
+  
+    return estado === 'pagado' || 
+           estado === 'vendido' || 
+           cronogramapagos.monto_pagado > 0 || 
+           fechaPago.getTime() < fechaActualDate.getTime();
+  }
+  
+  setMontoRestanInicial(){
+    this.fecha_pago = this.selectedCronogramapagos.fecha_pago;
+    this.idcronogramapagos = this.selectedCronogramapagos.id;
+    this.selectedPrestamo = this.selectedCronogramapagos.Prestamo;
+    this.monto_pagado = this.selectedCronogramapagos.monto_pagado;
+  
+    console.log(this.selectedCronogramapagos.Prestamo.id);
+    this.getListTicketsPrestamos(this.selectedCronogramapagos.Prestamo.id);
+    console.log(this.idcronogramapagos);
+  
+    this.nombreClienteSeleccionado = this.selectedCronogramapagos.Prestamo.Cliente.nombre + " " + this.selectedCronogramapagos.Prestamo.Cliente.apellido;
+    this.estado = "pendiente";
+  }
+  
+  setMontoRestante() {
+    let tipoPago = this.formPago.get('id_tipopago').value;
+    let monto_restante = this.montoRestanteFinal;
+  
+    switch (tipoPago) {
+      case "1":
+        monto_restante -= this.interes; // Restar el interés del monto restante
+        this.formPago.patchValue({ pago: this.interes }, { emitEvent: false });
+        this.capital_pago = 0;
+        this.interesfinal = this.formPago.get('pago').value;
+        this.pagoPrestamo = this.formPago.get('pago').value;
+        break;
+      case "2":
+        if (this.montoRestanteFinal < this.monto_prestamo) {
+          this.formPago.patchValue({ pago: this.montoRestanteFinal }, { emitEvent: false });
+        } else {
+          this.formPago.patchValue({ pago: this.monto_prestamo }, { emitEvent: false });
+        }
+        this.capital_pago = this.formPago.value.pago;
+        this.interesfinal = 0;
+        this.pagoPrestamo = this.formPago.value.pago;
+        break;
+      case "3":
+        this.formPago.patchValue({ pago: this.montoRestanteFinal }, { emitEvent: false });
+        this.capital_pago = this.montoRestanteFinal;
+        this.interesfinal = 0;
+        this.pagoPrestamo = this.formPago.value.pago;
+        break;
+      case "4":
+        const pago = this.formPago.get('pago').value;
+        if (pago > this.interes) {
+          this.capital_pago = pago - this.interes;
+          this.interesfinal = pago - this.capital_pago;
+          this.pagoPrestamo = this.formPago.value.pago;
+        }
+        break;
+    }
+  }
+  
+  isOptionDisabled(tipopago: any): boolean {
+    if (tipopago.nombre_tipo === 'interes') {
+      return this.sumaMontoPagado > this.interes;
+    }
+    
+    if (tipopago.nombre_tipo === 'prestamo') {
+      return this.sumaMontoPagado === this.monto_prestamo || this.sumaMontoPagado > this.monto_prestamo || this.sumaMontoPagado > this.interes;
+    }
+    
+    if (tipopago.nombre_tipo === 'abono') {
+      return this.sumaMontoPagado > this.interes || this.sumaMontoPagado > this.monto_prestamo;
+    }
+  
+    return false;
+  }
+  
+  buscarPagos(): void {
+    if (!this.terminoBusqueda.trim()) {
+      this.toastr.warning('Por favor, ingrese un DNI.', '', { positionClass: 'toast-top-right' });
+      return;
+    }
+  
+    this.loading = true;
+    this.searchService.searchCronogramaPagos(this.currentPage, this.pageSize, this.terminoBusqueda).subscribe(
+      (response: any) => {
+        this.listCronogramaPagos = response.data;
+        this.currentPage = response.page;
+        this.totalPages = response.totalPages;
+        this.totalItems = response.totalItems;
+        this.loading = false;
+  
+        this.sumaMontoPagado = this.listCronogramaPagos.reduce((sum, cronograma) => sum + Number(cronograma.monto_pagado), 0);
+  
+        console.log(this.sumaMontoPagado);
+  
+        if (this.listCronogramaPagos.length === 0) {
+          this.toastr.warning('No se encontraron préstamos con ese DNI.', '', { positionClass: 'toast-top-right' });
+        }
+      },
+      error => {
+        console.error('Error al buscar cronogramas de pagos:', error);
+        this.loading = false;
+      }
+    );
+  }
+  
   pageChanged(page: number) {
     this.currentPage = page;
     this.buscarPagos();
   }
   
-  // Método para generar las páginas disponibles
   getPages(): number[] {
-    // Retorna un array de números enteros del 1 al totalPages
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
-
-
-    // Método para eliminar la búsqueda
-    eliminarBusqueda() {
-      // Lógica para eliminar la búsqueda, si es necesario
-      this.listCronogramaPagos = []; // Limpiar la lista de clientes
+  
+  eliminarBusqueda() {
+    this.listCronogramaPagos = [];
+  }
+  
+  getTipoPagos(): void {
+    this.loading = true;
+    this._TipoPagoService.getListTipopagos().subscribe(
+      (response: any) => {
+        this.ListTipoPagos = response;
+        this.loading = false;
+      },
+      error => {
+        console.error('Error al obtener los tipos de pago:', error);
+        this.toastr.error('Error al obtener los tipos de pago');
+        this.loading = false;
+      }
+    );
+  }
+  
+  getListTicketsPrestamos(idprestamo: number) {
+    this.loading = true;
+  
+    this._ticketService.getListTicketPrestamo(idprestamo).subscribe(
+      (response: any) => {
+        this.listTicketsPrestamo = response;
+        this.nombresempleado = `${response.Empleado.nombre} ${response.Empleado.apellidos}`;
+        this.empleadoid = response.Empleado.id;
+        this.estadopago = response.idpago;
+  
+        this.loading = false;
+      },
+      error => {
+        console.error('Error al obtener los tickets del préstamo:', error);
+        this.loading = false;
+      }
+    );
+  }
+  
+  onTipoPagoSelected(event: any): void {
+    const selectedTipoPagoId = event.target.value;
+    if (selectedTipoPagoId === "4") {
+      this.formPago.get('pago').enable();
+    } else {
+      this.formPago.get('pago').disable();
     }
-
-              getListPrestamos() {
-                // this.loading = true;
-              
-                // this._ticketService.getListTicketPrestamo(id).subscribe((response: any) => {
-                //   this.listPrestamos = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
-                //   this.loading = false;
-                //   console.log(this.listPrestamos);
-                // });
-              }
-
-              getTipoPagos(): void {
-                this.loading = true;
-                this._TipoPagoService.getListTipopagos().subscribe(
-                  (response: any) => {
-                    this.ListTipoPagos = response;
-                    this.loading = false;
-                  },
-                  error => {
-                    console.error('Error al obtener los tipos de pago:', error);
-                    this.toastr.error('Error al obtener los tipos de pago');
-                    this.loading = false;
-                  }
-                );
-              }
-              
-
-              // getListTicketsPrestamos(idprestamo: number) {
-              //   this.loading = true;
-              
-              //   this._ticketService.getListTicketPrestamo(idprestamo).subscribe((response: any) => {
-              //     this.listTicketsPrestamo = response; // Asigna los datos de clientes del objeto devuelto por el servicio
-              //     this.nombresempleado = response.Empleado.nombre +" " +response.Empleado.apellidos ;
-              //     this.empleadoid = response.Empleado.id;
-              //     this.estadopago = response.idpago;
-                  
-              //     this.montoRestante = response.Pago?.monto_restante ?? this.selectedCronogramapagos?.Prestamo.monto_pago ?? 0;
-                 
-              //     console.log ("ver monto restante " + this.montoRestante);
-              //     this.loading = false;
-              //   });
-              // }
-
-              getListTicketsPrestamos(idprestamo: number) {
-                this.loading = true;
-              
-                this._ticketService.getListTicketPrestamo(idprestamo).subscribe(
-                  (response: any) => {
-                    this.listTicketsPrestamo = response;
-                    this.nombresempleado = `${response.Empleado.nombre} ${response.Empleado.apellidos}`;
-                    this.empleadoid = response.Empleado.id;
-                    this.estadopago = response.idpago;
-              
-                   
-                    this.loading = false;
-                  },
-                  error => {
-                    console.error('Error al obtener los tickets del préstamo:', error);
-                    this.loading = false;
-                  }
-                );
-              }
-
-
-              
-             
-
-              onTipoPagoSelected(event: any): void {
-                const selectedTipoPagoId = event.target.value;
-                if (selectedTipoPagoId === "4") {
-                  this.formPago.get('pago').enable(); // Habilita el campo pago
-                } else {
-                  this.formPago.get('pago').disable(); // Deshabilita el campo pago
-                }
-              }
-
-              montoprueba() {
-                  this.monto_inicial = this.monto_prestamo / 1.20;
-                  this.interes = this.monto_prestamo - this.monto_inicial;
-                  this.montoRestanteFinal = this.monto_prestamo - this.sumaMontoPagado;
-                
-                
-                }
-            
-              setSelectedPago(cronogramapagos: CronogramaPago) {
-                this.selectedCronogramapagos = cronogramapagos;
-                this.id = cronogramapagos.Prestamo.id;
-                this.setMontoRestanInicial();
-              
-                this.monto_prestamo = cronogramapagos.Prestamo.monto_prestamo || 0;
-                this.monto_pago = cronogramapagos.Prestamo.monto_pago || 0;
-                this.montoprueba();
-              
-                if (cronogramapagos.Prestamo.Articulo.Categoria.id === 1) {
-                  this.descripcionArticuloSeleccionado = `${cronogramapagos.Prestamo.Articulo.Vehiculo.descripcion} ${cronogramapagos.Prestamo.Articulo.Vehiculo.marca} ${cronogramapagos.Prestamo.Articulo.Vehiculo.modelo} ${cronogramapagos.Prestamo.Articulo.Vehiculo.placa}`;
-                } else if (cronogramapagos.Prestamo.Articulo.Categoria.id === 2) {
-                  this.descripcionArticuloSeleccionado = `${cronogramapagos.Prestamo.Articulo.Electrodomestico.descripcion} ${cronogramapagos.Prestamo.Articulo.Electrodomestico.marca} ${cronogramapagos.Prestamo.Articulo.Electrodomestico.modelo} ${cronogramapagos.Prestamo.Articulo.Electrodomestico.numero_serie}`;
-                }
-              
-                this.formPago.patchValue({
-                  fecha_pago: this.fechaActual,
-                  idprestamo: cronogramapagos.Prestamo.id,
-                  fecha_prestamo: cronogramapagos.Prestamo.fecha_prestamo,
-                  fecha_devolucion: cronogramapagos.Prestamo.fecha_devolucion,
-                  monto_prestamo: cronogramapagos.Prestamo.monto_prestamo,
-                  monto_restante: this.montoRestanteFinal,
-                });
-              
-                this.estado = "pendiente";
-              
-                // Resetear el estado de validación del formulario y establecer formularioModificado a false
-                this.formPago.markAsUntouched();
-                this.mostrarModalPago();
-              
-                console.log('Estado del formulario:', this.formPago.valid);
-              }
-              
+  }
+  
+  setSelectedPago(cronogramapagos: CronogramaPago) {
+    this.selectedCronogramapagos = cronogramapagos;
+    this.id = cronogramapagos.Prestamo.id;
+    this.setMontoRestanInicial();
+  
+    this.monto_prestamo = cronogramapagos.Prestamo.monto_prestamo || 0;
+    this.monto_pago = cronogramapagos.Prestamo.monto_pago || 0;
+    this.interes = this.monto_pago - this.monto_prestamo;
+    this.montoRestanteFinal = this.monto_pago - this.sumaMontoPagado;
+  
+    if (cronogramapagos.Prestamo.Articulo.Categoria.id === 1) {
+      this.descripcionArticuloSeleccionado = `${cronogramapagos.Prestamo.Articulo.Vehiculo.descripcion} ${cronogramapagos.Prestamo.Articulo.Vehiculo.marca} ${cronogramapagos.Prestamo.Articulo.Vehiculo.modelo} ${cronogramapagos.Prestamo.Articulo.Vehiculo.placa}`;
+    } else if (cronogramapagos.Prestamo.Articulo.Categoria.id === 2) {
+      this.descripcionArticuloSeleccionado = `${cronogramapagos.Prestamo.Articulo.Electrodomestico.descripcion} ${cronogramapagos.Prestamo.Articulo.Electrodomestico.marca} ${cronogramapagos.Prestamo.Articulo.Electrodomestico.modelo} ${cronogramapagos.Prestamo.Articulo.Electrodomestico.numero_serie}`;
+    }
+  
+    this.formPago.patchValue({
+      fecha_pago: this.fechaActual,
+      idprestamo: cronogramapagos.Prestamo.id,
+      fecha_prestamo: cronogramapagos.Prestamo.fecha_prestamo,
+      fecha_devolucion: cronogramapagos.Prestamo.fecha_devolucion,
+      monto_pago: cronogramapagos.Prestamo.monto_pago,
+      monto_restante: this.montoRestanteFinal,
+    });
+  
+    this.estado = "pendiente";
+  
+    this.formPago.markAsUntouched();
+    this.mostrarModalPago();
+  
+    console.log('Estado del formulario:', this.formPago.valid);
+  }
              
 
               setSelectedPrestamo(prestamo: Prestamo) {
@@ -705,10 +626,9 @@ fecha_pago : Date ;
     
     this.loading = true;
     this._prestamosService.deletePrestamo(id).subscribe(() => {
-      this.getListPrestamos();
+      // this.getListTicketsPrestamos();
       this.toastr.warning('El Prestamo fue eliminado con exito', 'Prestamo eliminado');
     })
-
 
 
   }
