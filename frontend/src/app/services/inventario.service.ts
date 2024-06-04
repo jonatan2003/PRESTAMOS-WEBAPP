@@ -30,6 +30,11 @@ export class InventarioService {
     return this.http.put<Inventario>(`${this.apiUrl}/${id}`, inventario);
   }
 
+  updateInventarioPrecio(id: number, inventario: Partial<Inventario>): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, inventario);
+  }
+
+
   deleteInventario(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

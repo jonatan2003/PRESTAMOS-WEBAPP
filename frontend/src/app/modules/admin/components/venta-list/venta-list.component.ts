@@ -200,13 +200,21 @@ export class VentaListComponent implements OnInit {
     const clienteApellido = comprobante.Venta?.Cliente?.apellido || '';
     const clienteDNI = comprobante.Venta?.Cliente?.dni || '';
   
-    const articulos = detallesVenta.map(detalle => {
+    const detalleventa = detallesVenta.map(detalle => {
       let descripcion = 'No hay descripción disponible';
       let marca = 'No hay marca disponible';
       let modelo = 'No hay modelo disponible';
+      let cantidad = 0;
+      let precio_unitario = 0;
+      let subtotal = 0;
   
       if (detalle.Articulo) {
+        
+  
         if (detalle.Articulo.Vehiculo) {
+          cantidad = detalle.cantidad;
+        precio_unitario = detalle.precio_unitario;
+        subtotal = detalle.subtotal;
           descripcion = detalle.Articulo.Vehiculo.descripcion || '';
           marca = detalle.Articulo.Vehiculo.marca || '';
           modelo = detalle.Articulo.Vehiculo.modelo || '';
@@ -214,10 +222,16 @@ export class VentaListComponent implements OnInit {
           descripcion = detalle.Articulo.Electrodomestico.descripcion || '';
           marca = detalle.Articulo.Electrodomestico.marca || '';
           modelo = detalle.Articulo.Electrodomestico.modelo || '';
+          cantidad = detalle.cantidad;
+          precio_unitario = detalle.precio_unitario;
+          subtotal = detalle.subtotal;
         }
       }
   
       return {
+        cantidad,
+        precio_unitario,
+        subtotal,
         descripcion,
         marca,
         modelo
@@ -227,13 +241,10 @@ export class VentaListComponent implements OnInit {
     this.impresionService.imprimirFilaVentas('Ventas', {
       empleado: `${empleadoNombre} ${empleadoApellidos}`,
       cliente: `${clienteNombre} ${clienteApellido}`,
-      articulos,
+      detalleventa,
       dni: clienteDNI,
       fecha_venta: comprobante.Venta?.fecha_venta || '',
       tipo_pago: comprobante.Venta?.tipo_pago || '',
-      cantidad: detallesVenta.reduce((sum, detalle) => sum + (detalle.cantidad || 0), 0),
-      precio_unitario: detallesVenta.reduce((sum, detalle) => sum + (detalle.precio_unitario || 0), 0),
-      subtotal: detallesVenta.reduce((sum, detalle) => sum + (detalle.subtotal || 0), 0),
       total: comprobante.Venta?.total || '',
       igv: comprobante.igv || 0,
       descuento: comprobante.descuento || 0,

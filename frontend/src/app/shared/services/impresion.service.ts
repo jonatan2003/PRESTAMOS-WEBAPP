@@ -485,25 +485,17 @@ async imprimirFilaVentas(entidad: string, datos: any) {
     format: [2.9, 8.2],
   });
 
-
   // Generar el código QR único
-  const qrData = `Datos de la Venta: ${JSON.stringify(datos)}`;
+  const qrData = `Datos de la Venta: ${JSON.stringify(datos,)}`;
   const qrCodeDataURL = await QRCode.toDataURL(qrData);
 
   // Genera un número de serie único
   const nro_serie = `                           ${datos.serie}`;
 
   const tipo_comprobante = `${datos.tipo_comprobante}`;
-  let boleta_factura;
-
-  if (tipo_comprobante == 'boleta') {
-    boleta_factura = '          BOLETA DE VENTA ELECTRONICA ';
-  } else {
-    boleta_factura = '          FACTURA DE VENTA ELECTRONICA ';
-  }
+  let boleta_factura = tipo_comprobante === 'boleta' ? '          BOLETA DE VENTA ELECTRONICA ' : '          FACTURA DE VENTA ELECTRONICA ';
 
   // Datos de la empresa
-  const comprobante = boleta_factura;
   const empresa = '               CASA DE EMPEÑOS DON GATO';
   const direccion = `Calle: Principal 123, Ciudad    Teléfono: 987654233`;
   const ruc = `                      R.U.C: 10785645876`;
@@ -512,14 +504,11 @@ async imprimirFilaVentas(entidad: string, datos: any) {
   const cliente = `Cliente: ${datos.cliente}`;
   const dni = `Dni: ${datos.dni}`;
   const empleado = `                  Empleado: ${datos.empleado} `;
-  const descripcion = `Articulo                  Marca                  Modelo`;
+  const descripcion = `Articulo                 CANT.  P.U  SUBTOTAL`;
+  const articulos = Array.isArray(datos.detalleventa) ? datos.detalleventa : [];
 
-  // Crear una constante articulos
-  const articulos = Array.isArray(datos.articulos) ? datos.articulos : [];
-
-  const fecha_venta = `Fecha de emision:                              ${datos.fecha_venta}`;
-  const tipo_pago = `Tipo de Pago         Cantidad          Precio Unitario`;
-  const pago = `${datos.tipo_pago}                         ${datos.cantidad}                      S/.${datos.precio_unitario} `;
+  const fecha_venta = `Fecha de emision:  ${datos.fecha_venta}`;
+  const tipo_pago = `Tipo de Pago     `;
   const IGV = `                                                    IGV:         S/.${datos.igv}`;
   const descuento = `                                 Total  Descuento:       S/.${datos.descuento}`;
   const total = `                                      Importe Total:     S/.${datos.total}`;
@@ -532,7 +521,7 @@ async imprimirFilaVentas(entidad: string, datos: any) {
   // Contenido del cuerpo
   const cuerpo = [
     [direccion],
-    [comprobante],
+    [boleta_factura],
     [ruc],
     [nro_serie],
     ['__________________________________________'],
@@ -544,23 +533,19 @@ async imprimirFilaVentas(entidad: string, datos: any) {
   ];
 
   // Añadir artículos al cuerpo
-  articulos.forEach(articulo => {
-    cuerpo.push([articulo.descripcion, articulo.marca, articulo.modelo]);
+  articulos.forEach(detalle => {
+    cuerpo.push([`${detalle.descripcion + " "+detalle.modelo + " " +detalle.marca}` + "      " + `${detalle.cantidad}` + "   "+ `${detalle.precio_unitario}` + "   " +`${detalle.subtotal}`]);
   });
 
   cuerpo.push(
     ['__________________________________________'],
     [tipo_pago],
-    [pago],
+    [`${datos.tipo_pago}`],
     [IGV],
     [descuento],
     [total],
     [''],
     [empleado],
-    [''],
-    [''],
-    [''],
-    [''],
     [''],
     [''],
     [''],
@@ -580,105 +565,43 @@ async imprimirFilaVentas(entidad: string, datos: any) {
 
   // Ajustar las coordenadas del código QR para que aparezca en una esquina o en la parte inferior de la boleta
   const qrX = 0.8; // Coordenada X
-  const qrY = 6.6; // Coordenada Y
+  const qrY = 6.7; // Coordenada Y
 
-  // Convertir la imagen a Base64
-  const imgData = await this.getBase64ImageFromURL('/assets/img/login/gato.png');
-  doc1.addImage(imgData, 'PNG', 0.9, 0, 1.1, 1);
+ // Convertir la imagen a Base64
+ const imgData = await this.getBase64ImageFromURL('/assets/img/login/gato.png');
+ doc1.addImage(imgData, 'PNG', 0.9, 0, 1.1, 1);
+ doc1.addImage(qrCodeDataURL, 'PNG', qrX, qrY, qrWidth, qrHeight);
 
-  doc1.addImage(qrCodeDataURL, 'PNG', qrX, qrY, qrWidth, qrHeight);
+ autoTable(doc1, {
+   startY: margintop,
+   head: encabezado,
+   body: cuerpo,
 
-  autoTable(doc1, {
-    startY: margintop,
-    head: encabezado,
-    body: cuerpo,
+   styles: {
+     fontSize: 8, // Tamaño de la letra de hoja
+     halign: 'justify', // Alineación horizontal justificada
+     textColor: [0, 0, 0], // Color del texto en RGB (negro)
+   },
 
-    styles: {
-      fontSize: 8, // Tamaño de la letra de hoja
-      halign: 'justify', // Alineación horizontal justificada
-      textColor: [0, 0, 0], // Color del texto en RGB (negro)
-    },
-
-    theme: 'plain',
-    tableWidth: doc1.internal.pageSize.width - 0.2, // Ancho de la tabla
-    margin: { // Adjust the margins
-      top: margintop,
-      bottom: marginBottom,
-      left: marginleft + 0.1,
-      right: marginright + 0
-    },
-    didParseCell: (data) => {
-      if (data.row.index === 9 || data.row.index === 12) { // Cambia el índice a la fila que contiene 'descripcion'
-        data.cell.styles.fontStyle = 'bold';
-      }
-      else if (data.row.index === 1 || data.row.index === 18) {
-        data.cell.styles.fontStyle = 'bold';
-      }
-      else if (data.row.index === 4 || data.row.index === 11) {
-        data.cell.styles.fontStyle = 'bold';
-      }
-    },
-
-    didDrawCell: (data) => {
-      if (data.section === 'body') {
-
-        // Establecer color de los bordes
-        doc1.setDrawColor(0); // Color negro
-        // Dibujar borde superior
-        if (data.row.index === 0) {
-          // Si es la primera fila, no dibujar el borde superior
-          doc1.setLineWidth(0);
-        } else if (data.row.index === cuerpo.length - 1) {
-          // Si es la última fila, no dibujar el borde inferior
-          doc1.setLineWidth(0);
-        } else if (data.row.index === 1 || data.row.index === 2) {
-          // Si es la tercera o cuarta fila, no dibujar los bordes
-          doc1.setLineWidth(-1);
-        } else if (data.row.index === 3 || data.row.index === 4) {
-          // Si es la tercera o cuarta fila, no dibujar los bordes
-          doc1.setLineWidth(0);
-        } else if (data.row.index === 5 || data.row.index === 6) {
-          // Si es la tercera o cuarta fila, no dibujar los bordes
-          doc1.setLineWidth(0);
-        } else if (data.row.index === 7 || data.row.index === 8) {
-          // Si es la tercera o cuarta fila, no dibujar los bordes
-          doc1.setLineWidth(0);
-        } else if (data.row.index === 10) {
-          // Si es la tercera o cuarta fila, no dibujar los bordes
-          doc1.setLineWidth(0);
-        } else if (data.row.index === 11 || data.row.index === 12 || data.row.index === 13) {
-          // Si es la tercera o cuarta fila, no dibujar los bordes
-          doc1.setLineWidth(0);
-        }
-        else if (data.row.index === 14 || data.row.index === 15) {
-          // Si es la tercera o cuarta fila, no dibujar los bordes
-          doc1.setLineWidth(0);
-        } else if (data.row.index === 16 || data.row.index === 17) {
-          // Si es la tercera o cuarta fila, no dibujar los bordes
-          doc1.setLineWidth(0);
-        } else if (data.row.index === 19 || data.row.index === 20) {
-          // Si es la tercera o cuarta fila, no dibujar los bordes
-          doc1.setLineWidth(0);
-        } else if (data.row.index === 21 || data.row.index === 22) {
-          // Si es la tercera o cuarta fila, no dibujar los bordes
-          doc1.setLineWidth(0);
-        } else if (data.row.index === 23 || data.row.index === 24) {
-          // Si es la tercera o cuarta fila, no dibujar los bordes
-          doc1.setLineWidth(0);
-        } else {
-          // Si no es la primera ni la última fila, dibujar los bordes
-          doc1.line(data.cell.x, data.cell.y, data.cell.x + data.cell.width, data.cell.y); // Borde superior
-          doc1.line(data.cell.x, data.cell.y + data.cell.height, data.cell.x + data.cell.width, data.cell.y + data.cell.height); // Borde inferior
-        }
-      }
-    }
-  });
+   theme: 'plain',
+   tableWidth: doc1.internal.pageSize.width - 0.2, // Ancho de la tabla
+   margin: {
+     top: margintop,
+     bottom: marginBottom,
+     left: marginleft + 0.1,
+     right: marginright + 0,
+   },
+   didParseCell: (data) => {
+     if (data.row.index === 9) { // Cambia el índice a la fila que contiene 'descripcion'
+       data.cell.styles.fontStyle = 'bold';
+     }
+   },
+ });
 
   // Guardar o mostrar el documento
   const hoy = new Date();
-  doc1.save(entidad + "_" + hoy.getDate() + (hoy.getMonth() + 1) + hoy.getFullYear() + "_" + hoy.getTime() + '.pdf');
+  doc1.save(`${entidad}_${hoy.getDate()}${hoy.getMonth() + 1}${hoy.getFullYear()}_${hoy.getTime()}.pdf`);
 }
-
 
 
 
