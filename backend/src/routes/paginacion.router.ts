@@ -22,12 +22,18 @@ import { getClientes,
          getTicketsPagos,
          getTicketsVentas,
          getTicketsPrestamosPendientes,
-         getCronogramaPagosPendientes} from '../controllers/paginacion.controller';
+         getCronogramaPagosPendientes,
+         getClientesDNI,
+         getClientesRUC} from '../controllers/paginacion.controller';
 
 const PaginacionRouter = Router();
 
 // Rutas para clientes
 PaginacionRouter.get('/clientes', getClientes);
+
+PaginacionRouter.get('/clientesdni', getClientesDNI);
+
+PaginacionRouter.get('/clientesruc', getClientesRUC);
 
 // Rutas para préstamos
 PaginacionRouter.get('/prestamos', getPrestamos);

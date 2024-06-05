@@ -28,6 +28,7 @@
           <form id="formPrestamo" action="" autocomplete="off" >
             <p class="text-center roboto-medium">AGREGAR CLIENTE | ITEMS | EMPLEADO</p>
             <p class="text-center">
+				<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalBucarCliente"><i class="fas fa-user"></i> &nbsp;Buscar Cliente</button>
                 <button type="button" class="btn btn-primary"  (click)="mostrarCliente()"><i class="fas fa-user-plus"></i> &nbsp; Agregar Cliente</button>
                 <button type="button" class="btn btn-primary"  (click)="mostrarArticulo()"><i class="fas fa-box-open"></i> &nbsp; Agregar Articulo</button>
                 <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalEmpleado"><i class="fas fa-user"></i> &nbsp; Agregar empleado</button> -->
@@ -247,77 +248,13 @@
 	  </div>
 	</div>
   </div>
+
+
+  
   
 
-<!-- modal-cliente
-<div class="modal fade" id="ModalCliente" tabindex="-1" role="dialog" aria-labelledby="ModalCliente" aria-hidden="true">
-<div class="modal-dialog" role="document">
-<div class="modal-content">
-
-<div class="modal-header">
-<h5 class="modal-title" id="ModalCliente">AGREGAR CLIENTES</h5>
-<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-<span aria-hidden="true">&times;</span>
-</button>
-</div>
-
-
-<div class="modal-body">
-<div class="container-fluid">
-<div class="form-group">
-<label for="inputSearch" class="bmd-label-floating">¿Qué cliente estás buscando?</label>
-<input type="text" class="form-control" name="busqueda" id="inputSearch" maxlength="30" [(ngModel)]="terminoBusqueda">
-</div>
-<form  (submit)="buscarClientes()">
-<div class="container-fluid">
-<div class="row justify-content-md-center">
-
-	<div class="col-12">
-	 <p class="text-center" style="margin-top: 40px;">
-	<button type="submit" class="btn btn-raised btn-info"><i class="fas fa-search"></i> &nbsp; BUSCAR</button>
-   </p>
-  </div>
-   </div>
- </div>
-</form>
-
-</div>
-
-
-<div class="container-fluid">
-<div  class="table-responsive">
-<table  class="table table-hover table-bordered table-sm">
-
-<tbody>
- <tr class="text-center" *ngFor="let cliente of clientes"> -->
-  <!-- <td>{{ cliente.id }}</td> -->
- <!-- <td>{{ cliente.nombre }}</td>
- <td>{{ cliente.apellido }}</td>
- <td>{{ cliente.dni }}</td>
- <td>{{ cliente.telefono }}</td>
- <td>
-<form action="">
-<button   type="button" id="botonAgregarCliente" class="btn btn-primary" (click)="seleccionarCliente(cliente)"  data-dismiss="modal"><i class="fas fa-box-open"></i></button>
-</form>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-
-
-
-</div>
-<div class="modal-footer">
-<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-</div>
-</div>
-</div>
-</div> -->
-
-
 <!-- MODAL ARTICULO -->
+
 <div  class="modal fade" id="ModalArticulo" tabindex="-1" role="dialog" aria-labelledby="ModalArticulo" aria-hidden="true" >
   <div class="modal-dialog" role="document">
 	  <div class="modal-content">
@@ -563,6 +500,66 @@
 	  </div>
   </div>
 </div>
+
+
+<!-- MODAL BUSCAR CLIENTE-->
+<div class="modal fade" id="ModalBucarCliente" tabindex="-1" role="dialog" aria-labelledby="ModalBucarCliente" aria-hidden="true" >
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="ModalBucarCliente">Agregar Cliente</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<div class="form-group">
+						<label for="agregar_cliente" class="bmd-label-floating">DNI, Nombre, Apellido, Telefono</label>
+						<input type="text" class="form-control" name="agregar_cliente" id="agregar_cliente" maxlength="30"  [(ngModel)]="terminoBusqueda">
+					</div>
+					<form  (submit)="buscarClientes()">
+					  <div class="container-fluid">
+					   <div class="row justify-content-md-center">
+	
+							<div class="col-12">
+							 <p class="text-center" style="margin-top: 40px;">
+							<button type="submit" class="btn btn-raised btn-info"><i class="fas fa-search"></i> &nbsp; BUSCAR</button>
+						   </p>
+						  </div>
+						   </div>
+						 </div>
+					  </form>
+				</div>
+				<br>
+				<div class="container-fluid">
+					<div class="table-responsive">
+						<table class="table table-hover table-bordered table-sm">
+							<tbody>
+								<tr class="text-center" *ngFor="let cliente of clientes">
+									<td>{{ cliente.dni }}</td>
+									<td>{{ cliente.nombre }}</td>
+									<td>{{ cliente.apellido }}</td> 
+									<!-- <td>{{ empleado.dni }}</td> -->
+									
+									<td>
+										<form action="">
+											<button type="button" class="btn btn-primary" (click)="seleccionarClientes(cliente)" data-dismiss="modal"><i class="fas fa-user-plus"></i></button>
+										</form>
+									</td>
+								</tr>
+	
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+	</div>
+	</div>
 
 
 <!-- MODAL ITEM -->

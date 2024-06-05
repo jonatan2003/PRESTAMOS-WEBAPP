@@ -56,6 +56,7 @@ export class ReservationNewComponent {
  electrodomesticoId: number | null = null;
   listTicket : Ticket [] = [];
 //..--------------
+clienteAgregado: boolean = false;
 
 
 formcliente: FormGroup; 
@@ -93,6 +94,13 @@ id_articulo = null;
 
   descripcionArticuloSeleccionado: string = '';
   
+    
+  currentPage: number = 1;
+  pageSize: number = 10; // Tamaño de la página
+  totalItems: number;
+  totalPages: number = 0;   // Inicializa totalPages en 0
+
+
 
 
   constructor(
@@ -648,6 +656,44 @@ limpiarFormulario() {
         }
       }
     }
+
+
+      // Método para cambiar de página
+pageChanged(page: number) {
+  this.currentPage = page;
+
+  this.buscarClientes();
+}
+
+seleccionarClientes(cliente: Cliente) {
+  //  this.empleadoSeleccionado = empleado.nombre;
+  //    this.form.controls['empleado'].setValue(empleado.nombre);
+    
+    this.idClienteSeleccionado = cliente.id;
+     this.form.controls['id_cliente'].setValue(cliente.id);
+     this.nombreClienteSeleccionado = cliente.nombre  + " " +cliente.apellido;
+      this.clienteAgregado = true;
+    }
+
+    buscarClientes() {
+      this.loading = true; // Establecer loading en true para mostrar la carga
+    
+    this.searchService.searchClientes ( this.currentPage, this.pageSize,this.terminoBusqueda,).subscribe(
+      (response: any) => {
+        this.clientes = response.data; // Asignar los datos de empleados a la propiedad empleados
+        this.currentPage = response.page; // Actualizar currentPage con el número de página actual
+        this.totalPages = response.totalPages; // Actualizar totalPages con el número total de páginas
+        this.totalItems = response.totalItems; // Actualizar totalItems con el número total de elementos
+        this.loading = false; // Establecer loading en false al finalizar la carga
+      },
+      error => {
+        console.error('Error al buscar empleado:', error);
+        this.loading = false; // Manejar el error y establecer loading en false
+      }
+    );
+    }
+
+
 
 
     

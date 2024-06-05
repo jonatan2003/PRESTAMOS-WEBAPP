@@ -47,7 +47,7 @@ export class VentaNewComponent implements OnInit {
   articuloSeleccionado: any;
   empleadoSeleccionado: any;
   inventarioSeleccionado: any;
- 
+  tipocomprobante : number;
   idelectrodomestico : number;
   idvehiculo : number;
   selectedInventario: Inventario[] = [];
@@ -84,6 +84,7 @@ totalPages: number = 0;   // Inicializa totalPages en 0
   nombreClienteSeleccionado: string = '';
   idClienteSeleccionado: number | null = null;
   formcliente: FormGroup; 
+  formclienteRUC: FormGroup;
   form: FormGroup;
   loading: boolean = false;
   id: number;
@@ -99,6 +100,12 @@ totalPages: number = 0;   // Inicializa totalPages en 0
   subtotal: number = 0;
   igv: number = 0;
   total: number = 0;
+
+
+  currentPage2: number = 1;
+  pageSize2: number = 10; // Tamaño de la página
+  totalItems2: number;
+  totalPages2: number = 0;   // Inicializa totalPages en 0
 
 
   constructor(private searchService: SearchService,
@@ -135,11 +142,23 @@ totalPages: number = 0;   // Inicializa totalPages en 0
     });
 
     this.formcliente = this.fb.group({
-      tipoCliente: ['dni'],
-      nombre: [{ value: '', disabled: true }, Validators.required],
-      apellido: [{ value: '', disabled: true }, Validators.required],
-      direccion: [{ value: '', disabled: true }, Validators.required],
+      tipoClienteB: ['dni'],
+      nombre: ['', [Validators.required, Validators.maxLength(50)]],
+      apellido: ['', [Validators.required, Validators.maxLength(50)]],
+      direccion: ['', [Validators.required, Validators.maxLength(50)]],
       dni: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(8), Validators.pattern("^[0-9]*$")]],
+      ruc: ['no'],
+      razon_social: ['no'],
+      telefono: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(9), Validators.pattern("^[0-9]*$")]],
+      rubro: ['', [Validators.required, Validators.maxLength(25)]],
+    });
+
+    this.formclienteRUC = this.fb.group({
+      tipoClienteF: ['ruc'],
+      nombre: ['no'],
+      apellido: ['no'],
+      direccion: ['', [Validators.required, Validators.maxLength(50)]],
+      dni: ['no'],
       ruc: ['', [Validators.required, Validators.maxLength(11), Validators.pattern("^[0-9]*$")]],
       razon_social: ['', [Validators.required, Validators.maxLength(25)]],
       telefono: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(9), Validators.pattern("^[0-9]*$")]],
@@ -148,7 +167,8 @@ totalPages: number = 0;   // Inicializa totalPages en 0
   }
 
   ngOnInit(): void {
-    this.onTipoClienteChange();
+   
+
     const fechaActual = new Date();
     const fechaActualString = fechaActual.toISOString().slice(0, 10);
     this.form.patchValue({ fecha_venta: fechaActualString });
@@ -157,10 +177,82 @@ totalPages: number = 0;   // Inicializa totalPages en 0
       this.operacion = 'Editar';
       // this.getVenta(this.id);
     }
+
     this.getListEmpleados();
     this.getListClientes();
     this.getListArticulos();
 
+  }
+
+  onTipoClienteChangeB() {
+    const tipoCliente = this.formcliente.get('tipoClienteB').value;
+    if (tipoCliente === 'dni') {
+      this.formcliente.controls['dni'].enable();
+      this.formcliente.controls['nombre'].enable();
+      this.formcliente.controls['apellido'].enable();
+      this.formcliente.controls['direccion'].enable();
+      this.formcliente.controls['rubro'].enable();
+
+      this.formcliente.controls['ruc'].enable();
+      this.formcliente.controls['razon_social'].enable();
+
+    }
+  }
+
+  onTipoClienteChangeF() {
+    const tipoCliente = this.formclienteRUC.get('tipoClienteF').value;
+    if (tipoCliente === 'ruc') {
+      this.formclienteRUC.controls['ruc'].enable();
+      this.formclienteRUC.controls['razon_social'].enable();
+      this.formclienteRUC.controls['direccion'].enable();
+      this.formclienteRUC.controls['telefono'].enable();
+      this.formclienteRUC.controls['rubro'].enable();
+
+      this.formclienteRUC.controls['dni'].enable();
+      this.formclienteRUC.controls['nombre'].enable();
+      this.formclienteRUC.controls['apellido'].enable();
+
+    
+    }
+  }
+
+  onDniChange() {
+    const dni = this.formcliente.get('dni').value;
+    if (dni.length === 8) {
+      this.toastr.info('Buscando DNI...', 'Información');
+      this.apiDniService.getClienteByDni(dni).subscribe(data => {
+        this.toastr.info('DNI ENCONTRADO', 'Información');
+        const responseData = data; // Acceder al objeto 'body'
+        this.formcliente.patchValue({
+          nombre: responseData.nombres, // Acceder a las propiedades dentro de 'body'
+          apellido: responseData.apellidoPaterno + " " + responseData.apellidoMaterno,
+          dni: responseData.numeroDocumento,
+       
+        });
+      }, error => {
+        this.toastr.error('DNI DESCONOCIDO', 'NO ENCONTRADO');
+        console.error(error);
+      });
+    }
+  }
+
+  onRucChange() {
+    const ruc = this.formclienteRUC.get('ruc').value;
+    if (ruc.length === 11) {
+      this.toastr.info('Buscando RUC...', 'Información');
+      this.apiRucService.getClienteByDni(ruc).subscribe(data => {
+        this.toastr.info('RUC ENCONTRADO', 'Información');
+        this.formclienteRUC.patchValue({
+          ruc: data.numeroDocumento,
+          direccion: data.direccion,
+          razon_social: data.nombre,
+          
+        });
+      }, error => {
+        this.toastr.error('RUC DESCONOCIDO', 'NO ENCONTRADO');
+        console.error(error);
+      });
+    }
   }
 
   getListArticulos() {
@@ -222,7 +314,7 @@ totalPages: number = 0;   // Inicializa totalPages en 0
       console.log('¡El artículo ya ha sido seleccionado!');
       this.toastr.warning(
         `ARTICULO YA SELECCIONADO`,
-        'ERROR',
+        'ADVERTENCIA',
         {
           timeOut: 3000, // Cambiado a 3000 milisegundos (3 segundos)
           extendedTimeOut: 0,
@@ -334,6 +426,20 @@ calcularTotales(): void {
     }
   }
 
+  mostrarClienteFactura() {
+    const modal = document.getElementById('ModalClienteFactura');
+    if (modal) {
+      modal.classList.add('show');
+      modal.classList.add('fade');
+      modal.style.display = 'block';
+      modal.setAttribute('aria-modal', 'true');
+      document.body.classList.add('modal-open');
+      const backdrop = document.createElement('div');
+      backdrop.classList.add('modal-backdrop', 'fade', 'show');
+      document.body.appendChild(backdrop);
+    }
+  }
+
   mostrarArticuloBuscar() {
     const modal = document.getElementById('ModaArticuloBuscar');
     if (modal) {
@@ -363,6 +469,22 @@ calcularTotales(): void {
     }
   }
 
+
+  guardarClienteFactura(){
+
+    const modal = document.getElementById('ModalClienteFactura');
+    if (modal) {
+      modal.classList.remove('show', 'fade', 'showing');
+      modal.style.display = 'none';
+      modal.setAttribute('aria-modal', 'false');
+      document.body.classList.remove('modal-open');
+      const backdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (backdrop) {
+        backdrop.parentNode.removeChild(backdrop);
+      }
+    }
+
+  }
   addCliente() {
     const cliente: Cliente = {
       nombre: this.formcliente.value.nombre,
@@ -395,66 +517,40 @@ calcularTotales(): void {
     });
   }
 
-  onTipoClienteChange() {
-    const tipoCliente = this.formcliente.get('tipoCliente').value;
-    if (tipoCliente === 'ruc') {
-      this.formcliente.controls['dni'].disable();
-      this.formcliente.controls['ruc'].enable();
-      this.formcliente.controls['razon_social'].enable();
-      this.formcliente.controls['nombre'].disable();
-      this.formcliente.controls['apellido'].disable();
-      this.formcliente.controls['direccion'].enable();
-      this.formcliente.controls['rubro'].enable();
-    } else {
-      this.formcliente.controls['ruc'].disable();
-      this.formcliente.controls['dni'].enable();
-      this.formcliente.controls['nombre'].enable();
-      this.formcliente.controls['apellido'].enable();
-      this.formcliente.controls['direccion'].enable();
-      this.formcliente.controls['rubro'].enable();
-    }
+  addClienteRUC() {
+    const cliente: Cliente = {
+      nombre: this.formclienteRUC.value.nombre,
+      apellido: this.formclienteRUC.value.apellido,
+      direccion: this.formclienteRUC.value.direccion,
+      dni: this.formclienteRUC.value.dni,
+      ruc: this.formclienteRUC.value.ruc,
+      razon_social:this.formclienteRUC.value.razon_social,
+      telefono: this.formclienteRUC.value.telefono,
+      rubro: this.formclienteRUC.value.rubro,
+    };
+
+    this.loading = true;
+    this._clientesService.saveCliente(cliente).subscribe((clienteid: Cliente) => {
+      this.loading = false;
+      this.idClienteSeleccionado = clienteid.id;
+      const idClienteControl = this.form.get('idcliente');
+      if (idClienteControl) {
+        idClienteControl.setValue(this.idClienteSeleccionado);
+      }
+      this.toastr.success('El Cliente fue registrado con éxito', 'Cliente registrado', {
+        timeOut: 2000,
+        progressBar: true,
+        progressAnimation: 'increasing',
+        positionClass: 'toast-top-right',
+      });
+      this.clienteAgregado = true;
+      this.nombreClienteSeleccionado = `${this.formclienteRUC.value.razon_social}`;
+      this.guardarClienteFactura();
+    });
   }
 
-  onDniChange() {
-    const dni = this.formcliente.get('dni').value;
-    if (dni.length === 8) {
-      this.toastr.info('Buscando DNI...', 'Información');
-      this.apiDniService.getClienteByDni(dni).subscribe(data => {
-      this.toastr.info('DNI ENCONTRADO', 'Información');
 
-        const responseData = data; // Acceder al objeto 'body'
-        this.formcliente.patchValue({
-          nombre: responseData.nombres, // Acceder a las propiedades dentro de 'body'
-          apellido: responseData.apellidoPaterno + "  " + responseData.apellidoMaterno,
-          razon_social: "no"
-          // direccion: responseData.desDireccion,
-        });
-      }, error => {
-        this.toastr.error('DNI DESCONOCIDO', 'NO ENCONTRADO');
-        console.error(error);
-      });
-    }
-  }
-  
-  onRucChange() {
-    const ruc = this.formcliente.get('ruc').value;
-    if (ruc.length === 11) {
-      this.toastr.info('Buscando RUC...', 'Información');
-      this.apiRucService.getClienteByDni(ruc).subscribe(data => {
-        this.toastr.info('RUC ENCONTRADO', 'Información');
-        this.formcliente.patchValue({
-          nombre: "no",
-          apellido: "no",
-          direccion: data.direccion,
-          razon_social: data.nombre
-          // rubro: data.rubro
-        });
-      }, error => {
-        this.toastr.error('RUC DESCONOCIDO', 'NO ENCONTRADO');
-        console.error(error);
-      });
-    }
-  }
+ 
 // Dentro de tu componente
 addVenta() {
   const venta: Venta = {
@@ -523,7 +619,7 @@ addComprobanteVenta(idVenta: number) {
     idventa: idVenta,
     igv: 0, /* Calcula el valor del IGV */
     descuento: 0, /* Calcula el valor del descuento */
-    idtipo_comprobante: 1, /* Asigna el ID del tipo de comprobante */
+    idtipo_comprobante: this.tipocomprobante, /* Asigna el ID del tipo de comprobante */
     num_serie: ""  /* Asigna el número de serie */,
     // Otros campos que necesites para el comprobante de venta
   };
@@ -548,16 +644,60 @@ addComprobanteVenta(idVenta: number) {
   mostrarFormularioBoleta(tipo: string): void {
     this.mostrarFormBoleta = true;
     this.mostrarFormFactura = false;
+    this.tipocomprobante = 1 ;
 
     // Additional logic if necessary for different form types
 }
 mostrarFormularioFactura(tipo: string): void {
   this.mostrarFormFactura = true;
   this.mostrarFormBoleta = false;
+  this.tipocomprobante = 2 ;
+
   // Additional logic if necessary for different form types
 
 
 }
+
+
+
+       // Método para cambiar de página
+  pageChanged2(page: number) {
+    this.currentPage2 = page;
+    this.buscarClientes();
+  }
+  
+  // Método para generar las páginas disponibles
+  getPages2(): number[] {
+    // Retorna un array de números enteros del 1 al totalPages
+    return Array.from({ length: this.totalPages2 }, (_, i) => i + 1);
+  }
+      seleccionarClientes(cliente: Cliente) {
+        //  this.empleadoSeleccionado = empleado.nombre;
+        //    this.form.controls['empleado'].setValue(empleado.nombre);
+          
+          this.idClienteSeleccionado = cliente.id;
+           this.form.controls['id_cliente'].setValue(cliente.id);
+           this.nombreClienteSeleccionado = cliente.nombre  + " " +cliente.apellido;
+            this.clienteAgregado = true;
+          }
+      
+          buscarClientes() {
+            this.loading = true; // Establecer loading en true para mostrar la carga
+          
+          this.searchService.searchClientes ( this.currentPage2, this.pageSize2,this.terminoBusqueda,).subscribe(
+            (response: any) => {
+              this.clientes = response.data; // Asignar los datos de empleados a la propiedad empleados
+              this.currentPage2 = response.page; // Actualizar currentPage con el número de página actual
+              this.totalPages2 = response.totalPages; // Actualizar totalPages con el número total de páginas
+              this.totalItems2 = response.totalItems; // Actualizar totalItems con el número total de elementos
+              this.loading = false; // Establecer loading en false al finalizar la carga
+            },
+            error => {
+              console.error('Error al buscar empleado:', error);
+              this.loading = false; // Manejar el error y establecer loading en false
+            }
+          );
+          }
 
 
 async onImprimirFila(index: number) {
@@ -571,8 +711,12 @@ async onImprimirFila(index: number) {
     // Obtener los detalles de venta
     const detallesVenta: DetalleVenta[] = await this._detaventasService.getDetaventabyIdVenta(idventa).toPromise();
 
-    // Imprimir la fila con los datos obtenidos
+   if ( this.tipocomprobante < 2 ){
     this.imprimirFila(comprobante, detallesVenta);
+   }else if  ( this.tipocomprobante > 1 ){
+    this.imprimirFilaF(comprobante, detallesVenta);
+
+   }
   } catch (error) {
     console.error('Error al obtener los datos:', error);
   }
@@ -628,6 +772,67 @@ private imprimirFila(comprobante: Comprobante_venta, detallesVenta: DetalleVenta
     cliente: `${clienteNombre} ${clienteApellido}`,
     detalleventa,
     dni: clienteDNI,
+    fecha_venta: comprobante.Venta?.fecha_venta || '',
+    tipo_pago: comprobante.Venta?.tipo_pago || '',
+    total: comprobante.Venta?.total || '',
+    igv: comprobante.igv || 0,
+    descuento: comprobante.descuento || 0,
+    tipo_comprobante: comprobante.TipoComprobante?.nombre || '',
+    serie: comprobante.num_serie || ''
+  });
+}
+
+
+private imprimirFilaF(comprobante: Comprobante_venta, detallesVenta: DetalleVenta[]) {
+  const empleadoNombre = comprobante.Venta?.Empleado?.nombre || '';
+  const empleadoApellidos = comprobante.Venta?.Empleado?.apellidos || '';
+  const clienteNombre = comprobante.Venta?.Cliente?.nombre || '';
+  const clienteApellido = comprobante.Venta?.Cliente?.apellido || '';
+  const clienteDNI = comprobante.Venta?.Cliente?.dni || '';
+
+  const detalleventa = detallesVenta.map(detalle => {
+    let descripcion = 'No hay descripción disponible';
+    let marca = 'No hay marca disponible';
+    let modelo = 'No hay modelo disponible';
+    let cantidad = 0;
+    let precio_unitario = 0;
+    let subtotal = 0;
+
+    if (detalle.Articulo) {
+      
+
+      if (detalle.Articulo.Vehiculo) {
+        cantidad = detalle.cantidad;
+      precio_unitario = detalle.precio_unitario;
+      subtotal = detalle.subtotal;
+        descripcion = detalle.Articulo.Vehiculo.descripcion || '';
+        marca = detalle.Articulo.Vehiculo.marca || '';
+        modelo = detalle.Articulo.Vehiculo.modelo || '';
+      } else if (detalle.Articulo.Electrodomestico) {
+        descripcion = detalle.Articulo.Electrodomestico.descripcion || '';
+        marca = detalle.Articulo.Electrodomestico.marca || '';
+        modelo = detalle.Articulo.Electrodomestico.modelo || '';
+        cantidad = detalle.cantidad;
+        precio_unitario = detalle.precio_unitario;
+        subtotal = detalle.subtotal;
+      }
+    }
+
+    return {
+      cantidad,
+      precio_unitario,
+      subtotal,
+      descripcion,
+      marca,
+      modelo
+    };
+  });
+
+  this.impresionService.imprimirFilaVentasF('Ventas', {
+    empleado: `${empleadoNombre} ${empleadoApellidos}`,
+    razon_social:  comprobante.Venta?.Cliente.razon_social || '',
+    detalleventa,
+    ruc:  comprobante.Venta?.Cliente.ruc || '',
     fecha_venta: comprobante.Venta?.fecha_venta || '',
     tipo_pago: comprobante.Venta?.tipo_pago || '',
     total: comprobante.Venta?.total || '',

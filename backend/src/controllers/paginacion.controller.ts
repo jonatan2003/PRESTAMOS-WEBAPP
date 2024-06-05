@@ -47,6 +47,70 @@ export const getClientes = async (req: Request, res: Response) => {
       res.status(500).json({ msg: 'Error al obtener la lista de clientes' });
     }
   };
+
+  export const getClientesDNI = async (req: Request, res: Response) => {
+    try {
+      const page = parseInt(req.query.page as string, 10) || 1; // Página solicitada (predeterminada: 1)
+      const pageSize = parseInt(req.query.pageSize as string, 10) || 10; // Tamaño de página (predeterminado: 10)
+      const offset = (page - 1) * pageSize;
+  
+      // Consulta para obtener clientes paginados con ruc igual a "no"
+      const clientes = await Cliente.findAndCountAll({
+        where: {
+          ruc: 'no'
+        },
+        limit: pageSize,
+        offset: offset,
+        order: [['id', 'DESC']],
+      });
+  
+      const totalItems = clientes.count;
+      const totalPages = Math.ceil(totalItems / pageSize);
+  
+      res.json({
+        page,
+        pageSize,
+        totalItems,
+        totalPages,
+        data: clientes.rows
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ msg: 'Error al obtener la lista de clientes' });
+    }
+  };
+
+  // Obtener clientes que tienen dni igual a "no"
+export const getClientesRUC = async (req: Request, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string, 10) || 1; // Página solicitada (predeterminada: 1)
+    const pageSize = parseInt(req.query.pageSize as string, 10) || 10; // Tamaño de página (predeterminado: 10)
+    const offset = (page - 1) * pageSize;
+
+    const clientes = await Cliente.findAndCountAll({
+      where: {
+        dni: 'no'
+      },
+      limit: pageSize,
+      offset: offset,
+      order: [['id', 'DESC']],
+    });
+
+    const totalItems = clientes.count;
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    res.json({
+      page,
+      pageSize,
+      totalItems,
+      totalPages,
+      data: clientes.rows
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al obtener la lista de clientes' });
+  }
+};
   
 
   export const getPrestamos = async (req: Request, res: Response) => {
@@ -411,6 +475,7 @@ export const getTicketsVentas = async (req: Request, res: Response) => {
     const tickets = await Ticket.findAndCountAll({
       limit: pageSize,
       offset: offset,
+      order: [['id', 'DESC']],
       include: [
         { model: Empleado, as: 'Empleado' },
         { model: Pago, as: 'Pago' },
@@ -460,6 +525,7 @@ export const getTicketsPagos = async (req: Request, res: Response) => {
     const tickets = await Ticket.findAndCountAll({
       limit: pageSize,
       offset: offset,
+      order: [['id', 'DESC']],
       include: [
         { model: Empleado, as: 'Empleado' },
         {
@@ -510,6 +576,7 @@ export const getTicketsPrestamos = async (req: Request, res: Response) => {
     const tickets = await Ticket.findAndCountAll({
       limit: pageSize,
       offset: offset,
+      order: [['id', 'DESC']],
       where: { // Asegura que solo se incluyan tickets con préstamos
         '$Prestamo.id$': { [Op.ne]: null }
       },
@@ -560,6 +627,7 @@ export const getTickets = async (req: Request, res: Response) => {
     const tickets = await Ticket.findAndCountAll({
       limit: pageSize,
       offset: offset,
+      order: [['id', 'DESC']],
       include: [
         { model: Empleado, as: 'Empleado' },
         { model: Pago, as: 'Pago',
@@ -615,6 +683,8 @@ export const getTiposPago = async (req: Request, res: Response) => {
     const tiposPago = await TipoPago.findAndCountAll({
       limit: pageSize,
       offset: offset,
+      order: [['id', 'DESC']],
+
     });
 
     // Calculate total pages
@@ -1014,6 +1084,7 @@ export const getTicketsPrestamosPendientes = async (req: Request, res: Response)
     const tickets = await Ticket.findAndCountAll({
       limit: pageSize,
       offset: offset,
+      order: [['id', 'DESC']],
       include: [
         { model: Empleado, as: 'Empleado' },
         { model: Pago, as: 'Pago' },
@@ -1158,6 +1229,7 @@ export const getPrestamosPendientes = async (req: Request, res: Response) => {
       const tickets = await Ticket.findAndCountAll({
         limit: pageSize,
         offset: offset,
+        order: [['id', 'DESC']],
         include: [
           { model: Empleado, as: 'Empleado' },
           { model: Pago, as: 'Pago' },

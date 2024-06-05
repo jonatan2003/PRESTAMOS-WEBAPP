@@ -605,6 +605,134 @@ async imprimirFilaVentas(entidad: string, datos: any) {
 
 
 
+// IMPRESION DE LA VENTA
+async imprimirFilaVentasF(entidad: string, datos: any) {
+  const doc1 = new jsPDF({
+    orientation: 'portrait',
+    unit: 'in',
+    format: [2.9, 8.2],
+  });
+
+  // Generar el código QR único
+  const qrData = `Datos de la Venta: ${JSON.stringify(datos,)}`;
+  const qrCodeDataURL = await QRCode.toDataURL(qrData);
+
+  // Genera un número de serie único
+  const nro_serie = `                           ${datos.serie}`;
+
+  const tipo_comprobante = `${datos.tipo_comprobante}`;
+  let boleta_factura = tipo_comprobante === 'boleta' ? '          BOLETA DE VENTA ELECTRONICA ' : '          FACTURA DE VENTA ELECTRONICA ';
+
+  // Datos de la empresa
+  const empresa = '               CASA DE EMPEÑOS DON GATO';
+  const direccion = `Calle: Principal 123, Ciudad    Teléfono: 987654233`;
+  const ruc = `                      R.U.C: 10785645876`;
+
+  // Datos del préstamo
+  const cliente = `Cliente: ${datos.razon_social}`;
+  const ruccliente = `RUC: ${datos.ruc}`;
+  const empleado = `                  Empleado: ${datos.empleado} `;
+  const descripcion = `Articulo                 CANT.  P.U  SUBTOTAL`;
+  const articulos = Array.isArray(datos.detalleventa) ? datos.detalleventa : [];
+
+  const fecha_venta = `Fecha de emision:  ${datos.fecha_venta}`;
+  const tipo_pago = `Tipo de Pago     `;
+  const IGV = `                                                    IGV:         S/.${datos.igv}`;
+  const descuento = `                                 Total  Descuento:       S/.${datos.descuento}`;
+  const total = `                                      Importe Total:     S/.${datos.total}`;
+
+  // Contenido del encabezado
+  const encabezado = [
+    [empresa],
+  ];
+
+  // Contenido del cuerpo
+  const cuerpo = [
+    [direccion],
+    [boleta_factura],
+    [ruc],
+    [nro_serie],
+    ['__________________________________________'],
+    [fecha_venta],
+    [ruccliente],
+    [cliente],
+    [''],
+    [descripcion],
+  ];
+
+  // Añadir artículos al cuerpo
+  articulos.forEach(detalle => {
+    cuerpo.push([`${detalle.descripcion + " "+detalle.modelo + " " +detalle.marca}` + "      " + `${detalle.cantidad}` + "   "+ `${detalle.precio_unitario}` + "   " +`${detalle.subtotal}`]);
+  });
+
+  cuerpo.push(
+    ['__________________________________________'],
+    [tipo_pago],
+    [`${datos.tipo_pago}`],
+    [IGV],
+    [descuento],
+    [total],
+    [''],
+    [empleado],
+    [''],
+    [''],
+    [''],
+    [''],
+    ['                     Gracias por tu Preferencia¡'],
+  );
+
+  // Configuración de la tabla
+  const margintop = 1.1;
+  const marginBottom = 0; // Margen inferior
+  const marginleft = 0;
+  const marginright = 0;
+
+  // Obtener el ancho del código QR basado en su proporción
+  const qrWidth = 1.4;
+  const qrHeight = 1;
+
+  // Ajustar las coordenadas del código QR para que aparezca en una esquina o en la parte inferior de la boleta
+  const qrX = 0.8; // Coordenada X
+  const qrY = 6.7; // Coordenada Y
+
+ // Convertir la imagen a Base64
+ const imgData = await this.getBase64ImageFromURL('/assets/img/login/gato.png');
+ doc1.addImage(imgData, 'PNG', 0.9, 0, 1.1, 1);
+ doc1.addImage(qrCodeDataURL, 'PNG', qrX, qrY, qrWidth, qrHeight);
+
+ autoTable(doc1, {
+   startY: margintop,
+   head: encabezado,
+   body: cuerpo,
+
+   styles: {
+     fontSize: 8, // Tamaño de la letra de hoja
+     halign: 'justify', // Alineación horizontal justificada
+     textColor: [0, 0, 0], // Color del texto en RGB (negro)
+   },
+
+   theme: 'plain',
+   tableWidth: doc1.internal.pageSize.width - 0.2, // Ancho de la tabla
+   margin: {
+     top: margintop,
+     bottom: marginBottom,
+     left: marginleft + 0.1,
+     right: marginright + 0,
+   },
+   didParseCell: (data) => {
+     if (data.row.index === 9) { // Cambia el índice a la fila que contiene 'descripcion'
+       data.cell.styles.fontStyle = 'bold';
+     }
+   },
+ });
+
+  // Guardar o mostrar el documento
+  const hoy = new Date();
+  doc1.save(`${entidad}_${hoy.getDate()}${hoy.getMonth() + 1}${hoy.getFullYear()}_${hoy.getTime()}.pdf`);
+}
+
+
+
 
 
 }

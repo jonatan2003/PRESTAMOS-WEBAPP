@@ -18,6 +18,7 @@
 
   <!-- Botones para mostrar el formulario -->
 <div class="text-center mt-4">
+  
     <button type="button" class="btn btn-success" (click)="mostrarFormularioBoleta('boleta')"> <h1> BOLETA </h1></button>
     <button type="button" class="btn btn-info" (click)="mostrarFormularioFactura('factura')"><h1> FACTURA </h1></button>
 </div>
@@ -30,6 +31,7 @@
                 <form id="formPrestamo" action="" autocomplete="off">
                     <p class="text-center roboto-medium">BOLETA ELECTRONICA DON GATO</p>
                     <p class="text-center">
+                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalBucarCliente"><i class="fas fa-user"></i> &nbsp;Buscar Cliente</button>
                         <button type="button" class="btn btn-primary" (click)="mostrarCliente()"><i class="fas fa-user-plus"></i> &nbsp; Agregar Cliente</button>
                         <button type="button" class="btn btn-primary" (click)="mostrarArticuloBuscar()"><i class="fas fa-box-open"></i> &nbsp; Agregar Articulo</button>
                     </p>
@@ -170,7 +172,8 @@
                 <form id="formPrestamo" action="" autocomplete="off">
                     <p class="text-center roboto-medium">FACTURA ELECTRONICA DON GATO</p>
                     <p class="text-center">
-                        <button type="button" class="btn btn-primary" (click)="mostrarCliente()"><i class="fas fa-user-plus"></i> &nbsp; Agregar Cliente</button>
+                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalBucarClienteF"><i class="fas fa-user"></i> &nbsp;Buscar Cliente</button>
+                        <button type="button" class="btn btn-primary" (click)="mostrarClienteFactura()"><i class="fas fa-user-plus"></i> &nbsp; Agregar Cliente</button>
                         <button type="button" class="btn btn-primary" (click)="mostrarArticuloBuscar()"><i class="fas fa-box-open"></i> &nbsp; Agregar Articulo</button>
                     </p>
                 </form>
@@ -303,8 +306,128 @@
 
 
 
+<!-- MODAL BUSCAR CLIENTE B-->
+<div class="modal fade" id="ModalBucarCliente" tabindex="-1" role="dialog" aria-labelledby="ModalBucarCliente" aria-hidden="true" >
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="ModalBucarCliente">Buscar Cliente</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<div class="form-group">
+						<label for="agregar_cliente" class="bmd-label-floating">DNI, Nombre, Apellido</label>
+						<input type="text" class="form-control" name="agregar_cliente" id="agregar_cliente" maxlength="30"  [(ngModel)]="terminoBusqueda">
+					</div>
+					<form  (submit)="buscarClientes()">
+					  <div class="container-fluid">
+					   <div class="row justify-content-md-center">
+	
+							<div class="col-12">
+							 <p class="text-center" style="margin-top: 40px;">
+							<button type="submit" class="btn btn-raised btn-info"><i class="fas fa-search"></i> &nbsp; BUSCAR</button>
+						   </p>
+						  </div>
+						   </div>
+						 </div>
+					  </form>
+				</div>
+				<br>
+				<div class="container-fluid">
+					<div class="table-responsive">
+						<table class="table table-hover table-bordered table-sm">
+							<tbody>
+								<tr class="text-center" *ngFor="let cliente of clientes">
+									<td>{{ cliente.dni }}</td>
+									<td>{{ cliente.nombre }}</td>
+									<td>{{ cliente.apellido }}</td> 
+									<!-- <td>{{ empleado.dni }}</td> -->
+									
+									<td>
+										<form action="">
+											<button type="button" class="btn btn-primary" (click)="seleccionarClientes(cliente)" data-dismiss="modal"><i class="fas fa-user-plus"></i></button>
+										</form>
+									</td>
+								</tr>
+	
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+	</div>
+	</div>
+
   
- <!-- modal-cliente -->
+<!-- MODAL BUSCAR CLIENTE F-->
+<div class="modal fade" id="ModalBucarClienteF" tabindex="-1" role="dialog" aria-labelledby="ModalBucarClienteF" aria-hidden="true" >
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="ModalBucarClienteF">Buscar Cliente</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<div class="form-group">
+						<label for="agregar_cliente" class="bmd-label-floating">DNI, Nombre, Apellido</label>
+						<input type="text" class="form-control" name="agregar_cliente" id="agregar_cliente" maxlength="30"  [(ngModel)]="terminoBusqueda">
+					</div>
+					<form  (submit)="buscarClientes()">
+					  <div class="container-fluid">
+					   <div class="row justify-content-md-center">
+	
+							<div class="col-12">
+							 <p class="text-center" style="margin-top: 40px;">
+							<button type="submit" class="btn btn-raised btn-info"><i class="fas fa-search"></i> &nbsp; BUSCAR</button>
+						   </p>
+						  </div>
+						   </div>
+						 </div>
+					  </form>
+				</div>
+				<br>
+				<div class="container-fluid">
+					<div class="table-responsive">
+						<table class="table table-hover table-bordered table-sm">
+							<tbody>
+								<tr class="text-center" *ngFor="let cliente of clientes">
+									<td>{{ cliente.dni }}</td>
+									<td>{{ cliente.nombre }}</td>
+									<td>{{ cliente.apellido }}</td> 
+									<!-- <td>{{ empleado.dni }}</td> -->
+									
+									<td>
+										<form action="">
+											<button type="button" class="btn btn-primary" (click)="seleccionarClientes(cliente)" data-dismiss="modal"><i class="fas fa-user-plus"></i></button>
+										</form>
+									</td>
+								</tr>
+	
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+	</div>
+	</div>
+
+
+  
+ <!-- modal-cliente b-->
  <div class="modal fade" id="ModalCliente" tabindex="-1" role="dialog" aria-labelledby="ModalCliente" aria-hidden="true">
 	<div class="modal-dialog" role="document">
 	  <div class="modal-content">
@@ -324,16 +447,15 @@
                         <div class="row">
                           <div class="col-12 col-md-6">
                             <div class="form-group">
-                              <label for="tipoCliente">Tipo de Cliente</label>
-                              <select id="tipoCliente" formControlName="tipoCliente" class="form-control mt-2" (change)="onTipoClienteChange()">
-                                <option selected value="dni">DNI</option>
-                                <option value="ruc">RUC</option>
+                              <label for="tipoClienteB">Tipo de Cliente</label>
+                              <select id="tipoClienteB" formControlName="tipoClienteB" class="form-control mt-2" (change)="onTipoClienteChangeB()">
+                                <option value="dni">DNI</option>
                               </select>
                             </div>
                           </div>
                           
                           <!-- DNI Section -->
-                          <div class="col-12" *ngIf="formcliente.controls['tipoCliente'].value === 'dni'">
+                          <div class="col-12" *ngIf="formcliente.controls['tipoClienteB'].value === 'dni'">
                             <div class="row">
                               <div class="col-12 col-md-6">
                                 <div class="form-group">
@@ -350,13 +472,13 @@
                               <div class="col-12 col-md-6">
                                 <div class="form-group">
                                   <label for="nombre">Nombres</label>
-                                  <input formControlName="nombre" type="text" class="form-control mt-2" maxlength="25" (change)="onDniChange()">
+                                  <input formControlName="nombre" type="text" class="form-control mt-2" maxlength="25" >
                                 </div>
                               </div>
                               <div class="col-12 col-md-6">
                                 <div class="form-group">
                                   <label for="apellido">Apellidos</label>
-                                  <input formControlName="apellido" type="text" class="form-control mt-2" maxlength="25" (change)="onDniChange()">
+                                  <input formControlName="apellido" type="text" class="form-control mt-2" maxlength="25" >
                                 </div>
                               </div>
 
@@ -394,62 +516,7 @@
                             
                           </div>
                           
-                          <!-- RUC Section -->
-                          <div class="col-12" *ngIf="formcliente.controls['tipoCliente'].value === 'ruc'">
-                            <div class="row">
-                              <div class="col-12 col-md-6">
-                                <div class="form-group">
-                                  <label for="ruc">RUC</label>
-                                  <input type="text" id="ruc" formControlName="ruc" class="form-control mt-2" (change)="onRucChange()" [maxLength]="11">
-                                  <div class="alert alert-danger mt-2" [hidden]="formcliente.get('ruc').valid || formcliente.get('ruc').pristine">
-                                    <span *ngIf="formcliente.get('ruc').errors?.['required']" class="text-danger">Este campo es requerido</span>
-                                    <span *ngIf="formcliente.get('ruc').errors?.['minlength']" class="text-danger">El RUC debe tener exactamente 11 dígitos</span>
-                                    <span *ngIf="formcliente.get('ruc').errors?.['maxlength']" class="text-danger">El RUC debe tener exactamente 11 dígitos</span>
-                                    <span *ngIf="formcliente.get('ruc').errors?.['pattern']" class="text-danger">El RUC solo puede contener números</span>
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="col-12 col-md-6">
-                                <div class="form-group">
-                                  <label for="razon_social">Razón Social</label>
-                                  <input type="text" id="razon_social" formControlName="razon_social" class="form-control mt-2" (change)="onRucChange()" [maxLength]="100">
-                                  <div class="alert alert-danger mt-2" [hidden]="formcliente.get('razon_social').valid || formcliente.get('razon_social').pristine">
-                                    <span *ngIf="formcliente.get('razon_social').errors?.['required']" class="text-danger">Este campo es requerido</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div class="col-12 col-md-12">
-                                <div class="form-group">
-                                    <label for="direccion">Dirección</label>
-                                    <input formControlName="direccion" type="text" class="form-control mt-2" maxlength="100">
-                                </div>
-                              </div>
-                              <div class="col-12 col-md-12">
-                                <div class="form-group">
-                                    <label for="telefono">Teléfono</label>
-                                    <input formControlName="telefono" type="text" class="form-control mt-2" maxlength="9">
-                                    <div class="alert alert-danger mt-2" [hidden]="formcliente.get('telefono').valid || formcliente.get('telefono').pristine">
-                                      <span *ngIf="formcliente.get('telefono').errors?.['required']" class="text-danger">Este campo es requerido</span>
-                                      <span *ngIf="formcliente.get('telefono').errors?.['minlength']" class="text-danger">El teléfono debe tener exactamente 9 dígitos</span>
-                                      <span *ngIf="formcliente.get('telefono').errors?.['maxlength']" class="text-danger">El teléfono debe tener exactamente 9 dígitos</span>
-                                      <span *ngIf="formcliente.get('telefono').errors?.['pattern']" class="text-danger">El teléfono solo puede contener números</span>
-                                    </div>
-                                </div>
-                              </div>
-                              <div class="col-12 col-md-12">
-                                <div class="form-group">
-                                    <label for="rubro">Rubro</label>
-                                    <input formControlName="rubro" type="text" class="form-control mt-2" maxlength="15">
-                                    <div class="alert alert-danger mt-2" [hidden]="formcliente.get('rubro').valid || formcliente.get('rubro').pristine">
-                                      <span *ngIf="formcliente.get('rubro').errors?.['required']" class="text-danger">Este campo es requerido</span>
-                                    </div>
-                                </div>
-                              </div>
-                          </div>
-                      
-                          
+                         
  
 
                         </div>
@@ -469,6 +536,123 @@
 	  </div>
 	</div>
   </div>
+
+
+
+   <!-- modal-cliente FACTURA -->
+ <div class="modal fade" id="ModalClienteFactura" tabindex="-1" role="dialog" aria-labelledby="ModalClienteFactura" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h5 class="modal-title" id="ModalClienteFactura">AGREGAR CLIENTES</h5>
+		  <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="guardarClienteFactura()">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+  
+		<div class="modal-body">
+		  <div class="container-fluid">
+			<form class="form-neon" [formGroup]="formclienteRUC" (ngSubmit)="addClienteRUC()">
+				<fieldset>
+					<legend><i class="fas fa-user"></i> &nbsp; Información básica </legend>
+					<div class="container-fluid">
+                        <div class="row">
+                          <div class="col-12 col-md-6">
+                            <div class="form-group">
+                              <label for="tipoClienteF">Tipo de Cliente</label>
+                              <select id="tipoClienteF" formControlName="tipoClienteF" class="form-control mt-2" (change)="onTipoClienteChangeF()">          
+                                <option  value="ruc">RUC</option>
+                              </select>
+                            </div>
+                          </div>
+                        
+                          
+                          <!-- RUC Section -->
+                          <div class="col-12" *ngIf="formclienteRUC.controls['tipoClienteF'].value === 'ruc'">
+                            <div class="row">
+                              <div class="col-12 col-md-6">
+                                <div class="form-group">
+                                  <label for="ruc">RUC</label>
+                                  <input type="text" id="ruc" formControlName="ruc" class="form-control mt-2" (change)="onRucChange()" [maxLength]="11">
+                                  <div class="alert alert-danger mt-2" [hidden]="formclienteRUC.get('ruc').valid || formclienteRUC.get('ruc').pristine">
+                                    <span *ngIf="formclienteRUC.get('ruc').errors?.['required']" class="text-danger">Este campo es requerido</span>
+                                    <span *ngIf="formclienteRUC.get('ruc').errors?.['minlength']" class="text-danger">El RUC debe tener exactamente 11 dígitos</span>
+                                    <span *ngIf="formclienteRUC.get('ruc').errors?.['maxlength']" class="text-danger">El RUC debe tener exactamente 11 dígitos</span>
+                                    <span *ngIf="formclienteRUC.get('ruc').errors?.['pattern']" class="text-danger">El RUC solo puede contener números</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-12 col-md-6">
+                                <div class="form-group">
+                                  <label for="razon_social">Razón Social</label>
+                                  <input type="text" id="razon_social" formControlName="razon_social" class="form-control mt-2" [maxLength]="100">
+                                  <div class="alert alert-danger mt-2" [hidden]="formclienteRUC.get('razon_social').valid || formclienteRUC.get('razon_social').pristine">
+                                    <span *ngIf="formclienteRUC.get('razon_social').errors?.['required']" class="text-danger">Este campo es requerido</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-12 col-md-12">
+                                <div class="form-group">
+                                    <label for="direccion">Dirección</label>
+                                    <input formControlName="direccion" type="text" class="form-control mt-2" maxlength="100">
+                                    <div class="alert alert-danger mt-2" [hidden]="formclienteRUC.get('direccion').valid || formclienteRUC.get('direccion').pristine">
+                                      <span *ngIf="formclienteRUC.get('direccion').errors?.['required']" class="text-danger">Este campo es requerido</span>
+                                    </div>
+
+                                </div>
+
+
+                              </div>
+                              <div class="col-12 col-md-12">
+                                <div class="form-group">
+                                    <label for="telefono">Teléfono</label>
+                                    <input formControlName="telefono" type="text" class="form-control mt-2" maxlength="9">
+                                    <div class="alert alert-danger mt-2" [hidden]="formclienteRUC.get('telefono').valid || formclienteRUC.get('telefono').pristine">
+                                      <span *ngIf="formclienteRUC.get('telefono').errors?.['required']" class="text-danger">Este campo es requerido</span>
+                                      <span *ngIf="formclienteRUC.get('telefono').errors?.['minlength']" class="text-danger">El teléfono debe tener exactamente 9 dígitos</span>
+                                      <span *ngIf="formclienteRUC.get('telefono').errors?.['maxlength']" class="text-danger">El teléfono debe tener exactamente 9 dígitos</span>
+                                      <span *ngIf="formclienteRUC.get('telefono').errors?.['pattern']" class="text-danger">El teléfono solo puede contener números</span>
+                                    </div>
+                                </div>
+                              </div>
+                              <div class="col-12 col-md-12">
+                                <div class="form-group">
+                                    <label for="rubro">Rubro</label>
+                                    <input formControlName="rubro" type="text" class="form-control mt-2" maxlength="15">
+                                    <div class="alert alert-danger mt-2" [hidden]="formclienteRUC.get('rubro').valid || formclienteRUC.get('rubro').pristine">
+                                      <span *ngIf="formclienteRUC.get('rubro').errors?.['required']" class="text-danger">Este campo es requerido</span>
+                                    </div>
+                                </div>
+                              </div>
+                          </div>
+
+
+                              
+
+                      
+                          
+ 
+
+                        </div>
+                      </div>
+				</fieldset>
+				<p class="text-center" style="margin-top: 40px;">
+				  <button type="reset" class="btn btn-raised btn-secondary btn-sm"><i class="fas fa-paint-roller"></i> &nbsp; LIMPIAR</button>
+				  &nbsp; &nbsp;
+				  <button [disabled]="formclienteRUC.invalid" type="submit" class="btn btn-raised btn-info btn-sm"><i class="far fa-save"></i> &nbsp; GUARDAR</button>
+				</p>
+			  </form>
+		  </div>
+		</div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="guardarClienteFactura()">Cerrar</button>
+		</div>
+	  </div>
+	</div>
+  </div>
+  
   
   
    <!-- modal-INVENTARIO ARTICULOS Buscar -->
