@@ -157,10 +157,10 @@ totalPages: number = 0;   // Inicializa totalPages en 0
       tipoClienteF: ['ruc'],
       nombre: ['no'],
       apellido: ['no'],
-      direccion: ['', [Validators.required, Validators.maxLength(50)]],
+      direccion: ['', [Validators.required, Validators.maxLength(80)]],
       dni: ['no'],
       ruc: ['', [Validators.required, Validators.maxLength(11), Validators.pattern("^[0-9]*$")]],
-      razon_social: ['', [Validators.required, Validators.maxLength(25)]],
+      razon_social: ['', [Validators.required, Validators.maxLength(50)]],
       telefono: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(9), Validators.pattern("^[0-9]*$")]],
       rubro: ['', [Validators.required, Validators.maxLength(25)]],
     });
@@ -193,8 +193,8 @@ totalPages: number = 0;   // Inicializa totalPages en 0
       this.formcliente.controls['direccion'].enable();
       this.formcliente.controls['rubro'].enable();
 
-      this.formcliente.controls['ruc'].enable();
-      this.formcliente.controls['razon_social'].enable();
+      // this.formcliente.controls['ruc'].enable();
+      // this.formcliente.controls['razon_social'].enable();
 
     }
   }
@@ -208,9 +208,9 @@ totalPages: number = 0;   // Inicializa totalPages en 0
       this.formclienteRUC.controls['telefono'].enable();
       this.formclienteRUC.controls['rubro'].enable();
 
-      this.formclienteRUC.controls['dni'].enable();
-      this.formclienteRUC.controls['nombre'].enable();
-      this.formclienteRUC.controls['apellido'].enable();
+      // this.formclienteRUC.controls['dni'].enable();
+      // this.formclienteRUC.controls['nombre'].enable();
+      // this.formclienteRUC.controls['apellido'].enable();
 
     
     }
@@ -711,9 +711,9 @@ async onImprimirFila(index: number) {
     // Obtener los detalles de venta
     const detallesVenta: DetalleVenta[] = await this._detaventasService.getDetaventabyIdVenta(idventa).toPromise();
 
-   if ( this.tipocomprobante < 2 ){
+   if ( this.tipocomprobante === 1 ){
     this.imprimirFila(comprobante, detallesVenta);
-   }else if  ( this.tipocomprobante > 1 ){
+   }else if  ( this.tipocomprobante === 2 ){
     this.imprimirFilaF(comprobante, detallesVenta);
 
    }

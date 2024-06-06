@@ -596,7 +596,7 @@
                             <div class="col-12 col-md-12">
                                 <div class="form-group">
                                     <label for="direccion">Dirección</label>
-                                    <input formControlName="direccion" type="text" class="form-control mt-2" maxlength="100">
+                                    <input formControlName="direccion" type="text" class="form-control mt-2" maxlength="120">
                                     <div class="alert alert-danger mt-2" [hidden]="formclienteRUC.get('direccion').valid || formclienteRUC.get('direccion').pristine">
                                       <span *ngIf="formclienteRUC.get('direccion').errors?.['required']" class="text-danger">Este campo es requerido</span>
                                     </div>

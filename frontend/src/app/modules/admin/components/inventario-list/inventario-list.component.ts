@@ -323,45 +323,131 @@ performDeleteEmpleado(id: number) {
 }
 
 
-// constructor(private impresionService: ImpresionService) { }
 
+// constructor(private impresionService: ImpresionService) { }
 onImprimir() {
-  const entidad = 'Empleados'; // Nombre de la entidad (para el nombre del archivo PDF)
-  const encabezado = this.getEncabezado(); // Obtener el encabezado de la tabla
-  const cuerpo = this.getCuerpo(); // Obtener el cuerpo de la tabla
-  const titulo = 'Lista de Empleados'; // Título del informe
-  this.impresionService.imprimir(entidad, encabezado, cuerpo, titulo, true); // Llama al servicio de impresión
+  const entidad = 'Inventario ';
+  const encabezado = this.getEncabezado();
+  const cuerpo = this.getCuerpo();
+  const titulo = 'Lista del Inventario';
+  const cuerpoUnico = this.eliminarFilasDuplicadas(cuerpo);
+  this.impresionService.imprimir(entidad, encabezado, cuerpoUnico, titulo, true);
 }
 
-// Método para obtener el encabezado de la tabla
-getEncabezado(): string[] {
-  const encabezado: string[] = [];
-  document.querySelectorAll('table thead th').forEach((th: HTMLTableHeaderCellElement) => {
-    const texto = th.textContent.trim();
-    if (texto !== 'ACTUALIZAR' && texto !== 'ELIMINAR' && texto !== 'IMPRIMIR') {
-      encabezado.push(texto);
+
+eliminarFilasDuplicadas(cuerpo: Array<any>): Array<any> {
+  const cuerpoUnico: Array<any> = [];
+  const filasVistas = new Set();
+  cuerpo.forEach((fila) => {
+    const filaString = JSON.stringify(fila);
+    if (!filasVistas.has(filaString)) {
+      cuerpoUnico.push(fila);
+      filasVistas.add(filaString);
     }
   });
-  return encabezado;
+  return cuerpoUnico;
 }
 
-// Método para obtener el cuerpo de la tabla
-getCuerpo(): string[][] {
-  const cuerpo: string[][] = [];
-  document.querySelectorAll('table tbody tr').forEach((tr: HTMLTableRowElement) => {
-    const fila: string[] = [];
-    tr.querySelectorAll('td').forEach((td: HTMLTableCellElement) => {
-      const texto = td.textContent.trim();
-      if (texto !== 'Actualizar' && texto !== 'Eliminar' && texto !== 'Imprimir') {
-        fila.push(texto);
-      }
-    });
+
+
+getEncabezado(): string[] { 
+if (this.categoriaSeleccionada === 1) {
+  return [
+    'DESCRIPCION',
+    'CARROCERIA',
+    'MARCA',
+    'MODELO',
+    'COLOR',
+    'NUMERO SERIE',
+    'NUMERO MOTOR',
+    'PLACA',
+    'OBSERVACION',
+    'PRECIO VENTA',
+    'PRECIO PRESTAMO',
+    'ESTADO'
+  ];
+} else {
+  return [
+    'DESCRIPCION',
+    'MARCA',
+    'MODELO',
+    'COLOR',
+    'OBSERVACION',
+    'PRECIO VENTA',
+    'PRECIO PRESTAMO',
+    'ESTADO',
+  ];
+}
+
+ 
+}
+
+getCuerpo(): any[][] {
+  const cuerpo: any[][] = [];
+  const filasVistas = new Set();
+
+    if (this.categoriaSeleccionada === 1) {
+      
+  this.listInventarioArticulosVehiculos.forEach((inventario) => {
+
+     const fila: any[] = [
+
+
+    inventario.Articulo?.Vehiculo?.descripcion ,
+    inventario.Articulo?.Vehiculo?.carroceria ,
+    inventario.Articulo?.Vehiculo?.marca ,
+    inventario.Articulo?.Vehiculo?.modelo ,
+    inventario.Articulo?.Vehiculo?.color ,
+    inventario.Articulo?.Vehiculo?.numero_serie ,
+    inventario.Articulo?.Vehiculo?.numero_motor ,
+    inventario.Articulo?.Vehiculo?.placa ,
+    inventario.Articulo?.observaciones,
+    inventario.valor_venta,
+    inventario.valor_precio,
+    inventario.estado_articulo 
+
+  
+  ];
+
+  const filaString = fila.join('|');
+  if (!filasVistas.has(filaString)) {
     cuerpo.push(fila);
-  });
+    filasVistas.add(filaString);
+  }
+
+
+});
+} else{
+
+       
+  this.listInventarioArticulosElectrodomesticos.forEach((inventario) => {
+
+    const fila: any[] = [
+
+
+   inventario.Articulo?.Electrodomestico?.descripcion,
+   inventario.Articulo.Electrodomestico?.marca ,
+   inventario.Articulo.Electrodomestico?.modelo,
+   inventario.Articulo.Electrodomestico?.color,
+   inventario.Articulo.Electrodomestico?.numero_serie,
+   inventario.Articulo.observaciones ,
+   inventario.valor_venta,
+   inventario.valor_precio,
+   inventario.Articulo.estado
+  
+ ];
+
+ const filaString = fila.join('|');
+ if (!filasVistas.has(filaString)) {
+   cuerpo.push(fila);
+   filasVistas.add(filaString);
+ }
+
+
+});
+}
   return cuerpo;
 }
-
-
 
 
 

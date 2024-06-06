@@ -177,7 +177,7 @@ fecha_pago : Date ;
         } else {
           this.formPago.patchValue({ pago: this.monto_prestamo }, { emitEvent: false });
         }
-        this.capital_pago = this.formPago.value.pago;
+        this.capital_pago = this.monto_prestamo;
         this.interesfinal = 0;
         this.pagoPrestamo = this.formPago.value.pago;
         break;

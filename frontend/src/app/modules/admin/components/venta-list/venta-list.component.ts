@@ -89,6 +89,7 @@ export class VentaListComponent implements OnInit {
     });
   }
 
+
   onImprimir() {
     const entidad = 'Ventas';
     const encabezado = this.getEncabezado();
@@ -110,6 +111,8 @@ export class VentaListComponent implements OnInit {
     });
     return cuerpoUnico;
   }
+
+  
 
   getEncabezado(): string[] {
     return [
@@ -155,24 +158,23 @@ export class VentaListComponent implements OnInit {
     return cuerpo;
   }
 
+  // obtenerDatos(idventa: number) {
+  //   this._comprobanteventaService.getComprobanteventabyVentaID(idventa).subscribe((comprobante: Comprobante_venta) => {
+  //     // Guardar el resultado en this.listcomprobanteVentas
+  //     const index = this.listcomprobanteVenta.findIndex(c => c.idventa === idventa);
+  //     if (index !== -1) {
+  //       this.listcomprobanteVenta[index] = comprobante;
+  //     } else {
+  //       this.listcomprobanteVenta.push(comprobante);
+  //     }
+  //   });
 
-  obtenerDatos(idventa: number) {
-    this._comprobanteventaService.getComprobanteventabyVentaID(idventa).subscribe((comprobante: Comprobante_venta) => {
-      // Guardar el resultado en this.listcomprobanteVentas
-      const index = this.listcomprobanteVenta.findIndex(c => c.idventa === idventa);
-      if (index !== -1) {
-        this.listcomprobanteVenta[index] = comprobante;
-      } else {
-        this.listcomprobanteVenta.push(comprobante);
-      }
-    });
 
+  //   this._detalleventaService.getDetaventabyIdVenta(idventa).subscribe((detalleventa : DetalleVenta[]) => {
+  //   this.listdetalleVentas.push(detalleventa[0]);
 
-    this._detalleventaService.getDetaventabyIdVenta(idventa).subscribe((detalleventa : DetalleVenta[]) => {
-    this.listdetalleVentas.push(detalleventa[0]);
-
-    });
-  }
+  //   });
+  // }
 
   
   async onImprimirFila(index: number) {

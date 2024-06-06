@@ -131,8 +131,7 @@ listCronogramaPago: CronogramaPago[] = [];
     });
   }
   
-
-  
+ 
   onImprimir() {
     const entidad = 'Pagos'; // Nombre de la entidad (para el nombre del archivo PDF)
     const encabezado = this.getEncabezado(); // Obtener el encabezado de la tabla
@@ -183,16 +182,18 @@ listCronogramaPago: CronogramaPago[] = [];
       const textosExcluidos = new Set(['Actualizar', 'Eliminar', 'Imprimir']); // Textos a excluir
       const filasVistas = new Set(); // Usar un conjunto para mantener un registro de las filas ya vistas
       
-      this.listPago.forEach((pago) => {
+      this.listTickets.forEach((ticket) => {
         const fila: any[] = [
-          // pago.Prestamo.Cliente?.nombre + ' ' + pago.Prestamo.Cliente?.apellido,
-          // // pago.Prestamo.Empleado?.nombre + ' ' + pago.Prestamo.Empleado?.apellidos,
-          // pago.Prestamo.Articulo ? (pago.Prestamo.Articulo.Vehiculo ? pago.Prestamo.Articulo.Vehiculo.descripcion : (pago.Prestamo.Articulo.Electrodomestico ? pago.Prestamo.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
-          // pago.tipo_pago,
-          pago.fecha_pago,
-          pago.interes_pago,
-          pago.monto_restante,
-          pago.capital_pago,
+          ticket.Prestamo?.Cliente.nombre + ' ' + ticket.Prestamo?.Cliente.apellido,
+         // ticket.Empleado?.nombre + ' ' + ticket.Empleado?.apellidos,
+           ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.descripcion :
+             (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.descripcion : 
+              'No hay descripción disponible')) : 'No hay descripción disponible',
+              ticket.Pago.TipoPago?.nombre_tipo,
+             ticket.Pago?.fecha_pago,
+          ticket.Pago?.interes_pago,
+         ticket.Pago?.monto_restante,
+          ticket.Pago?.capital_pago,
           
         ];
     

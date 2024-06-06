@@ -540,84 +540,74 @@ montoRestante: number ;
   
 
 
-  
-onImprimir() {
-  const entidad = 'Prestamos'; // Nombre de la entidad (para el nombre del archivo PDF)
-  const encabezado = this.getEncabezado(); // Obtener el encabezado de la tabla
-  const cuerpo = this.getCuerpo(); // Obtener el cuerpo de la tabla
-  const titulo = 'Lista de Prestamos'; // Título del informe
-  
-  // Eliminar filas duplicadas del cuerpo
-  const cuerpoUnico = this.eliminarFilasDuplicadas(cuerpo);
-
-  // Llamar al servicio de impresión
-  this.impresionService.imprimir(entidad, encabezado, cuerpoUnico, titulo, true);
-}
+ 
+  onImprimir() {
+    const entidad = 'Prestamos';
+    const encabezado = this.getEncabezado();
+    const cuerpo = this.getCuerpo();
+    const titulo = 'Lista de Prestmaos';
+    const cuerpoUnico = this.eliminarFilasDuplicadas(cuerpo);
+    this.impresionService.imprimir(entidad, encabezado, cuerpoUnico, titulo, true);
+  }
 
 // Método para eliminar filas duplicadas del cuerpo de la tabla
 eliminarFilasDuplicadas(cuerpo: Array<any>): Array<any> {
   const cuerpoUnico: Array<any> = [];
-  const filasVistas = new Set(); // Usamos un conjunto para mantener un registro de las filas vistas
+  const filasVistas = new Set();
   cuerpo.forEach((fila) => {
-      // Convertimos la fila en una cadena para poder compararla con otras filas
-      const filaString = JSON.stringify(fila);
-      if (!filasVistas.has(filaString)) {
-          // Si la fila no ha sido vista antes, la agregamos al cuerpo único y al conjunto de filas vistas
-          cuerpoUnico.push(fila);
-          filasVistas.add(filaString);
-      }
+    const filaString = JSON.stringify(fila);
+    if (!filasVistas.has(filaString)) {
+      cuerpoUnico.push(fila);
+      filasVistas.add(filaString);
+    }
   });
   return cuerpoUnico;
 }
 
-  getEncabezado(): string[] {
-    const encabezado: string[] = [
-      'CLIENTE',
-      'EMPLEADO',
-      'ARTICULO',
-      'FECHA DE PRÉSTAMO',
-      'FECHA DE DEVOLUCION',
-      'MONTO PRESTAMO',
-      'MONTO PAGO',
-      'OBSERVACION',
-      'ESTADO'
-    ];
-  
-    return encabezado;
-  }
+getEncabezado(): string[] {
+  return [
+    'CLIENTE',
+    'EMPLEADO',
+    'ARTICULO',
+    'FECHA PRESTMO',
+    'FECHA DEVOLUCION ',
+    'MONTO PRESTAMO',
+    'MONTO PAGO',
+    'OBSERVACION',
+    'ESTADO'
+  ];
+}
 
-
-
-  getCuerpo(): any[][] {
-    const cuerpo: any[][] = [];
-    const textosExcluidos = new Set(['Actualizar', 'Eliminar', 'Imprimir', 'Pagos']); // Textos a excluir
-    const filasVistas = new Set(); // Usar un conjunto para mantener un registro de las filas ya vistas
+getCuerpo(): any[][] {
+  const cuerpo: any[][] = [];
+  const filasVistas = new Set();
+  this.listTickets.forEach((ticket) => {
+    const fila: any[] = [
     
-    this.listPrestamos.forEach((prestamo) => {
-      const fila: any[] = [
-        prestamo.Cliente?.nombre + ' ' + prestamo.Cliente?.apellido,
-        // prestamo.Empleado?.nombre + ' ' + prestamo.Empleado?.apellidos,
-        prestamo.Articulo ? (prestamo.Articulo.Vehiculo ? prestamo.Articulo.Vehiculo.descripcion : (prestamo.Articulo.Electrodomestico ? prestamo.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
-        prestamo.fecha_prestamo,
-        prestamo.fecha_devolucion,
-        prestamo.monto_prestamo,
-        prestamo.monto_pago,
-        prestamo.Articulo?.observaciones,
-        prestamo.estado
-      ];
-  
-      // Convertir la fila en una cadena para compararla
-      const filaString = fila.join('|');
-  
-      // Solo agregar la fila al cuerpo si no se ha visto antes
-      if (!filasVistas.has(filaString)) {
-        cuerpo.push(fila);
-        filasVistas.add(filaString);
-      }
-    });
-  
-    return cuerpo;
-  }
+      ticket.Prestamo?.Cliente?.nombre,
+      ticket.Empleado?.nombre + ' ' + ticket.Empleado?.apellidos,
+      ticket.Prestamo?.Articulo ?
+        (ticket.Prestamo?.Articulo.Vehiculo ?
+          ticket.Prestamo?.Articulo.Vehiculo.descripcion :
+          (ticket.Prestamo?.Articulo.Electrodomestico ?
+            ticket.Prestamo?.Articulo.Electrodomestico.descripcion :
+            'No hay descripción disponible')) :
+        'No hay descripción disponible',
+        ticket.Prestamo?.fecha_prestamo,
+        ticket.Prestamo?.fecha_devolucion,
+        ticket.Prestamo?.monto_prestamo,
+        ticket.Prestamo?.monto_pago,
+        ticket.Prestamo?.Articulo?.observaciones,
+        ticket.Prestamo?.estado
+    ];
+    const filaString = fila.join('|');
+    if (!filasVistas.has(filaString)) {
+      cuerpo.push(fila);
+      filasVistas.add(filaString);
+    }
+  });
+  return cuerpo;
+}
 
 
 
