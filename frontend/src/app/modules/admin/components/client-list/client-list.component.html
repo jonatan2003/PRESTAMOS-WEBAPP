@@ -19,67 +19,139 @@
 
 			<!-- Content here-->
       <div class="container-fluid">
-				<div *ngIf="!loading"  class="table-responsive">
-					<table *ngIf="listClientes.length > 0"  class="table table-dark table-sm">
-						<thead>
-							<tr class="text-center roboto-medium">
-								<th scope="col">DNI</th>
-								<th scope="col">RUC</th>
-								<th scope="col">NOMBRE</th>
-								<th scope="col">APELLIDO</th>
-                <th scope="col">DIRECCION</th>
-                <th scope="col">TELEFONO</th>
-                <th scope="col">RUBRO</th>
-								<th scope="col">ACTUALIZAR</th>
-								<th scope="col">ELIMINAR</th>
-                <th scope="col">IMPRIMIR</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr *ngFor="let clientes of listClientes" class="text-center" >
-								<td>{{ clientes.dni }}</td>
-								<td>{{ clientes.ruc }}</td>
-								<td>{{ clientes.nombre }}</td>
-								<td>{{ clientes.apellido }}</td>
-                <td>{{ clientes.direccion }}</td>
-                <td>{{ clientes.telefono }}</td>
-                <td>{{ clientes.rubro }}</td>
 
-								<td>
-									
-										<button type="button" (click)="setSelectedCliente(clientes)" class="btn btn-primary" >
-											<i class="fas fa-sync-alt"></i>
-										 </button>
-									 
-                  </td>
-				  
-                  <td>
-                  <form action="">
-                     <button  (click)="deleteCliente(clientes.id!)" type="button" class="btn btn-warning">
-                         <i class="far fa-trash-alt"></i>
-                      </button>
-                  </form>
-                  </td>
-                  <td> <button type="button" class="btn btn-danger" (click)="onImprimir()" ><i class="fas fa-file-pdf"></i></button></td>
-							</tr>
 
-						</tbody>
-					</table>
-				</div>
-				<nav aria-label="Page navigation example">
-					<ul class="pagination justify-content-center">
-					  <li class="page-item" [class.disabled]="currentPage === 1">
-						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage - 1)" tabindex="-1">Atras</a>
-					  </li>
-					  <li class="page-item" *ngFor="let page of getPages()">
-						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(page)">{{ page }}</a>
-					  </li>
-					  <li class="page-item" [class.disabled]="currentPage === totalPages">
-						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
-					  </li>
-					</ul>
-				  </nav>
+		<div class="row justify-content-center">
+			<div class="col-md-6">
+			  <div class="form-group">
+			   
+				<select class="form-control " id="selectCategoria" (change)="onCategoriaSelected($event)">
+				  <option [ngClass]="{'text-danger': !categoriaSeleccionada}"  selected disabled>Seleccionar CLIENTES</option>
+				  <option value="1">CLIENTES DNI</option>
+				  <option value="2">CLIENTES RUC</option>
+				</select>
+			  </div>
 			</div>
+		  </div>
+
+		  <div *ngIf="categoriaSeleccionada === 1" class="table-responsive">
+			<table *ngIf="listClientes.length > 0"  class="table table-dark table-sm">
+				<thead>
+					<tr class="text-center roboto-medium">
+						<th scope="col">DNI</th>
+						<th scope="col">NOMBRE</th>
+						<th scope="col">APELLIDO</th>
+		<th scope="col">DIRECCION</th>
+		<th scope="col">TELEFONO</th>
+		<th scope="col">RUBRO</th>
+						<th scope="col">ACTUALIZAR</th>
+						<!-- <th scope="col">ELIMINAR</th> -->
+		<th scope="col">IMPRIMIR</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let clientes of listClientes" class="text-center" >
+						<td>{{ clientes.dni }}</td>
+						<td>{{ clientes.nombre }}</td>
+						<td>{{ clientes.apellido }}</td>
+		<td>{{ clientes.direccion }}</td>
+		<td>{{ clientes.telefono }}</td>
+		<td>{{ clientes.rubro }}</td>
+
+						<td>
+							
+								<button type="button" (click)="setSelectedCliente(clientes)" class="btn btn-primary" >
+									<i class="fas fa-sync-alt"></i>
+								 </button>
+							 
+		  </td>
+		  
+		  <!-- <td>
+		  <form action="">
+			 <button  (click)="deleteCliente(clientes.id!)" type="button" class="btn btn-warning">
+				 <i class="far fa-trash-alt"></i>
+			  </button>
+		  </form>
+		  </td> -->
+		  <td> <button type="button" class="btn btn-danger" (click)="onImprimir()" ><i class="fas fa-file-pdf"></i></button></td>
+					</tr>
+
+				</tbody>
+			</table>
+		  </div>
+		
+		  <div *ngIf="categoriaSeleccionada === 2" class="table-responsive">
+			<table *ngIf="listClientes.length > 0"  class="table table-dark table-sm">
+				<thead>
+					<tr class="text-center roboto-medium">
+						<th scope="col">RAZON SOCIAL</th>
+						<th scope="col">RUC</th>
+	     	            <th scope="col">DIRECCION</th>
+		                <th scope="col">TELEFONO</th>
+		                <th scope="col">RUBRO</th>
+						<th scope="col">ACTUALIZAR</th>
+						<!-- <th scope="col">ELIMINAR</th> -->
+		                <th scope="col">IMPRIMIR</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let clientes of listClientes" class="text-center" >
+						<td>{{ clientes.razon_social }}</td>
+						<td>{{ clientes.ruc }}</td>
+		<td>{{ clientes.direccion }}</td>
+		<td>{{ clientes.telefono }}</td>
+		<td>{{ clientes.rubro }}</td>
+
+						<td>
+							
+								<button type="button" (click)="setSelectedCliente(clientes)" class="btn btn-primary" >
+									<i class="fas fa-sync-alt"></i>
+								 </button>
+							 
+		  </td>
+		  
+		  <!-- <td>
+		  <form action="">
+			 <button  (click)="deleteCliente(clientes.id!)" type="button" class="btn btn-warning">
+				 <i class="far fa-trash-alt"></i>
+			  </button>
+		  </form>
+		  </td> -->
+		  <td> <button type="button" class="btn btn-danger" (click)="onImprimir()" ><i class="fas fa-file-pdf"></i></button></td>
+					
+		</tr>
+
+				</tbody>
+			</table>
+		  </div>
+		
+		  <nav *ngIf="categoriaSeleccionada === 1 || categoriaSeleccionada === 2" aria-label="Page navigation example">
+			<ul class="pagination justify-content-center">
+			  <li class="page-item" [class.disabled]="currentPage === 1">
+				<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage - 1)" tabindex="-1">Atras</a>
+			  </li>
+			  <li class="page-item" *ngFor="let page of getPages()">
+				<a class="page-link" href="javascript:void(0)" (click)="pageChanged(page)">{{ page }}</a>
+			  </li>
+			  <li class="page-item" [class.disabled]="currentPage === totalPages">
+				<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
+			  </li>
+			  <li class="page-item" >
+				  <button type="button" class="btn btn-danger" (click)="onImprimir()">
+					  <i class="fas fa-file-pdf"></i>
+				  </button>
+				</li>
+			</ul>
+		  </nav>
+		</div>
+
+
+
+
+
+			
+			
+
 
 
 
@@ -95,13 +167,15 @@
 				</button>
 			</div>
 			<div class="modal-body">
-				<div class="container-fluid">
+				<div class="container-fluid" *ngIf="categoriaSeleccionada === 1 ">
 					
 					<form class="form-neon" [formGroup]="form" (ngSubmit)="updateCliente()">
 						<fieldset>
 						  <legend><i class="fas fa-user"></i> &nbsp; Información básica</legend>
-						  <div class="container-fluid">
+						  <div class="container-fluid" >
 							<div class="row">
+								
+								
 							  <div class="col-12 col-md-6">
 								<div class="form-group">
 								  <label for="dni" >DNI</label>
@@ -133,6 +207,7 @@
 								  <span *ngIf="form.get('apellido').errors?.['required']" class="text-danger">Este campo es requerido</span>
 								  </div>
 								</div>
+							  
 							  </div>
 							  <div class="col-12 col-md-4">
 								<div class="form-group">
@@ -169,6 +244,8 @@
 		
 							</div>
 						  </div>
+
+
 							</fieldset>
 							<br>
 							<p class="text-center" style="margin-top: 40px;">
@@ -179,6 +256,98 @@
 
 						</form>
 				</div>
+
+
+				<div class="container-fluid" *ngIf="categoriaSeleccionada === 2 ">
+					
+					<form class="form-neon" [formGroup]="formRuc" (ngSubmit)="updateClienteRuc()">
+						<fieldset>
+						  <legend><i class="fas fa-user"></i> &nbsp; Información básica</legend>
+						  
+						  <div class="container-fluid" >
+							<div class="row">
+						
+
+							  <div class="col-12 col-md-6">
+								<div class="form-group">
+								  <label for="ruc" >RUC</label>
+								  <input formControlName="ruc" type="text" class="form-control mt-2" pattern="[0-9]*" maxlength="11" minlength="11">
+								  <div class="alert alert-danger mt-2"[hidden]="formRuc.get('ruc').valid || formRuc.get('ruc').pristine">
+								  <span *ngIf="formRuc.get('ruc').errors?.['required']" class="text-danger">Este campo es requerido</span>
+								  <span *ngIf="formRuc.get('ruc').errors?.['minlength']" class="text-danger">El RUC debe tener exactamente 11 dígitos</span>
+								  <br>
+								  <span *ngIf="formRuc.get('ruc').errors?.['maxlenght']" class="text-danger">El RUC debe tener exactamente 11 dígitos</span>
+								  <br>
+								  <span *ngIf="formRuc.get('ruc').errors?.['pattern']" class="text-danger">El RUC solo puede contener números</span>
+								</div>
+								</div>
+							  </div>
+							  <div class="col-12 col-md-6">
+								<div class="form-group">
+								  <label for="razon_social" >Razon Social</label>
+								  <input formControlName="razon_social" type="text" class="form-control mt-2" maxlength="100">
+								  <div class="alert alert-danger mt-2"[hidden]="formRuc.get('razon_social').valid || formRuc.get('razon_social').pristine">
+								  <span *ngIf="formRuc.get('razon_social').errors?.['required']" class="text-danger">Este campo es requerido</span>
+								  </div>
+								</div>
+							  </div>
+							
+
+							  <div class="col-12 col-md-4">
+								<div class="form-group">
+								  <label for="telefono" >Teléfono</label>
+								  <input formControlName="telefono" type="text" class="form-control mt-2" maxlength="9" minlength="9">
+								  <div class="alert alert-danger mt-2" [hidden]="formRuc.get('telefono').valid || formRuc.get('telefono').pristine">
+									<span *ngIf="formRuc.get('telefono').errors?.['required']" class="text-danger">Este campo es requerido</span>
+									<span *ngIf="formRuc.get('telefono').errors?.['minlength']" class="text-danger">El Telefono debe tener exactamente 9 dígitos</span>
+									<br>
+									<span *ngIf="formRuc.get('telefono').errors?.['maxlength']" class="text-danger">El Telefono debe tener exactamente 9 dígitos</span>
+									<br>
+									<span *ngIf="formRuc.get('telefono').errors?.['pattern']" class="text-danger">El Telefono solo puede contener números</span>
+								  </div>
+								</div>
+							  </div>
+							  <div class="col-12 col-md-4">
+								<div class="form-group">
+								  <label for="direccion" >Dirección</label>
+								  <input formControlName="direccion" type="text" class="form-control mt-2" maxlength="100">
+								  <div class="alert alert-danger mt-2"[hidden]="formRuc.get('direccion').valid || formRuc.get('direccion').pristine">
+								  <span *ngIf="formRuc.get('direccion').errors?.['required']" class="text-danger">Este campo es requerido</span>
+								  </div>
+								</div>
+							  </div>
+							  <div class="col-12 col-md-4">
+								<div class="form-group">
+								  <label for="rubro" >Rubro</label>
+								  <input formControlName="rubro" type="text" class="form-control mt-2" maxlength="50">
+								  <div class="alert alert-danger mt-2"[hidden]="formRuc.get('rubro').valid || formRuc.get('rubro').pristine">
+								  <span *ngIf="formRuc.get('rubro').errors?.['required']" class="text-danger">Este campo es requerido</span>
+								  </div>
+								</div>
+							  </div>
+		
+							</div>
+						  </div>
+
+
+							</fieldset>
+							<br>
+							<p class="text-center" style="margin-top: 40px;">
+								
+								<button [disabled]="formRuc.untouched || formRuc.invalid" type="submit" class="btn btn-raised btn-info btn-sm" (click)="guardar()">
+									<i class="far fa-save"></i> &nbsp; GUARDAR
+								  </button>							</p>
+
+						</form>
+				</div>
+
+
+
+
+
+
+
+
 				<br>
 				
 			</div>

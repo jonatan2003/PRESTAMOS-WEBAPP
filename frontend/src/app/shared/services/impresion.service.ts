@@ -51,7 +51,7 @@ async imprimirFilaPrestamos(entidad: string, datos: any) {
   const doc1 = new jsPDF({
     orientation: 'portrait',
     unit: 'in',
-    format: [2.9, 8.3],
+    format: [2.9, 6.4],
   });
 
   // Generar el código QR único
@@ -62,8 +62,8 @@ async imprimirFilaPrestamos(entidad: string, datos: any) {
   const nro_serie = `                               ${datos.num_serie}`;
 
   // Datos de la empresa
-  const empresa = '               CASA DE EMPEÑOS DON GATO';
-  const direccion = `Calle: Principal 123, Ciudad    Teléfono: 987654233`;
+  const empresa = '                 CASA DE EMPEÑOS DON GATO';
+  const direccion = `   Teléfono: 987654233`;
 
   const prestamo = `          TICKET DE PRESTAMO ELECTRONICA`;
   const ruc = `                          R.U.C: 10785645876`;
@@ -72,16 +72,13 @@ async imprimirFilaPrestamos(entidad: string, datos: any) {
   const cliente = `Cliente:${datos.cliente}`;
   const dni = `Dni: ${datos.dni}`;
   const empleado = `                Empleado: ${datos.empleado} `;
-  const descripcion = `Articulo                     Marca                     Modelo`;
-  const articulo = `${datos.articulo}                           ${datos.marca}                     ${datos.modelo}`;
+  const descripcion = `Articulo                 Marca                     Modelo`;
+  const articulo = `${datos.articulo}           ${datos.marca}             ${datos.modelo}`;
 
   const fechaPrestamo = `Fecha de Emision:                              ${datos.fechaPrestamo}`;
   const fechadevolucion = `Fecha de Devolucion:                         ${datos.fechaDevolucion}`;
   const estado = ` Prestamo                   Pagar                   Estado`;
   const pago = ` S/.${datos.montoPrestamo}                 S/.${datos.montoPago}               ${datos.estado}`;
-
-
-
 
   // Contenido del encabezado
   const encabezado = [
@@ -90,43 +87,50 @@ async imprimirFilaPrestamos(entidad: string, datos: any) {
 
   // Contenido del cuerpo
   const cuerpo = [
-    [direccion],
+    ['                       Calle: Principal 123, Ciudad '],
+    ['                           Teléfono: 987-654-233'],
+    [''],
     [prestamo],
     [ruc],
     [nro_serie],
     ['__________________________________________'],
     [fechaPrestamo],
-    [fechadevolucion],
     [dni],
     [cliente],
-    [''],
+    ['__________________________________________'],
     [descripcion],
     [articulo],
+    ['__________________________________________'],
     [estado],
     [pago],
+    ['__________________________________________'],
     ['                   Cronograma de Pagos'],
     ['Pago' + '            ' +'Fecha de Pago' + '           ' +'Monto Pagado'],
    
   ];
 
-  
-  // datos.cronogramaPagos.forEach((item ) => {
-  //   cuerpo.push([item.fechaPago +'     ' + item.montoPagado]);
-  // });
-
   let contador = 1;
 datos.cronogramaPagos.forEach((item) => {
-  cuerpo.push([contador + '                       ' + item.fechaPago + '                    ' + item.montoPagado]);
+  cuerpo.push([ contador + '                       ' + item.fechaPago + '                    S/'+item.montoPagado]);
   contador++;
 });
-
+    cuerpo.push(['__________________________________________']);
+    cuerpo.push([' EN CASO DE INCUMPLIMIENTO EN EL PAGO']);
+    cuerpo.push(['    DEL PRÉSTAMO DENTRO DEL PLAZO ']);
+    cuerpo.push(['ACORDADO EL BIEN SERÁ PUESTO EN VENTA']);
+    cuerpo.push(['']);
     cuerpo.push([ empleado]);
     cuerpo.push(['']);
     cuerpo.push(['']);
     cuerpo.push(['']);
     cuerpo.push(['']);
     cuerpo.push(['']);
-    cuerpo.push(['                     Gracias por tu Preferencia¡']);
+    cuerpo.push(['']);
+    cuerpo.push(['']);
+    cuerpo.push(['']);
+    cuerpo.push(['']);
+    cuerpo.push(['']);
+    cuerpo.push(['                       Gracias por tu Preferencia¡']);
 
   // Configuración de la tabla
   const margintop = 1.1;
@@ -140,7 +144,7 @@ datos.cronogramaPagos.forEach((item) => {
 
   // Ajustar las coordenadas del código QR para que aparezca en una esquina o en la parte inferior de la boleta
   const qrX = 0.8; // Coordenada X
-  const qrY = 6.8; // Coordenada Y
+  const qrY = 4.8; // Coordenada Y
 
   // Convertir la imagen a Base64
   const imgData = await this.getBase64ImageFromURL('/assets/img/login/gato.png');
@@ -152,8 +156,11 @@ datos.cronogramaPagos.forEach((item) => {
     startY: margintop,
     head: encabezado,
     body: cuerpo,
+   
     styles: {
       fontSize: 8, // Tamaño de la letra de hoja
+      cellPadding: -0, // Establece el padding en 0.1 inches
+      
       halign: 'justify', // Alineación horizontal justificada
       textColor: [0, 0, 0] // Color del texto en RGB (negro)
     },
@@ -166,13 +173,13 @@ datos.cronogramaPagos.forEach((item) => {
       right: marginright + 0
     },
     didParseCell: (data) => {
-      if (data.row.index === 10) { // Cambia el índice a la fila que contiene 'descripcion'
+      if (data.row.index === 3) { // Cambia el índice a la fila que contiene 'descripcion'
         data.cell.styles.fontStyle = 'bold';
-      } else if (data.row.index === 1 || data.row.index === 4) {
+      } else if (data.row.index === 5 || data.row.index === 11 ) {
         data.cell.styles.fontStyle = 'bold';
-      } else if (data.row.index === 12) {
+      } else if (data.row.index === 14 || data.row.index === 22 || data.row.index === 23) {
         data.cell.styles.fontStyle = 'bold';
-      } else if (data.row.index === 14 || data.row.index === 18) {
+      } else if (data.row.index === 17 || data.row.index === 24 || data.row.index === 26) {
         data.cell.styles.fontStyle = 'bold';
       }
     },
@@ -180,6 +187,7 @@ datos.cronogramaPagos.forEach((item) => {
       if (data.section === 'body') {
         // Establecer color de los bordes
         doc1.setDrawColor(0); // Color negro
+        
         // Dibujar borde superior
         if (data.row.index === 0) {
           // Si es la primera fila, no dibujar el borde superior
@@ -199,31 +207,49 @@ datos.cronogramaPagos.forEach((item) => {
         } else if (data.row.index === 6 || data.row.index === 7) {
           // Si es la tercera o cuarta fila, no dibujar los bordes
           doc1.setLineWidth(0);
-        } else if (data.row.index === 8 || data.row.index === 9) {
+        } else if (data.row.index === 8 || data.row.index === 9 || data.row.index === 10) {
           // Si es la tercera o cuarta fila, no dibujar los bordes
           doc1.setLineWidth(0);
-        } else if (data.row.index === 11) {
+        } else if (data.row.index === 11 || data.row.index === 13) {
           // Si es la tercera o cuarta fila, no dibujar los bordes
           doc1.setLineWidth(0);
-        } else if (data.row.index === 12 || data.row.index === 13) {
+        } else if (data.row.index === 12 || data.row.index === 14) {
           // Si es la tercera o cuarta fila, no dibujar los bordes
           doc1.setLineWidth(0);
-        } else if (data.row.index === 15) {
+        } else if (data.row.index === 15 || data.row.index === 16) {
           // Si es la tercera o cuarta fila, no dibujar los bordes
           doc1.setLineWidth(0);
-        } else if (data.row.index === 16 || data.row.index === 17) {
+        } else if (data.row.index === 17) {
           // Si es la tercera o cuarta fila, no dibujar los bordes
           doc1.setLineWidth(0);
-        } else if ( data.row.index === 19) {
+        } else if ( data.row.index === 18 || data.row.index === 19) {
           // Si es la tercera o cuarta fila, no dibujar los bordes
           doc1.setLineWidth(0);
-        } else if (data.row.index === 20 || data.row.index === 21) {
+        } else if (data.row.index === 20 ) {
           // Si es la tercera o cuarta fila, no dibujar los bordes
           doc1.setLineWidth(0);
-        } else if (data.row.index === 22 || data.row.index === 23) {
+        } else if (data.row.index === 21 ||data.row.index === 22) {
           // Si es la tercera o cuarta fila, no dibujar los bordes
           doc1.setLineWidth(0);
-        } else {
+        } else if (data.row.index === 23 || data.row.index === 24 || data.row.index === 25) {
+          // Si es la tercera o cuarta fila, no dibujar los bordes
+          doc1.setLineWidth(0);
+         } else if (data.row.index === 26 || data.row.index === 27 || data.row.index === 28) {
+          // Si es la tercera o cuarta fila, no dibujar los bordes
+          doc1.setLineWidth(0);
+         }else if (data.row.index === 29 || data.row.index === 30 || data.row.index === 31)  {
+          // Si es la tercera o cuarta fila, no dibujar los bordes
+          doc1.setLineWidth(0);
+         }
+         else if (data.row.index === 32 || data.row.index === 33 || data.row.index ===34 || data.row.index ===35) {
+          // Si es la tercera o cuarta fila, no dibujar los bordes
+          doc1.setLineWidth(0);
+         }
+         else if (data.row.index === 36 || data.row.index === 37 || data.row.index ===38 ) {
+          // Si es la tercera o cuarta fila, no dibujar los bordes
+          doc1.setLineWidth(0);
+         }
+          else {
           // Si no es la primera ni la última fila, dibujar los bordes
           doc1.line(data.cell.x, data.cell.y, data.cell.x + data.cell.width, data.cell.y); // Borde superior
           doc1.line(data.cell.x, data.cell.y + data.cell.height, data.cell.x + data.cell.width, data.cell.y + data.cell.height); // Borde inferior
@@ -261,14 +287,13 @@ generateUniqueTicketNumber(): string {
   return uniqueNumber;
 }
 
-
 // IMPRESION DEL Pago
 
 async imprimirFilaPagos(entidad: string, datos: any) {
   const doc1 = new jsPDF({
       orientation: 'portrait',
       unit: 'in',
-      format: [2.9, 8.5],
+      format: [2.9, 5.5],
   });
 
 
@@ -315,7 +340,7 @@ const nro_serie = `                            ${datos.num_serie}`;
   const fecha_pago = `Fecha de Emicion:                       ${datos.fecha_pago}`;
 const estado = `Interes                   Pagado                     Restante`;
   const pagado = `S/.${datos.interes_pago}                    S/.${datos.capital_pago}                  S/.${datos.monto_restante}`;
-  const tipo_pago = `Tipo Pago: ${datos.tipo_pago}`;
+  const tipo_pago = `${datos.tipo_pago}`;
   // Contenido del encabezado
   const encabezado = [
       [empresa],
@@ -323,7 +348,9 @@ const estado = `Interes                   Pagado                     Restante`;
 
   // Contenido del cuerpo
   const cuerpo = [
-    [direccion],   
+       ['                       Calle: Principal 123, Ciudad '],
+       ['                           Teléfono: 987-654-233'],
+       [''],
       [pago],
       [ruc],
       [nro_serie],
@@ -331,29 +358,33 @@ const estado = `Interes                   Pagado                     Restante`;
       [fecha_pago],
       [dni],
       [cliente],
-      [''],
+      ['__________________________________________'],
       [descripcion],
       [articulo],
+      ['__________________________________________'],
       [estado],
       [pagado],
-      [tipo_pago],
-      ['                   Cronograma de Pagos'],
-      ['Pago' + '            ' +'Fecha de Pago' + '           ' +'Monto Pagado'],
+      ['__________________________________________'],
+      ['Pago' + '              ' +'Monto Pagado' + '             ' +'Tipo Pago'],
   ];
 
   let contador = 1;
   datos.cronogramaPagos.forEach((item) => {
-    cuerpo.push([contador + '                       ' + item.fechaPago + '                    ' + item.montoPagado]);
+    cuerpo.push([contador + '                       S/.'+item.montoPagado + '                      ' + tipo_pago]);
     contador++;
   });
-  
+      cuerpo.push(['__________________________________________']);
       cuerpo.push([ empleado]);
       cuerpo.push(['']);
       cuerpo.push(['']);
       cuerpo.push(['']);
       cuerpo.push(['']);
       cuerpo.push(['']);
-      cuerpo.push(['                     Gracias por tu Preferencia¡']);
+      cuerpo.push(['']);
+      cuerpo.push(['']);
+      cuerpo.push(['']);
+      cuerpo.push(['']);
+      cuerpo.push(['                       Gracias por tu Preferencia¡']);
 
   // Configuración de la tabla
   const margintop = 1.1;
@@ -367,7 +398,7 @@ const estado = `Interes                   Pagado                     Restante`;
 
   // Ajustar las coordenadas del código QR para que aparezca en una esquina o en la parte inferior de la boleta
   const qrX = 0.8; // Coordenada X
-  const qrY = 6.7; // Coordenada Y
+  const qrY = 4.1; // Coordenada Y
 
   // Convertir la imagen a Base64
   const imgData = await this.getBase64ImageFromURL('/assets/img/login/gato.png');
@@ -384,6 +415,7 @@ const estado = `Interes                   Pagado                     Restante`;
       styles: {
         fontSize: 8, // Tamaño de la letra de hoja
         halign: 'justify', // Alineación horizontal justificada
+        cellPadding: -0, // Establece el padding en 0.1 inches
         textColor: [0, 0, 0] // Color del texto en RGB (negro)
     },
       theme: 'plain',
@@ -395,13 +427,13 @@ const estado = `Interes                   Pagado                     Restante`;
         right: marginright +0
     },
     didParseCell: (data) => {
-      if (data.row.index === 9  || data.row.index === 11) { // Cambia el índice a la fila que contiene 'descripcion'
+      if (data.row.index === 5  || data.row.index === 11) { // Cambia el índice a la fila que contiene 'descripcion'
         data.cell.styles.fontStyle = 'bold';
       }
-      else if (data.row.index === 1) {
+      else if (data.row.index === 3) {
         data.cell.styles.fontStyle = 'bold';
     } 
-    else if (data.row.index === 14 || data.row.index === 18) {
+    else if (data.row.index === 14 || data.row.index === 17 || data.row.index === 21) {
       data.cell.styles.fontStyle = 'bold';
   }
 
@@ -418,44 +450,47 @@ const estado = `Interes                   Pagado                     Restante`;
           } else if (data.row.index === cuerpo.length - 1) {
               // Si es la última fila, no dibujar el borde inferior
               doc1.setLineWidth(0);
-            } else if (data.row.index === 1 || data.row.index === 2) {
+            } else if (data.row.index === 1 || data.row.index === 2 || data.row.index === 3) {
               // Si es la tercera o cuarta fila, no dibujar los bordes
               doc1.setLineWidth(0);
-          } else if (data.row.index === 3 || data.row.index === 4  ) {
+          } else if (data.row.index === 4 || data.row.index === 5 || data.row.index === 6 ) {
               // Si es la tercera o cuarta fila, no dibujar los bordes
               doc1.setLineWidth(0);
-          } else if (data.row.index === 5|| data.row.index === 6) {
+          } else if (data.row.index === 7|| data.row.index === 8 || data.row.index === 9) {
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
-          } else if (data.row.index === 7|| data.row.index === 8) {
+          } else if (data.row.index === 10|| data.row.index === 11 || data.row.index === 12) {
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
             
-          }else if ( data.row.index === 10 || data.row.index === 11 ) {
+          }else if ( data.row.index === 13 || data.row.index === 14 || data.row.index === 15) {
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
           } 
-          else if ( data.row.index === 12 || data.row.index === 13 ) {
+          else if ( data.row.index === 16 || data.row.index === 17 || data.row.index === 18) {
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
           }
-          else if ( data.row.index === 15 ) {
+          else if ( data.row.index === 19 || data.row.index === 20 || data.row.index === 21) {
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
           }
-          else if ( data.row.index === 16 || data.row.index === 17 ) {
+          else if ( data.row.index === 22 || data.row.index === 23 || data.row.index === 24 ) {
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
           }
-          else if ( data.row.index === 19 ) {
+          else if ( data.row.index === 25 || data.row.index === 26 || data.row.index === 27) {
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
           }
-          else if ( data.row.index === 20 || data.row.index === 21 ) {
+          else if ( data.row.index === 28 || data.row.index === 29 || data.row.index === 30) {
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
           }
-          else if ( data.row.index === 22 || data.row.index === 23 ) {
+          else if ( data.row.index === 31 || data.row.index === 32 || data.row.index === 33) {
+            // Si es la tercera o cuarta fila, no dibujar los bordes
+            doc1.setLineWidth(0);
+          }else if ( data.row.index === 34 || data.row.index === 35 || data.row.index === 36) {
             // Si es la tercera o cuarta fila, no dibujar los bordes
             doc1.setLineWidth(0);
           }else {
@@ -467,8 +502,6 @@ const estado = `Interes                   Pagado                     Restante`;
     }
   });
 
-
-
  // Guardar o mostrar el documento
     const hoy = new Date();
     doc1.save(entidad + "_" + hoy.getDate() + (hoy.getMonth()+1) + hoy.getFullYear()+ "_" + hoy.getTime() + '.pdf')
@@ -477,7 +510,7 @@ const estado = `Interes                   Pagado                     Restante`;
   }
 
    
-// IMPRESION DE LA VENTA
+// IMPRESION DE LA VENTA BOLETA
 async imprimirFilaVentas(entidad: string, datos: any) {
   const doc1 = new jsPDF({
     orientation: 'portrait',
@@ -547,9 +580,7 @@ async imprimirFilaVentas(entidad: string, datos: any) {
     [''],
     [empleado],
     [''],
-    [''],
-    [''],
-    [''],
+   
     ['                     Gracias por tu Preferencia¡'],
   );
 
@@ -580,6 +611,7 @@ async imprimirFilaVentas(entidad: string, datos: any) {
    styles: {
      fontSize: 8, // Tamaño de la letra de hoja
      halign: 'justify', // Alineación horizontal justificada
+     cellPadding: -0, // Establece el padding en 0.1 inches
      textColor: [0, 0, 0], // Color del texto en RGB (negro)
    },
 
@@ -605,7 +637,9 @@ async imprimirFilaVentas(entidad: string, datos: any) {
 
 
 
-// IMPRESION DE LA VENTA
+
+
+// IMPRESION DE LA VENTA FACTURA
 async imprimirFilaVentasF(entidad: string, datos: any) {
   const doc1 = new jsPDF({
     orientation: 'portrait',
@@ -708,6 +742,7 @@ async imprimirFilaVentasF(entidad: string, datos: any) {
    styles: {
      fontSize: 8, // Tamaño de la letra de hoja
      halign: 'justify', // Alineación horizontal justificada
+   
      textColor: [0, 0, 0], // Color del texto en RGB (negro)
    },
 
@@ -720,10 +755,79 @@ async imprimirFilaVentasF(entidad: string, datos: any) {
      right: marginright + 0,
    },
    didParseCell: (data) => {
-     if (data.row.index === 9) { // Cambia el índice a la fila que contiene 'descripcion'
+     if (data.row.index === 5  || data.row.index === 11) { // Cambia el índice a la fila que contiene 'descripcion'
        data.cell.styles.fontStyle = 'bold';
      }
+     else if (data.row.index === 3) {
+       data.cell.styles.fontStyle = 'bold';
+   } 
+   else if (data.row.index === 14 || data.row.index === 17 || data.row.index === 21) {
+     data.cell.styles.fontStyle = 'bold';
+ }
+
    },
+
+   didDrawCell: (data) => {
+     if (data.section === 'body') {
+         // Establecer color de los bordes
+         doc1.setDrawColor(0); // Color negro
+           // Dibujar borde superior
+           if (data.row.index === 0) {
+             // Si es la primera fila, no dibujar el borde superior
+             doc1.setLineWidth(0);
+         } else if (data.row.index === cuerpo.length - 1) {
+             // Si es la última fila, no dibujar el borde inferior
+             doc1.setLineWidth(0);
+           } else if (data.row.index === 1 || data.row.index === 2 || data.row.index === 3) {
+             // Si es la tercera o cuarta fila, no dibujar los bordes
+             doc1.setLineWidth(0);
+         } else if (data.row.index === 4 || data.row.index === 5 || data.row.index === 6 ) {
+             // Si es la tercera o cuarta fila, no dibujar los bordes
+             doc1.setLineWidth(0);
+         } else if (data.row.index === 7|| data.row.index === 8 || data.row.index === 9) {
+           // Si es la tercera o cuarta fila, no dibujar los bordes
+           doc1.setLineWidth(0);
+         } else if (data.row.index === 10|| data.row.index === 11 || data.row.index === 12) {
+           // Si es la tercera o cuarta fila, no dibujar los bordes
+           doc1.setLineWidth(0);
+           
+         }else if ( data.row.index === 13 || data.row.index === 14 || data.row.index === 15) {
+           // Si es la tercera o cuarta fila, no dibujar los bordes
+           doc1.setLineWidth(0);
+         } 
+         else if ( data.row.index === 16 || data.row.index === 17 || data.row.index === 18) {
+           // Si es la tercera o cuarta fila, no dibujar los bordes
+           doc1.setLineWidth(0);
+         }
+         else if ( data.row.index === 19 || data.row.index === 20 || data.row.index === 21) {
+           // Si es la tercera o cuarta fila, no dibujar los bordes
+           doc1.setLineWidth(0);
+         }
+         else if ( data.row.index === 22 || data.row.index === 23 || data.row.index === 24 ) {
+           // Si es la tercera o cuarta fila, no dibujar los bordes
+           doc1.setLineWidth(0);
+         }
+         else if ( data.row.index === 25 || data.row.index === 26 || data.row.index === 27) {
+           // Si es la tercera o cuarta fila, no dibujar los bordes
+           doc1.setLineWidth(0);
+         }
+         else if ( data.row.index === 28 || data.row.index === 29 || data.row.index === 30) {
+           // Si es la tercera o cuarta fila, no dibujar los bordes
+           doc1.setLineWidth(0);
+         }
+         else if ( data.row.index === 31 || data.row.index === 32 || data.row.index === 33) {
+           // Si es la tercera o cuarta fila, no dibujar los bordes
+           doc1.setLineWidth(0);
+         }else if ( data.row.index === 34 || data.row.index === 35 || data.row.index === 36) {
+           // Si es la tercera o cuarta fila, no dibujar los bordes
+           doc1.setLineWidth(0);
+         }else {
+             // Si no es la primera ni la última fila, dibujar los bordes
+             doc1.line(data.cell.x, data.cell.y, data.cell.x + data.cell.width, data.cell.y); // Borde superior
+             doc1.line(data.cell.x, data.cell.y + data.cell.height, data.cell.x + data.cell.width, data.cell.y + data.cell.height); // Borde inferior
+         }
+     }
+   }
  });
 
   // Guardar o mostrar el documento

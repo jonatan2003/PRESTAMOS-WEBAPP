@@ -491,8 +491,8 @@ calcularTotales(): void {
       apellido: this.formcliente.value.apellido,
       direccion: this.formcliente.value.direccion,
       dni: this.formcliente.value.dni,
-      ruc: this.formcliente.value.ruc,
-      razon_social:this.formcliente.value.razon_social,
+      ruc: "no",
+      razon_social:"no",
       telefono: this.formcliente.value.telefono,
       rubro: this.formcliente.value.rubro,
     };
@@ -519,10 +519,10 @@ calcularTotales(): void {
 
   addClienteRUC() {
     const cliente: Cliente = {
-      nombre: this.formclienteRUC.value.nombre,
-      apellido: this.formclienteRUC.value.apellido,
+      nombre: "no",
+      apellido: "no",
       direccion: this.formclienteRUC.value.direccion,
-      dni: this.formclienteRUC.value.dni,
+      dni: "no",
       ruc: this.formclienteRUC.value.ruc,
       razon_social:this.formclienteRUC.value.razon_social,
       telefono: this.formclienteRUC.value.telefono,

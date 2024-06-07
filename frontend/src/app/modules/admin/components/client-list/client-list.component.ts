@@ -17,12 +17,12 @@ import { PaginacionService } from 'src/app/services/paginacion.service';
 export class ClientListComponent {
   form: FormGroup;
   id: number;
-
+ formRuc: FormGroup;
   listClientes: Cliente[] = []
   loading: boolean = false;
   clienteSeleccionado: Cliente | null = null;
   selectedCliente: Cliente | null = null;
-
+  categoriaSeleccionada: number = 0; 
 // Define propiedades para la paginación
 currentPage: number = 1;
 pageSize: number = 10; // Tamaño de la página
@@ -46,21 +46,71 @@ totalPages: number = 0;   // Inicializa totalPages en 0
         // ... Otros campos del formulario de clientes
       });
 
+      this.formRuc = this.fb.group({
+        direccion: ['', [Validators.required, Validators.maxLength(80)]],
+        ruc: ['', [Validators.required, Validators.maxLength(11), Validators.pattern("^[0-9]*$")]],
+        razon_social: ['', [Validators.required, Validators.maxLength(50)]],
+        telefono: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(9), Validators.pattern("^[0-9]*$")]],
+        rubro: ['', [Validators.required, Validators.maxLength(25)]],
+    });
+
       this.id = Number(aRouter.snapshot.paramMap.get('id'));
 
     }
 
   ngOnInit(): void {
-    this.getListClientes();
   }
+
+  onCategoriaSelected(event: any) {
+    const selectedCategoryId = Number(event.target.value);
+    this.categoriaSeleccionada = selectedCategoryId;
+this.getListClientes();
+  }
+  
 
  
 
   getListClientes() {
+
+
+    if(this.categoriaSeleccionada === 1 ){
+
+
     this.loading = true;
   
     // Ajusta el método para aceptar parámetros de paginación
-    this._paginacionService.getListClientes(this.currentPage, this.pageSize).subscribe((response: any) => {
+    this._paginacionService.getListClientesDNI(this.currentPage, this.pageSize).subscribe((response: any) => {
+      this.listClientes = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
+      this.loading = false;
+    console.log(this.listClientes);
+      // Utiliza totalItems del objeto de respuesta para calcular totalPages
+      this.totalPages = response.totalPages;
+    });
+
+  }
+  if(this.categoriaSeleccionada === 2 ){
+
+
+
+    this.loading = true;
+  
+    // Ajusta el método para aceptar parámetros de paginación
+    this._paginacionService.getListClientesRUC(this.currentPage, this.pageSize).subscribe((response: any) => {
+      this.listClientes = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
+      this.loading = false;
+  
+      // Utiliza totalItems del objeto de respuesta para calcular totalPages
+      this.totalPages = response.totalPages;
+    });
+  }
+  }
+
+  
+  getListClientesRuc() {
+    this.loading = true;
+  
+    // Ajusta el método para aceptar parámetros de paginación
+    this._paginacionService.getListClientesRUC(this.currentPage, this.pageSize).subscribe((response: any) => {
       this.listClientes = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
       this.loading = false;
   
@@ -82,29 +132,40 @@ totalPages: number = 0;   // Inicializa totalPages en 0
   }
   setSelectedCliente(cliente: Cliente) {
     this.selectedCliente = cliente;
-  
-    // Validar los datos de entrada antes de asignarlos al formulario
-    if (cliente.dni && cliente.dni.length === 8 && /^\d+$/.test(cliente.dni) &&
-        cliente.telefono && cliente.telefono.length === 9 && /^\d+$/.test(cliente.telefono)) {
-      this.id = cliente.id;
-      // Establecer los valores del cliente seleccionado en el formulario
-      this.form.patchValue({
-        nombre: cliente.nombre,
-        apellido: cliente.apellido,
-        direccion: cliente.direccion,
-        dni: cliente.dni,
-        telefono: cliente.telefono,
-        rubro: cliente.rubro
-      });
-  
-      // MARCAR PENDIENDTE el estado de validación del formulario
-      this.form.markAsUntouched();
-      this.mostrarModal();
-      console.log('Estado del formulario:', this.form.valid);
-    } else {
-      console.log('Datos de cliente no válidos.');
+    this.id = cliente.id;
+
+    if (this.categoriaSeleccionada === 1) {
+     
+
+        this.form.patchValue({
+            nombre: cliente.nombre,
+            apellido: cliente.apellido,
+            direccion: cliente.direccion,
+            dni: cliente.dni,
+            telefono: cliente.telefono,
+            rubro: cliente.rubro
+        });
+
+        this.form.markAsUntouched();
+        this.mostrarModal();
+        console.log('Estado del formulario:', this.form.valid);
+    } else if (this.categoriaSeleccionada === 2) {
+      
+
+        this.formRuc.patchValue({
+           
+            direccion: cliente.direccion,
+            ruc: cliente.ruc,
+            razon_social: cliente.razon_social,
+            telefono: cliente.telefono,
+            rubro: cliente.rubro
+        });
+
+        this.formRuc.markAsUntouched();
+        this.mostrarModal();
+        console.log('Estado del formulario:', this.formRuc.valid);
     }
-  }
+}
   
 
   deleteCliente(id: number) {
@@ -137,8 +198,8 @@ totalPages: number = 0;   // Inicializa totalPages en 0
       apellido: this.form.value.apellido,
       direccion: this.form.value.direccion,
       dni: this.form.value.dni,
-      ruc: this.form.value.ruc,
-      razon_social: this.form.value.razon_social,
+      ruc: "no",
+      razon_social: "no",
       telefono: this.form.value.telefono,
       rubro: this.form.value.rubro,
       // ... Otros campos del formulario de clientes según la interfaz
@@ -175,6 +236,53 @@ totalPages: number = 0;   // Inicializa totalPages en 0
       this.toastr.error('ID del cliente no válido', 'Error');
     }
   }
+
+
+  updateClienteRuc() {
+    const cliente: Cliente = {
+      nombre:"no",
+      apellido: "no",
+      direccion: this.formRuc.value.direccion,
+      dni: "no",
+      ruc: this.formRuc.value.ruc,
+      razon_social: this.formRuc.value.razon_social,
+      telefono: this.formRuc.value.telefono,
+      rubro: this.formRuc.value.rubro,
+      // ... Otros campos del formulario de clientes según la interfaz
+    };
+  
+    console.log('Cliente a actualizar:', cliente); // Agregar registro de cliente a actualizar
+  
+    if (this.id !== 0) {
+      console.log('ID del cliente a actualizar:', this.id); // Agregar registro del ID del cliente a actualizar
+  
+      this.loading = true;
+  
+      cliente.id = this.id;
+      this._clientesService.updateCliente(this.id, cliente).subscribe(() => {
+        this.toastr.info(`El cliente ${cliente.razon_social} fue actualizado con éxito`, 'Cliente actualizado' ,
+        {
+          timeOut: 3000, // Duración en milisegundos (3 segundos en este caso)
+          progressBar: true, // Muestra la barra de progreso
+          progressAnimation: 'increasing', // Animación de la barra de progreso
+          positionClass: 'toast-top-right'
+          }); // Posición del toastr en la pantalla
+        
+        this.loading = false;
+        this.getListClientes();
+  
+        console.log('Cliente actualizado con éxito'); // Registro de cliente actualizado con éxito
+      }, error => {
+        console.error('Error al actualizar el cliente:', error); // Manejo de errores
+        this.toastr.error('Hubo un error al actualizar el cliente', 'Error');
+        this.loading = false;
+      });
+    } else {
+      console.log('ID del cliente no válido:', this.id); // Registro del ID de cliente no válido
+      this.toastr.error('ID del cliente no válido', 'Error');
+    }
+  }
+
   mostrarModal() {
     // Mostrar el modal
     const modal = document.getElementById('ModalCliente');

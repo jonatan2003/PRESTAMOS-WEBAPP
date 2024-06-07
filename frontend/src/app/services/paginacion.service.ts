@@ -46,6 +46,18 @@ export class PaginacionService {
       .set('page_size', pageSize.toString());
     return this.http.get<Cliente[]>(`${this.apiUrl}/clientes`,{ params });
   }
+  getListClientesDNI(page: number, pageSize: number): Observable<Cliente[]> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('page_size', pageSize.toString());
+    return this.http.get<Cliente[]>(`${this.apiUrl}/clientesdni`,{ params });
+  }
+  getListClientesRUC(page: number, pageSize: number): Observable<Cliente[]> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('page_size', pageSize.toString());
+    return this.http.get<Cliente[]>(`${this.apiUrl}/clientesruc`,{ params });
+  }
   getListEmpleados(page: number, pageSize: number): Observable<Empleado[]> {
     let params = new HttpParams()
       .set('page', page.toString())
