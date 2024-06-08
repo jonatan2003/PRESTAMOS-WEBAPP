@@ -3,9 +3,20 @@ import Cliente from '../models/cliente.model';
 import { Op } from 'sequelize'; // Agregar esta línea
 
 export const createCliente = async (req: Request, res: Response) => {
-  const { nombre, apellido, direccion, dni, ruc,razon_social,telefono,rubro } = req.body;
+  const { nombre, apellido, direccion, dni, ruc, razon_social, telefono, rubro } = req.body;
 
   try {
+    // Verificar si ya existe un cliente con el mismo DNI o RUC
+    const clienteExistente = await Cliente.findOne({
+      where: {
+        [Op.or]: [{ dni }, { ruc }]
+      }
+    });
+
+    if (clienteExistente) {
+      return res.status(400).json({ msg: 'Ya existe un cliente con el mismo DNI o RUC' });
+    }
+
     const nuevoCliente = await Cliente.create({
       nombre,
       apellido,

@@ -121,7 +121,8 @@ totalPages: number = 0;   // Inicializa totalPages en 0
       direccion: this.form.value.direccion,
       telefono: this.form.value.telefono,
       correo: this.form.value.correo,
-      tipo_contrato: this.form.value.tipo_contrato
+      tipo_contrato: this.form.value.tipo_contrato,
+      estado: "ACTIVO",
     };
   
     console.log('Empleado a actualizar:', empleado); // Agregar registro de cliente a actualizar

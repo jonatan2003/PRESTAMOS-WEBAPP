@@ -11,10 +11,10 @@ import Vehiculo from '../models/vehiculo.model';
 import Electrodomestico from '../models/electrodometisco.model';
 
 export const createComprobanteVenta = async (req: Request, res: Response) => {
-  const { igv, descuento, idventa, idtipo_comprobante, num_serie } = req.body;
+  const { igv, descuento, idventa, idtipo_comprobante, num_serie ,estado, razon_anulacion, idnotacredito} = req.body;
 
   try {
-    const nuevoComprobanteVenta = await ComprobanteVenta.create({ igv, descuento, idventa, idtipo_comprobante, num_serie });
+    const nuevoComprobanteVenta = await ComprobanteVenta.create({ igv, descuento, idventa, idtipo_comprobante, num_serie,estado, razon_anulacion, idnotacredito });
     res.status(201).json(nuevoComprobanteVenta);
   } catch (error) {
     console.error(error);

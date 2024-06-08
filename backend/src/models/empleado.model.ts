@@ -40,6 +40,12 @@ const Empleado = db.define('Empleado', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  estado: {
+    type: DataTypes.ENUM('ACTIVO', 'INACTIVO'),
+    defaultValue: 'ACTIVO',
+    allowNull: false,
+  },
+
 }, {
   createdAt: false,
   updatedAt: false,

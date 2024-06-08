@@ -621,6 +621,10 @@ addComprobanteVenta(idVenta: number) {
     descuento: 0, /* Calcula el valor del descuento */
     idtipo_comprobante: this.tipocomprobante, /* Asigna el ID del tipo de comprobante */
     num_serie: ""  /* Asigna el número de serie */,
+    estado: "EMITIDO",
+    razon_anulacion:" ",
+    idnotacredito: 1,
+
     // Otros campos que necesites para el comprobante de venta
   };
 

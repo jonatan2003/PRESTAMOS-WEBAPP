@@ -11,15 +11,27 @@ import { Op } from 'sequelize';
 
 
 export const createPrestamo = async (req: Request, res: Response) => {
-  const { idcliente, idarticulo,  fecha_prestamo, fecha_devolucion, monto_prestamo, monto_pago,estado } = req.body;
+  const { idcliente, idarticulo, fecha_prestamo, fecha_devolucion, monto_prestamo, monto_pago, estado } = req.body;
 
   try {
     // Verificar si el cliente, el empleado y el artículo asociados al préstamo existen
     const clienteExistente = await Cliente.findByPk(idcliente);
     const articuloExistente = await Articulo.findByPk(idarticulo);
 
-    if (!clienteExistente || !articuloExistente) {
+    if (!clienteExistente ||!articuloExistente) {
       return res.status(400).json({ msg: 'El cliente, el empleado o el artículo especificados no existen' });
+    }
+
+    // Verificar si el cliente tiene préstamos pendientes
+    const prestamosPendientes = await Prestamo.findAll({
+      where: {
+        idcliente,
+        estado: 'pendiente'
+      }
+    });
+
+    if (prestamosPendientes.length > 0) {
+      return res.status(400).json({ msg: 'El cliente tiene préstamos pendientes' });
     }
 
     const nuevoPrestamo = await Prestamo.create({

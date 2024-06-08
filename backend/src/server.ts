@@ -30,6 +30,7 @@ import ComprobanteVentaRouter from './routes/comprobante_venta.router';
 import routerSUNAT from './routes/sunat.router';
 import routerRUC from './routes/apiruc.router';
 import CronogramaPagosRouter from './routes/cronograma_pagos.router';
+import NotasCreditoRouter from './routes/notacredito.router';
 
 
 class Server {
@@ -95,6 +96,7 @@ class Server {
     this.app.use('/api/v1/cronograma_pagos', CronogramaPagosRouter);
     this.app.use('/api/v1/comprobantes_ventas', ComprobanteVentaRouter);
     this.app.use('/api/v1/ticket', TicketRouter);
+    this.app.use('/api/v1/notacreditos', NotasCreditoRouter);
     this.app.use('/api/v1/dni', RouterDni);
     this.app.use('/api/v1/ruc', routerRUC);
     this.app.use('/api/v1/boletas', BoletasRouter);

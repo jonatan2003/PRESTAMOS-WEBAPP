@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import Empleado from '../models/empleado.model';
 
 export const createEmpleado = async (req: Request, res: Response) => {
-  const { nombre, apellidos, dni,fecha_nacimiento, fecha_contratacion, genero, direccion, telefono, correo, tipo_contrato } = req.body;
+  const { nombre, apellidos, dni,fecha_nacimiento, fecha_contratacion, genero, direccion, telefono, correo, tipo_contrato,estado } = req.body;
 
   try {
     const nuevoEmpleado = await Empleado.create({
@@ -16,6 +16,7 @@ export const createEmpleado = async (req: Request, res: Response) => {
       telefono,
       correo,
       tipo_contrato,
+      estado,
     });
 
     res.status(201).json(nuevoEmpleado);

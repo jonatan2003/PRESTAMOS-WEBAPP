@@ -7,7 +7,7 @@ import { Op } from 'sequelize';
 
 // Crear un nuevo artículo
 export const createArticulo = async (req: Request, res: Response) => {
-  const { idcategoria, idvehiculo, idelectrodomestico,observaciones,estado } = req.body;
+  const { idcategoria, idvehiculo, idelectrodomestico, observaciones, estado, numero_serie } = req.body;
 
   try {
     // Verificar si la categoría asociada al artículo existe
@@ -32,12 +32,33 @@ export const createArticulo = async (req: Request, res: Response) => {
       }
     }
 
+    // Verificar si ya existe un artículo con el mismo número de serie
+    let articuloExistente;
+    if (idvehiculo) {
+      articuloExistente = await Vehiculo.findOne({
+        where: {
+          numero_serie
+        }
+      });
+    } else if (idelectrodomestico) {
+      articuloExistente = await Electrodomestico.findOne({
+        where: {
+          numero_serie
+        }
+      });
+    }
+
+    if (articuloExistente) {
+      return res.status(400).json({ msg: 'Ya existe un artículo con el mismo número de serie' });
+    }
+
     const nuevoArticulo = await Articulo.create({
       idcategoria,
       idvehiculo,
       idelectrodomestico,
       observaciones,
-      estado
+      estado,
+      numero_serie
     });
 
     res.status(201).json(nuevoArticulo);

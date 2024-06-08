@@ -11,4 +11,5 @@
     telefono: string;
     correo: string;
     tipo_contrato: string;
+    estado: 'ACTIVO' | 'INACTIVO';
   }

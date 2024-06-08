@@ -84,6 +84,7 @@ export class EmpleadoNewComponent {
       telefono: this.form.value.telefono,
       correo: this.form.value.correo,
       tipo_contrato: this.form.value.tipo_contrato,
+      estado: "ACTIVO",
       // ... Otros campos del formulario de empleado según la interfaz
     };
 
