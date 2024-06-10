@@ -6,6 +6,14 @@ export const createVehiculo = async (req: Request, res: Response) => {
   const { carroceria, marca, modelo, color, numero_serie, numero_motor, placa, descripcion } = req.body;
 
   try {
+    // Verificar si ya existe un vehículo con el mismo numero_serie
+    const vehiculoExistente = await Vehiculo.findOne({ where: { numero_serie } });
+
+    if (vehiculoExistente) {
+      return res.status(400).json({ msg: 'Ya existe un vehículo con este número de serie' });
+    }
+
+    // Crear un nuevo vehículo si no existe
     const nuevoVehiculo = await Vehiculo.create({
       carroceria,
       marca,

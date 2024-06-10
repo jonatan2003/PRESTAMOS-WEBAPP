@@ -3,11 +3,18 @@ import Electrodomestico from '../models/electrodometisco.model';
 
 // Crear un nuevo electrodoméstico
 export const createElectrodomestico = async (req: Request, res: Response) => {
-  const {  marca, modelo, color, numero_serie, descripcion } = req.body;
+  const { marca, modelo, color, numero_serie, descripcion } = req.body;
 
   try {
+    // Verificar si ya existe un electrodoméstico con el mismo numero_serie
+    const electrodomesticoExistente = await Electrodomestico.findOne({ where: { numero_serie } });
+
+    if (electrodomesticoExistente) {
+      return res.status(400).json({ msg: 'Ya existe un electrodoméstico con este número de serie' });
+    }
+
+    // Crear un nuevo electrodoméstico si no existe
     const nuevoElectrodomestico = await Electrodomestico.create({
-     
       marca,
       modelo,
       color,

@@ -114,6 +114,18 @@ estado : string ;
 
 // Método para realizar la búsqueda de prestamos
 buscarPrestamos() {
+
+  
+    if (!this.terminoBusqueda || this.terminoBusqueda.trim() === '') {
+      this.toastr.warning('Ingrese un término de búsqueda', 'Advertencia', {
+        timeOut: 2000,
+        progressBar: true,
+        progressAnimation: 'increasing',
+        positionClass: 'toast-top-right'
+      });
+      return;
+    }
+  
   this.loading = true; // Establecer loading en true para mostrar la carga
 
 this.searchService.searchPrestamos( this.currentPage, this.pageSize,this.terminoBusqueda,).subscribe(
@@ -123,6 +135,15 @@ this.searchService.searchPrestamos( this.currentPage, this.pageSize,this.termino
     this.totalPages = response.totalPages; // Actualizar totalPages con el número total de páginas
     this.totalItems = response.totalItems; // Actualizar totalItems con el número total de elementos
     this.loading = false; // Establecer loading en false al finalizar la carga
+
+    if (this.listTickets.length === 0) {
+      this.toastr.info('No se encontraron datos', 'Información', {
+        timeOut: 2000,
+        progressBar: true,
+        progressAnimation: 'increasing',
+        positionClass: 'toast-top-right'
+      });
+    }
   },
   error => {
     console.error('Error al buscar empleado:', error);

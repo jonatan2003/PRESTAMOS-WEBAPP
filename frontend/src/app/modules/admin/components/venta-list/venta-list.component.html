@@ -79,12 +79,10 @@
 						</a>
 					</td> -->
 					<td>
-						<form action="">
-							<button (click)="deleteComprobante(comprobante.id!)"  type="button" class="btn btn-warning">
-								  ANULAR
-							</button>
-						</form>
-					</td>
+						<button (click)="setSelectedComprobante(comprobante!)"  type="button" class="btn btn-warning">
+							  ANULAR
+						</button>
+				</td>
 				</tr>
 			</tbody>
 		</table>
@@ -134,11 +132,9 @@
 						</a>
 					</td> -->
 					<td>
-						<form action="">
-							<button (click)="deleteComprobante(comprobante.id!)"  type="button" class="btn btn-warning">
+							<button (click)="setSelectedComprobante(comprobante!)"  type="button" class="btn btn-warning">
 								  ANULAR
 							</button>
-						</form>
 					</td>
 				</tr>
 			</tbody>
@@ -165,3 +161,117 @@
 		</ul>
 	  </nav>
 </div>
+
+
+
+
+
+			<!-- MODAL Cliente -->
+			<div class="modal fade" id="ModalAnulacion" #modalEmpleado tabindex="-1" role="dialog" aria-labelledby="ModalAnulacion" aria-hidden="true" >
+
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="ModalAnulacion">ANULACIÓN DE VENTA</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close" id="ModalAnulacion" (click)="guardarANULACION()">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="container-fluid">
+								
+								<form class="form-neon" [formGroup]="formanular" (ngSubmit)="updateComprobante()">
+									<fieldset>
+									  <legend><i class="fas fa-user"></i> &nbsp; Información básica</legend>
+									  <div class="container-fluid">
+										<div class="row">
+										  <div class="col-12 col-md-4">
+											<div class="form-group">
+											  <label for="id_Venta">ID Venta</label>
+											  <input formControlName="id_Venta" type="text" class="form-control" maxlength="50">
+											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('id_Venta').valid || formanular.get('id_Venta').pristine">
+												<span *ngIf="formanular.get('id_Venta').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											  </div>
+											</div>
+										  </div>
+										  <div class="col-12 col-md-4">
+											<div class="form-group">
+											  <label for="igv">IGV</label>
+											  <input formControlName="igv" type="text" class="form-control" maxlength="50">
+											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('igv').valid || formanular.get('igv').pristine">
+												<span *ngIf="formanular.get('igv').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											  </div>
+											</div>
+										  </div>
+										  <div class="col-12 col-md-4">
+											<div class="form-group">
+											  <label for="descuento">Descuento</label>
+											  <input formControlName="descuento" type="text" class="form-control" maxlength="50">
+											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('descuento').valid || formanular.get('descuento').pristine">
+												<span *ngIf="formanular.get('descuento').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											  </div>
+											</div>
+										  </div>
+										  <div class="col-12 col-md-4">
+											<div class="form-group">
+											  <label for="id_tipo_comprobante">ID Tipo Comprobante</label>
+											  <input formControlName="id_tipo_comprobante" type="text" class="form-control" maxlength="50">
+											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('id_tipo_comprobante').valid || formanular.get('id_tipo_comprobante').pristine">
+												<span *ngIf="formanular.get('id_tipo_comprobante').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											  </div>
+											</div>
+										  </div>
+										  <div class="col-12 col-md-4">
+											<div class="form-group">
+											  <label for="num_serie">Número de Serie</label>
+											  <input formControlName="num_serie" type="text" class="form-control" maxlength="50">
+											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('num_serie').valid || formanular.get('num_serie').pristine">
+												<span *ngIf="formanular.get('num_serie').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											  </div>
+											</div>
+										  </div>
+										  <div class="col-12 col-md-4">
+											<div class="form-group">
+											  <label for="estado">Estado</label>
+											  <input formControlName="estado" type="text" class="form-control" maxlength="50">
+											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('estado').valid || formanular.get('estado').pristine">
+												<span *ngIf="formanular.get('estado').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											  </div>
+											</div>
+										  </div>
+										  <div class="col-12 col-md-4">
+											<div class="form-group">
+											  <label style="display:none" for="razon_anulacion">Razón de Anulación</label>
+											  <input formControlName="razon_anulacion" type="text" class="form-control" maxlength="50">
+											</div>
+										  </div>
+										  <div class="col-12 col-md-4">
+											<div class="form-group">
+												<label for="id_nota_credito">ID Nota de Crédito</label>
+												<select formControlName="id_nota_credito" class="form-control" (change)="onTipoNCSelected($event)">
+												  <option value="" disabled selected>Seleccione Tipo de Nota de Credito </option>
+												  <option *ngFor="let nota of listTiposNotasCreditos" [value]="nota.id">{{ nota.descripcion}}</option>
+												</select>
+											</div>
+										  </div>
+										</div>
+									  </div>
+									</fieldset>
+									<br>
+									<p class="text-center" style="margin-top: 40px;">
+									  <button [disabled]="formanular.untouched || formanular.invalid" type="submit" class="btn btn-raised btn-info btn-sm" (click)="guardarANULACION()">
+										<i class="far fa-save"></i> &nbsp; GUARDAR
+									  </button>
+									</p>
+								  </form>
+							</div>
+							<br>
+							
+						</div>
+			
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="guardarANULACION()">Cerrar</button>
+						</div>
+					</div>
+				</div>
+				</div>

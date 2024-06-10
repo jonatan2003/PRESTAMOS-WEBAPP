@@ -32,26 +32,6 @@ export const createArticulo = async (req: Request, res: Response) => {
       }
     }
 
-    // Verificar si ya existe un artículo con el mismo número de serie
-    let articuloExistente;
-    if (idvehiculo) {
-      articuloExistente = await Vehiculo.findOne({
-        where: {
-          numero_serie
-        }
-      });
-    } else if (idelectrodomestico) {
-      articuloExistente = await Electrodomestico.findOne({
-        where: {
-          numero_serie
-        }
-      });
-    }
-
-    if (articuloExistente) {
-      return res.status(400).json({ msg: 'Ya existe un artículo con el mismo número de serie' });
-    }
-
     const nuevoArticulo = await Articulo.create({
       idcategoria,
       idvehiculo,

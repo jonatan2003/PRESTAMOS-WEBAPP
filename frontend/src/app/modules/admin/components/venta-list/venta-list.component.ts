@@ -8,6 +8,11 @@ import { DetalleVenta } from 'src/app/interfaces/detaventa.interface';
 import { Comprobante_venta } from 'src/app/interfaces/comprobante_venta.interface';
 import { ComprobanteventaService } from 'src/app/services/comprobanteventa.service';
 import { DetaventaService } from 'src/app/services/detaventa.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NotaCreditoService } from 'src/app/services/notacredito.service';
+import { NotaCredito } from 'src/app/interfaces/notacredito.interface';
+
 
 @Component({
   selector: 'app-venta-list',
@@ -15,31 +20,106 @@ import { DetaventaService } from 'src/app/services/detaventa.service';
   styleUrls: ['./venta-list.component.css']
 })
 export class VentaListComponent implements OnInit {
-
+  listTiposNotasCreditos: NotaCredito [] = [];
   listdetalleVentas: DetalleVenta[] = [];
   listcomprobanteVenta: Comprobante_venta[] = [];
   listBoleta:  Comprobante_venta[] = [];
   listFactura:  Comprobante_venta[] = [];
   listNotaCredito:  Comprobante_venta[] = [];
+  selectedComprobante: Comprobante_venta | null = null;
   loading: boolean = false;
   currentPage: number = 1;
   pageSize: number = 10;
   totalItems: number;
   totalPages: number = 0;
   categoriaSeleccionada: number = 0; 
+  formanular: FormGroup;
 
 
   constructor(
+    private fb: FormBuilder,
     private _ventaService: VentaService, 
+    private _notacreditoService: NotaCreditoService,
     private _detalleventaService: DetaventaService,
     private _comprobanteventaService: ComprobanteventaService,
     private _paginacionService: PaginacionService,
     private toastr: ToastrService,
+    private router: Router,
     private impresionService: ImpresionService
-  ) {}
+  ) {
+
+
+
+// Inicializar los formularios en el constructor
+this.formanular = this.fb.group({
+  id_Venta: ['', Validators.required],
+  igv: ['', Validators.required],
+  descuento: ['', Validators.required],
+  id_tipo_comprobante: ['', Validators.required],
+  num_serie: ['', Validators.required],
+  estado: ['', Validators.required],
+  razon_anulacion: [''],
+  id_nota_credito: [''],
+});
+
+
+
+
+
+  }
 
   ngOnInit(): void {
-    
+
+
+  }
+
+  onTipoNCSelected(event: any): void {
+    const selectedTipoPagoId = event.target.value;
+    if (selectedTipoPagoId === "4") {
+      this.formanular.get('pago').enable();
+    } else {
+      this.formanular.get('pago').disable();
+    }
+  }
+
+
+  getListNotaCreditos() {
+    this.loading = true;
+  
+    this._notacreditoService.getListNotasCredito().subscribe(
+      (response: any) => {
+        this.listTiposNotasCreditos = response;
+        this.loading = false; // Finalizar el estado de carga cuando se obtiene la respuesta
+      },
+      (error: any) => {
+        console.error('Error al obtener la lista de notas de crédito:', error);
+        this.toastr.error('Error al obtener la lista de notas de crédito', 'Error');
+        this.loading = false; // Finalizar el estado de carga en caso de error
+      }
+    );
+  }
+
+  setSelectedComprobante(comprobante: Comprobante_venta) {
+    this.selectedComprobante = comprobante;
+  
+   
+      // Establecer los valores del cliente seleccionado en el formulario
+      this.formanular.patchValue({
+        id_Venta: comprobante.idventa,
+        igv: comprobante.igv,
+        descuento: comprobante.descuento,
+        id_tipo_comprobante: comprobante.TipoComprobante?.nombre,
+        num_serie: comprobante.num_serie,
+        estado: comprobante.estado,
+      
+      });
+      this.getListNotaCreditos();
+
+      // Resetear el estado de validación del formulario
+      this.formanular.markAsUntouched();
+      this.mostrarAnulacion();
+      console.log('Estado del formulario:', this.formanular.valid);
+   
   }
 
   onCategoriaSelected(event: any) {
@@ -106,6 +186,83 @@ this.getListComprobanteventas();
   getPages(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
+
+
+
+
+
+
+  updateComprobante() {
+    const comprobante: Comprobante_venta = {
+      idventa: 0,
+      igv: 0,
+      descuento: 0,
+      idtipo_comprobante: 0,
+      num_serie: '',
+      estado: 'EMITIDO',
+      razon_anulacion: null,
+      idnotacredito: null
+    };
+  
+    console.log('Comprobante a actualizar:', comprobante); // Agregar registro del comprobante a actualizar
+  
+  
+      console.log('ID del comprobante a actualizar:', comprobante.id); // Agregar registro del ID del comprobante a actualizar
+  
+      this.loading = true;
+  
+      comprobante.id = comprobante.id;
+      this._comprobanteventaService.updateComprobanteventa(comprobante.id, comprobante).subscribe(() => {
+        this.toastr.info(`El comprobante con ID ${comprobante.id} fue actualizado con éxito`, 'Comprobante actualizado', {
+          timeOut: 3000, // Duración en milisegundos (3 segundos en este caso)
+          progressBar: true, // Muestra la barra de progreso
+          progressAnimation: 'increasing', // Animación de la barra de progreso
+          positionClass: 'toast-top-right' // Posición del toastr en la pantalla
+        });
+  
+        this.loading = false;
+        this.getListComprobanteventas();
+  
+        console.log('Comprobante actualizado con éxito'); // Registro del comprobante actualizado con éxito
+      }, error => {
+        console.error('Error al actualizar el comprobante:', error); // Manejo de errores
+        this.toastr.error('Hubo un error al actualizar el comprobante', 'Error');
+        this.loading = false;
+      });
+  
+  }
+
+  mostrarAnulacion() {
+    const modal = document.getElementById('ModalAnulacion');
+    if (modal) {
+      modal.classList.add('show');
+      modal.classList.add('fade');
+      modal.style.display = 'block';
+      modal.setAttribute('aria-modal', 'true');
+      document.body.classList.add('modal-open');
+      const backdrop = document.createElement('div');
+      backdrop.classList.add('modal-backdrop', 'fade', 'show');
+      document.body.appendChild(backdrop);
+    }
+  }
+
+
+  guardarANULACION() {
+    const modal = document.getElementById('ModalAnulacion');
+    if (modal) {
+      modal.classList.remove('show', 'fade', 'showing');
+      modal.style.display = 'none';
+      modal.setAttribute('aria-modal', 'false');
+      document.body.classList.remove('modal-open');
+      const backdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (backdrop) {
+        backdrop.parentNode.removeChild(backdrop);
+      }
+    }
+  }
+
+
+
 
   deleteComprobante(id: number) {
     Swal.fire({
@@ -199,24 +356,6 @@ this.getListComprobanteventas();
     });
     return cuerpo;
   }
-
-  // obtenerDatos(idventa: number) {
-  //   this._comprobanteventaService.getComprobanteventabyVentaID(idventa).subscribe((comprobante: Comprobante_venta) => {
-  //     // Guardar el resultado en this.listcomprobanteVentas
-  //     const index = this.listcomprobanteVenta.findIndex(c => c.idventa === idventa);
-  //     if (index !== -1) {
-  //       this.listcomprobanteVenta[index] = comprobante;
-  //     } else {
-  //       this.listcomprobanteVenta.push(comprobante);
-  //     }
-  //   });
-
-
-  //   this._detalleventaService.getDetaventabyIdVenta(idventa).subscribe((detalleventa : DetalleVenta[]) => {
-  //   this.listdetalleVentas.push(detalleventa[0]);
-
-  //   });
-  // }
 
   
   async onImprimirFila(index: number) {

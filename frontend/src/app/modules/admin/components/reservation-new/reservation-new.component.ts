@@ -346,7 +346,7 @@ addCliente() {
       this.loading = false;
       console.error(error);
       if (error && error.error && error.error.msg) {
-        this.toastr.error(error.error.msg, 'Error al registrar cliente', {
+        this.toastr.error(error.error.msg, 'NO se puede registrar cliente', {
           timeOut: 2000,
           progressBar: true,
           progressAnimation: 'increasing',
@@ -407,7 +407,12 @@ saveArticulo() {
     // Redireccionar a la lista de artículos u otro lugar según sea necesario
     //this.router.navigate(['/admin/reservation-new']);
     // this.idArticuloSeleccionado = articuloid.id;
-    
+    // this.toastr.success(`El vehículo ${nuevoArticulo.Vehiculo?.descripcion || nuevoArticulo.Electrodomestico?.descripcion} fue registrado con éxito`, 'Vehículo registrado', {
+    //   timeOut: 2000, // Duración en milisegundos (2 segundos en este caso)
+    //   progressBar: true, // Muestra la barra de progreso
+    //   progressAnimation: 'increasing', // Animación de la barra de progreso
+    //   positionClass: 'toast-top-right' // Posición del toastr en la pantalla
+    // });
     this.idArticuloSeleccionado = response.id;
     this.form.get('id_articulo').setValue(this.idArticuloSeleccionado);
 
@@ -429,20 +434,18 @@ onCategoriaSelected(event: any) {
   this.categoriaSeleccionada = selectedCategoryId;
 }
 
-
 addVehiculo() {
   const vehiculo: Vehiculo = this.formVehiculo.value;
   this.loading = true;
 
   this._vehiculoService.saveVehiculo(vehiculo).subscribe(
-    (response: any) => { // Aquí se define 'response' como el parámetro de la función de suscripción
+    (response: any) => {
       this.toastr.success(`El vehículo ${vehiculo.descripcion} fue registrado con éxito`, 'Vehículo registrado', {
         timeOut: 2000, // Duración en milisegundos (2 segundos en este caso)
         progressBar: true, // Muestra la barra de progreso
         progressAnimation: 'increasing', // Animación de la barra de progreso
         positionClass: 'toast-top-right' // Posición del toastr en la pantalla
       });
-      
       this.loading = false;
 
       // Obtener el ID del vehículo desde la respuesta del servicio
@@ -451,27 +454,27 @@ addVehiculo() {
       // Asignar el valor de idelectrodomestico como null ya que no se está guardando un electrodoméstico
       this.electrodomesticoId = null;
       this.descripcionArticuloSeleccionado = this.formVehiculo.value.descripcion;
+
       // Llamar a la función saveArticulo() después de obtener los IDs
       this.saveArticulo();
-    
-
     },
-    (error: any) => { // Manejo de errores
+    (error: any) => {
       console.error('Error al guardar el vehículo:', error);
-      this.toastr.error('Error al guardar el vehículo', 'Error');
-      this.loading = false;
 
+      // Mostrar el mensaje específico del backend en un toast
+      const errorMsg = (error.error && error.error.msg) ? error.error.msg : 'Error desconocido';
+      this.toastr.error(errorMsg, 'Error');
+      this.loading = false;
     }
   );
 }
-
 
 addElectrodomestico() {
   const electrodomestico: Electrodomestico = this.formElectrodomestico.value;
   this.loading = true;
 
   this._electrodomesticoService.saveElectrodomestico(electrodomestico).subscribe(
-    (response: any) => { // Aquí se define 'response' como el parámetro de la función de suscripción
+    (response: any) => {
       this.toastr.success(`El electrodoméstico ${electrodomestico.descripcion} fue registrado con éxito`, 'Electrodoméstico registrado', {
         timeOut: 2000, // Duración en milisegundos (2 segundos en este caso)
         progressBar: true, // Muestra la barra de progreso
@@ -486,16 +489,17 @@ addElectrodomestico() {
       // Asignar el valor de idvehiculo como null ya que no se está guardando un vehículo
       this.vehiculoId = null;
       this.descripcionArticuloSeleccionado = this.formElectrodomestico.value.descripcion;
+
       // Llamar a la función saveArticulo() después de obtener los IDs
       this.saveArticulo();
-
-
     },
-    (error: any) => { // Manejo de errores
+    (error: any) => {
       console.error('Error al guardar el electrodoméstico:', error);
-      this.toastr.error('Error al guardar el electrodoméstico', 'Error');
-      this.loading = false;
 
+      // Mostrar el mensaje específico del backend en un toast
+      const errorMsg = (error.error && error.error.msg) ? error.error.msg : 'Error desconocido';
+      this.toastr.error(errorMsg, 'Error');
+      this.loading = false;
     }
   );
 }
