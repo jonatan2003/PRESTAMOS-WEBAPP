@@ -148,7 +148,7 @@ montoRestante: number ;
                 this._paginacionService.getListPrestamos(this.currentPage, this.pageSize).subscribe(
                   (response: any) => {
                     // Filtrar los tickets para mostrar solo aquellos que tienen un préstamo y no tienen un pago
-                    this.listTickets = response.data.filter(ticket => ticket.Prestamo && !ticket.Pago);
+                    this.listTickets = response.data;
               
                     this.loading = false;
               
@@ -498,11 +498,11 @@ montoRestante: number ;
 
 
 
-  deletePrestamo(id: number) {
+  deletePrestamo(ticket : Ticket) {
     // Mostrar confirmación antes de eliminar el prestamo
     Swal.fire({
-      title: 'Eliminar Prestamo',
-      text: '¿Estás seguro de que deseas eliminar este Prestamo?',
+      title: 'ANULAR Prestamo',
+      text: '¿Estás seguro de que deseas ANULAR este Prestamo?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí',
@@ -510,22 +510,65 @@ montoRestante: number ;
     }).then((result) => {
       if (result.isConfirmed) {
         // Confirmación aceptada, realizar eliminación
-        this.performDeletePrestamo(id);
+        this.performUpdatePrestamo(ticket);
       }
     });
   }
 
-  performDeletePrestamo(id: number) {
+  performUpdatePrestamo(ticket : Ticket) {
     
-    this.loading = true;
-    this._prestamosService.deletePrestamo(id).subscribe(() => {
-      this.getListPrestamos();
-      this.toastr.warning('El Prestamo fue eliminado con exito', 'Prestamo eliminado');
-    })
+    
+      const prestamo: Partial<Prestamo> = {
+        estado: "anulado"
+      };
+    
+      console.log('Prestamo a actualizar:', prestamo); // Log del objeto a actualizar
+      console.log('ID del Prestamo a actualizar:', ticket.idprestamo); // Log del ID del préstamo a actualizar
+    
+      this.loading = true;
+    
+      
+     
+      this._prestamosService.updatePrestamoEstado(ticket.idprestamo, prestamo).subscribe(
+        () => {
+          this.loading = false;
+          console.log('Préstamo actualizado con éxito'); // Log de éxito
+          this.toastr.info('Préstamo ANULADO con éxito', 'ANULADO', {
+            timeOut: 2000,
+            progressBar: true,
+            progressAnimation: 'increasing',
+            positionClass: 'toast-top-right'
+          });
+
+          this.getListPrestamos();
+        },
+        error => {
+          console.error('Error al actualizar el Préstamo:', error); // Manejo de errores
+          this.toastr.error('Hubo un error al actualizar el Préstamo', 'Error', {
+            timeOut: 2000,
+            progressBar: true,
+            progressAnimation: 'increasing',
+            positionClass: 'toast-top-right'
+          });
+          this.loading = false;
+        }
+      );
+    
 
 
 
   }
+
+  shouldDisableButton(Ticket: Ticket): boolean {
+    const estado = Ticket.Prestamo?.estado?.toLowerCase().trim();
+   
+  
+    return estado === 'pagado' || 
+           estado === 'vencido' ||
+           estado === 'anulado' 
+         ;
+  }
+  
 
   getCronogramaPagos(idPrestamo: number, callback: (cronograma: CronogramaPago[]) => void) {
     this.loading = true;

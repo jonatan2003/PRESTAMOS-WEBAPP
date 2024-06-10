@@ -577,8 +577,11 @@ export const getTicketsPrestamos = async (req: Request, res: Response) => {
       limit: pageSize,
       offset: offset,
       order: [['id', 'DESC']],
-      where: { // Asegura que solo se incluyan tickets con préstamos
-        '$Prestamo.id$': { [Op.ne]: null }
+      where: {
+        [Op.and]: [
+          { '$Prestamo.id$': { [Op.ne]: null } }, // Solo incluir tickets con préstamos
+          { '$Pago.id$': null } // Solo incluir tickets sin pago
+        ]
       },
       include: [
         { model: Empleado, as: 'Empleado' },

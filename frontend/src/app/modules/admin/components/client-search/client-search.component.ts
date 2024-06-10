@@ -19,10 +19,15 @@ import Swal from 'sweetalert2';
 export class ClientSearchComponent {
   form: FormGroup;
   id: number;
+  formRuc: FormGroup;
 
   clientes: Cliente[] = []; // Array para almacenar los clientes encontrados
   terminoBusqueda: string = ''; // Variable para almacenar el término de búsqueda
   listClientes: Cliente[] = []
+  listClientesDNI: Cliente[] = []
+  listClientesRUC: Cliente[] = []
+  categoriaSeleccionada: number = 0; 
+
   loading: boolean = false;
   clienteSeleccionado: Cliente | null = null;
   selectedCliente: Cliente | null = null;
@@ -52,30 +57,81 @@ export class ClientSearchComponent {
         // ... Otros campos del formulario de clientes
       });
 
+      this.formRuc = this.fb.group({
+        direccion: ['', [Validators.required, Validators.maxLength(80)]],
+        ruc: ['', [Validators.required, Validators.maxLength(11), Validators.pattern("^[0-9]*$")]],
+        razon_social: ['', [Validators.required, Validators.maxLength(50)]],
+        telefono: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(9), Validators.pattern("^[0-9]*$")]],
+        rubro: ['', [Validators.required, Validators.maxLength(25)]],
+    });
+
       this.id = Number(aRouter.snapshot.paramMap.get('id'));
 
     }
 
   
 
-  // Método para realizar la búsqueda de  empleados
-  buscarClientes() {
-    this.loading = true; // Establecer loading en true para mostrar la carga
+ // Método para realizar la búsqueda de clientes
+buscarClientes() {
+  this.loading = true; // Establecer loading en true para mostrar la carga
 
-  this.searchService.searchClientes( this.currentPage, this.pageSize,this.terminoBusqueda,).subscribe(
+  // Verificar si se ha ingresado un término de búsqueda
+  if (!this.terminoBusqueda) {
+    this.toastr.warning('INGRESAR DATOS DEL CLIENTE PARA BUSCAR', 'Advertencia', {
+      timeOut: 2000,
+      progressBar: true,
+      progressAnimation: 'increasing',
+      positionClass: 'toast-top-right'
+    });
+    this.loading = false; // Establecer loading en false al finalizar la carga
+    return; // Salir de la función si no se ha ingresado ningún término de búsqueda
+  }
+
+  // Continuar con la búsqueda si se ha ingresado un término de búsqueda
+  this.searchService.searchClientes(this.currentPage, this.pageSize, this.terminoBusqueda).subscribe(
     (response: any) => {
-      this.clientes = response.data; // Asignar los datos de empleados a la propiedad empleados
+      this.clientes = response.data; // Asignar los datos de clientes a la propiedad clientes
       this.currentPage = response.page; // Actualizar currentPage con el número de página actual
       this.totalPages = response.totalPages; // Actualizar totalPages con el número total de páginas
       this.totalItems = response.totalItems; // Actualizar totalItems con el número total de elementos
       this.loading = false; // Establecer loading en false al finalizar la carga
+      
+      // Filtrar los clientes por tipo
+      this.listClientesDNI = this.clientes.filter(cliente => cliente.ruc === 'no');
+      this.listClientesRUC = this.clientes.filter(cliente => cliente.dni === 'no');
+
+      // Establecer categoriaSeleccionada basado en los resultados de las búsquedas
+      if (this.listClientesDNI.length > 0) {
+        this.categoriaSeleccionada = 1; // Si hay clientes con DNI
+      } else if (this.listClientesRUC.length > 0) {
+        this.categoriaSeleccionada = 2; // Si hay clientes con RUC
+      } else {
+        this.categoriaSeleccionada = 0; // Si no hay clientes encontrados
+      }
+
+      // Verificar si no se encontraron clientes después de la búsqueda
+      if (this.clientes.length === 0) {
+        this.toastr.warning('No se encontró el cliente especificado', 'Advertencia', {
+          timeOut: 2000,
+          progressBar: true,
+          progressAnimation: 'increasing',
+          positionClass: 'toast-top-right'
+        });
+      }
     },
     error => {
       console.error('Error al buscar cliente:', error);
       this.loading = false; // Manejar el error y establecer loading en false
+
+      this.toastr.error(error.msg, 'Cliente no encontrado', {
+        timeOut: 2000,
+        progressBar: true,
+        progressAnimation: 'increasing',
+        positionClass: 'toast-top-right'
+      });
     }
   );
-  }
+}
 
   
   // Método para cambiar de página
@@ -101,30 +157,40 @@ export class ClientSearchComponent {
   
   setSelectedCliente(cliente: Cliente) {
     this.selectedCliente = cliente;
-  
-    // Validar los datos de entrada antes de asignarlos al formulario
-    if (cliente.dni && cliente.dni.length === 8 && /^\d+$/.test(cliente.dni) &&
-        cliente.telefono && cliente.telefono.length === 9 && /^\d+$/.test(cliente.telefono)) {
-      this.id = cliente.id;
-      // Establecer los valores del cliente seleccionado en el formulario
-      this.form.patchValue({
-        nombre: cliente.nombre,
-        apellido: cliente.apellido,
-        direccion: cliente.direccion,
-        dni: cliente.dni,
-        telefono: cliente.telefono,
-        rubro: cliente.rubro
-      });
-  
-      // MARCAR PENDIENDTE el estado de validación del formulario
-      this.form.markAsUntouched();
-      this.mostrarModal();
-      console.log('Estado del formulario:', this.form.valid);
-    } else {
-      console.log('Datos de cliente no válidos.');
-    }
-  }
+    this.id = cliente.id;
 
+    if (this.categoriaSeleccionada === 1) {
+     
+
+        this.form.patchValue({
+            nombre: cliente.nombre,
+            apellido: cliente.apellido,
+            direccion: cliente.direccion,
+            dni: cliente.dni,
+            telefono: cliente.telefono,
+            rubro: cliente.rubro
+        });
+
+        this.form.markAsUntouched();
+        this.mostrarModal();
+        console.log('Estado del formulario:', this.form.valid);
+    } else if (this.categoriaSeleccionada === 2) {
+      
+
+        this.formRuc.patchValue({
+           
+            direccion: cliente.direccion,
+            ruc: cliente.ruc,
+            razon_social: cliente.razon_social,
+            telefono: cliente.telefono,
+            rubro: cliente.rubro
+        });
+
+        this.formRuc.markAsUntouched();
+        this.mostrarModal();
+        console.log('Estado del formulario:', this.formRuc.valid);
+    }
+}
   
   deleteCliente(id: number) {
     // Mostrar confirmación antes de eliminar el cliente
@@ -159,8 +225,8 @@ export class ClientSearchComponent {
       apellido: this.form.value.apellido,
       direccion: this.form.value.direccion,
       dni: this.form.value.dni,
-      ruc: this.form.value.ruc,
-      razon_social: this.form.value.razon_social,
+      ruc: "no",
+      razon_social: "no",
       telefono: this.form.value.telefono,
       rubro: this.form.value.rubro,
       // ... Otros campos del formulario de clientes según la interfaz
@@ -185,6 +251,7 @@ export class ClientSearchComponent {
         
         this.loading = false;
         this.buscarClientes();
+
   
         console.log('Cliente actualizado con éxito'); // Registro de cliente actualizado con éxito
       }, error => {
@@ -197,6 +264,53 @@ export class ClientSearchComponent {
       this.toastr.error('ID del cliente no válido', 'Error');
     }
   }
+
+
+  updateClienteRuc() {
+    const cliente: Cliente = {
+      nombre:"no",
+      apellido: "no",
+      direccion: this.formRuc.value.direccion,
+      dni: "no",
+      ruc: this.formRuc.value.ruc,
+      razon_social: this.formRuc.value.razon_social,
+      telefono: this.formRuc.value.telefono,
+      rubro: this.formRuc.value.rubro,
+      // ... Otros campos del formulario de clientes según la interfaz
+    };
+  
+    console.log('Cliente a actualizar:', cliente); // Agregar registro de cliente a actualizar
+  
+    if (this.id !== 0) {
+      console.log('ID del cliente a actualizar:', this.id); // Agregar registro del ID del cliente a actualizar
+  
+      this.loading = true;
+  
+      cliente.id = this.id;
+      this._clientesService.updateCliente(this.id, cliente).subscribe(() => {
+        this.toastr.info(`El cliente ${cliente.razon_social} fue actualizado con éxito`, 'Cliente actualizado' ,
+        {
+          timeOut: 3000, // Duración en milisegundos (3 segundos en este caso)
+          progressBar: true, // Muestra la barra de progreso
+          progressAnimation: 'increasing', // Animación de la barra de progreso
+          positionClass: 'toast-top-right'
+          }); // Posición del toastr en la pantalla
+        
+        this.loading = false;
+        this.buscarClientes();
+  
+        console.log('Cliente actualizado con éxito'); // Registro de cliente actualizado con éxito
+      }, error => {
+        console.error('Error al actualizar el cliente:', error); // Manejo de errores
+        this.toastr.error('Hubo un error al actualizar el cliente', 'Error');
+        this.loading = false;
+      });
+    } else {
+      console.log('ID del cliente no válido:', this.id); // Registro del ID de cliente no válido
+      this.toastr.error('ID del cliente no válido', 'Error');
+    }
+  }
+
   mostrarModal() {
     // Mostrar el modal
     const modal = document.getElementById('ModalCliente');

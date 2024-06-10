@@ -40,7 +40,7 @@
 								<th  scope="col">IMPRIMIR</th>
 								<!-- <th  scope="col">PAGOS</th> -->
 								<!-- <th scope="col">ACTUALIZAR</th> -->
-								<th scope="col">ELIMINAR</th>
+								<th scope="col">ANULAR</th>
 
 								<!-- <th  scope="col">ELIMINAR</th> -->
 							</tr>
@@ -88,8 +88,8 @@
 								</td> -->
 								<td>
 									<form action="">
-										<button (click)="deletePrestamo(ticket.id!)" type="button" class="btn btn-warning">
-											<i class="far fa-trash-alt"></i>
+										<button (click)="deletePrestamo(ticket!)" type="button" class="btn btn-warning" [disabled]="shouldDisableButton(ticket!)">
+											ANULAR
 										</button>
 									</form>
 								</td>
@@ -108,11 +108,11 @@
 					  <li class="page-item" [class.disabled]="currentPage === totalPages">
 						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
 					  </li>
-					  <li class="page-item" >
+					  <!-- <li class="page-item" >
 						<button type="button" class="btn btn-danger" (click)="onImprimir()">
 							<i class="fas fa-file-pdf"></i>
 						</button>
-					  </li>
+					  </li> -->
 					</ul>
 				  </nav>
 			</div>

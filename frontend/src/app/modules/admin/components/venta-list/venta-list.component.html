@@ -18,50 +18,55 @@
 </div>
 
 <!-- Content here-->
-<div class="container-fluid">
-	<div *ngIf="!loading"  class="table-responsive">
-		<table *ngIf="listdetalleVentas.length > 0" class="table table-dark table-sm">
+<div class="container-fluid" >
+
+
+	
+	<div class="row justify-content-center">
+		<div class="col-md-6">
+		  <div class="form-group">
+		   
+			<select class="form-control " id="selectCategoria" (change)="onCategoriaSelected($event)">
+			  <option [ngClass]="{'text-danger': !categoriaSeleccionada}"  selected disabled>Tipo Comrobante</option>
+			  <option value="1">BOLETA</option>
+			  <option value="2">FACTURA</option>
+			  <option value="3">NOTA CREDITO</option>
+
+			</select>
+		  </div>
+		</div>
+	  </div>
+
+	<div *ngIf="this.categoriaSeleccionada === 1 || this.categoriaSeleccionada === 2 "  class="table-responsive">
+		<table *ngIf="listcomprobanteVenta.length > 0" class="table table-dark table-sm">
 			<thead>
 				
 
 
 				<tr class="text-center roboto-medium">
 					<th scope="col">VENTA NRO</th>
+					<th scope="col">TIPO COMPROBANTE</th>
 					<th scope="col">EMPLEADO</th>
 					<th scope="col">CLIENTE</th>
-					<th scope="col">ARTICULO</th>
 					<th scope="col">FECHA VENTA</th>
 					<th scope="col">TIPO PAGO</th>
-					<th scope="col">CANTIDAD</th>
-					<th scope="col">PRECIO UNITARIO</th>
-					<th scope="col">SUBTOTAL</th>
 					<th scope="col">TOTAL</th>
+					<th scope="col">ESTADO</th>
 					<th scope="col">IMPRIMIR</th>
 					<!-- <th scope="col">ACTUALIZAR</th> -->
 					<th scope="col">ELIMINAR</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr *ngFor="let detalleventa of listdetalleVentas  let i = index"  class="text-center"  >
-					<td>{{ detalleventa.Venta?.id}}</td>
-					<td>{{ detalleventa.Venta?.Empleado?.nombre}}</td>
-					<td>{{detalleventa.Venta?.Cliente?.nombre}}</td>
-					
-					<td> <span>
-						{{detalleventa.Articulo ?
-							(detalleventa.Articulo.Vehiculo ?
-							detalleventa.Articulo.Vehiculo.descripcion :
-								(detalleventa.Articulo.Electrodomestico ?
-								detalleventa.Articulo.Electrodomestico.descripcion :
-									'No hay descripción disponible')) :
-							'No hay descripción disponible' }}
-					</span></td>
-					<td>{{ detalleventa.Venta?.fecha_venta }}</td>
-					<td>{{ detalleventa.Venta?.tipo_pago }}</td>
-					<td>{{ detalleventa.cantidad }}</td>
-					<td>{{ detalleventa.precio_unitario }}</td>
-					<td>{{ detalleventa.subtotal }}</td>
-					<td>{{ detalleventa.Venta?.total }}</td>
+				<tr *ngFor="let comprobante of listcomprobanteVenta  let i = index"  class="text-center"  >
+					<td>{{ comprobante.Venta?.id}}</td>
+					<td>{{ comprobante.TipoComprobante?.nombre}}</td>
+					<td>{{ comprobante.Venta?.Empleado?.nombre}}</td>
+					<td>{{comprobante.Venta?.Cliente?.nombre ||comprobante.Venta?.Cliente?.razon_social  }}</td>
+					<td>{{ comprobante.Venta?.fecha_venta }}</td>
+					<td>{{ comprobante.Venta?.tipo_pago }}</td>
+					<td>{{ comprobante.Venta?.total }}</td>
+					<td>{{ comprobante.estado}}</td>
 
 					<td>
 						<button type="button" class="btn btn-danger" (click)="onImprimirFila(i)">
@@ -75,8 +80,8 @@
 					</td> -->
 					<td>
 						<form action="">
-							<button (click)="deleteComprobante(detalleventa.id!)"  type="button" class="btn btn-warning">
-								  <i class="far fa-trash-alt"></i>
+							<button (click)="deleteComprobante(comprobante.id!)"  type="button" class="btn btn-warning">
+								  ANULAR
 							</button>
 						</form>
 					</td>
@@ -84,6 +89,63 @@
 			</tbody>
 		</table>
 	</div>
+
+
+	
+	<div *ngIf="this.categoriaSeleccionada === 3"  class="table-responsive">
+		<table *ngIf="listcomprobanteVenta.length > 0" class="table table-dark table-sm">
+			<thead>
+				
+
+
+				<tr class="text-center roboto-medium">
+					<th scope="col">VENTA NRO</th>
+					<th scope="col">TIPO COMPROBANTE</th>
+					<th scope="col">EMPLEADO</th>
+					<th scope="col">CLIENTE</th>
+					<th scope="col">FECHA VENTA</th>
+					<th scope="col">TIPO PAGO</th>
+					<th scope="col">TOTAL</th>
+					<th scope="col">ESTADO</th>
+					<th scope="col">IMPRIMIR</th>
+					<!-- <th scope="col">ACTUALIZAR</th> -->
+					<th scope="col">ELIMINAR</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let comprobante of listcomprobanteVenta  let i = index"  class="text-center"  >
+					<td>{{ comprobante.Venta?.id}}</td>
+					<td>{{ comprobante.TipoComprobante?.nombre}}</td>
+					<td>{{ comprobante.Venta?.Empleado?.nombre}}</td>
+					<td>{{comprobante.Venta?.Cliente?.nombre ||comprobante.Venta?.Cliente?.razon_social  }}</td>
+					<td>{{ comprobante.Venta?.fecha_venta }}</td>
+					<td>{{ comprobante.Venta?.tipo_pago }}</td>
+					<td>{{ comprobante.Venta?.total }}</td>
+					<td>{{ comprobante.estado}}</td>
+
+					<td>
+						<button type="button" class="btn btn-danger" (click)="onImprimirFila(i)">
+							<i class="fas fa-file-pdf"></i>
+						</button>
+					</td>
+					<!-- <td>
+						<a routerLink="/venta-update/{{ detalleventas.id }}"class="btn btn-success">
+							  <i class="fas fa-sync-alt"></i>
+						</a>
+					</td> -->
+					<td>
+						<form action="">
+							<button (click)="deleteComprobante(comprobante.id!)"  type="button" class="btn btn-warning">
+								  ANULAR
+							</button>
+						</form>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+
 	<nav aria-label="Page navigation example">
 		<ul class="pagination justify-content-center">
 		  <li class="page-item" [class.disabled]="currentPage === 1">

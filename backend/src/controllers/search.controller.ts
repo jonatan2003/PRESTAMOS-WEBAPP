@@ -13,6 +13,7 @@ import Pago from '../models/pago.model';
 import DetalleVenta from '../models/detalleventa.model';
 import CronogramaPagos from '../models/cronograma_pagos.model';
 import Inventario from '../models/inventario.model';
+import Ticket from '../models/ticket.model';
 //CLIENTES
 export const searchClientes = async (req: Request, res: Response) => {
   const { searchTerm } = req.query;
@@ -29,6 +30,8 @@ export const searchClientes = async (req: Request, res: Response) => {
           { apellido: { [Op.like]: `%${searchTerm}%` } },
           { dni: { [Op.like]: `%${searchTerm}%` } },
           { telefono: { [Op.like]: `%${searchTerm}%` } },
+          { ruc: { [Op.like]: `%${searchTerm}%` } },
+          { razon_social: { [Op.like]: `%${searchTerm}%` } },
         ],
       },
       limit: pageSize,
@@ -65,6 +68,9 @@ export const searchEmpleados = async (req: Request, res: Response) => {
           { nombre: { [Op.like]: `%${searchTerm}%` } },
           { apellidos: { [Op.like]: `%${searchTerm}%` } },
           { dni: { [Op.like]: `%${searchTerm}%` } },
+         
+
+
         ],
       },
       limit: pageSize,
@@ -196,6 +202,76 @@ export const searchInventario = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Error al realizar la búsqueda de artículos en inventario' });
+  }
+};
+export const searchTicketsPrestamos = async (req: Request, res: Response) => {
+  const { searchTerm } = req.query;
+  const page = parseInt(req.query.page as string, 10) || 1;
+  const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+  const offset = (page - 1) * pageSize;
+
+  try {
+    const tickets = await Ticket.findAndCountAll({
+      include: [
+        { model: Empleado, as: 'Empleado' },
+        { model: Pago, as: 'Pago' },
+        {
+          model: Prestamo, as: 'Prestamo', include: [
+            { model: Cliente, as: 'Cliente' },
+            {
+              model: Articulo, as: 'Articulo', include: [
+                { model: Categoria, as: 'Categoria' },
+                { model: Vehiculo, as: 'Vehiculo' },
+                { model: Electrodomestico, as: 'Electrodomestico' },
+              ]
+            },
+          ],
+        }
+      ],
+      where: {
+        [Op.or]: [
+          { id: { [Op.like]: `%${searchTerm}%` } },
+        
+          { '$Empleado.nombre$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Empleado.apellidos$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Prestamo.estado$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Prestamo.fecha_prestamo$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Prestamo.Cliente.dni$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Prestamo.Cliente.nombre$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Prestamo.Cliente.apellido$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Prestamo.Articulo.Categoria.nombre$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Prestamo.Articulo.Vehiculo.descripcion$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Prestamo.Articulo.Electrodomestico.descripcion$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Prestamo.Articulo.Electrodomestico.numero_serie$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Prestamo.Articulo.Vehiculo.numero_serie$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Prestamo.Articulo.Vehiculo.numero_motor$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Prestamo.Articulo.Vehiculo.marca$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Prestamo.Articulo.Vehiculo.modelo$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Prestamo.Articulo.Vehiculo.color$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Prestamo.Articulo.Electrodomestico.color$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Prestamo.Articulo.Electrodomestico.marca$': { [Op.like]: `%${searchTerm}%` } },
+          { '$Prestamo.Articulo.Electrodomestico.modelo$': { [Op.like]: `%${searchTerm}%` } },
+        ],
+        '$Prestamo.id$': { [Op.ne]: null } // Asegura que solo se incluyan tickets con préstamos
+      },
+      limit: pageSize,
+      offset: offset,
+      order: [['id', 'DESC']],
+    });
+
+    const totalItems = tickets.count;
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    res.json({
+      page,
+      pageSize,
+      totalItems,
+      totalPages,
+      data: tickets.rows,
+    });
+  } catch (error) {
+    console.error('Error al realizar la búsqueda de tickets con préstamos:', error);
+    res.status(500).json({ msg: 'Error al realizar la búsqueda de tickets con préstamos' });
   }
 };
 

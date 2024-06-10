@@ -13,6 +13,7 @@ import { DetalleVenta } from '../interfaces/detaventa.interface';
 import { Usuario } from '../interfaces/usuario.interface';
 import { CronogramaPago } from '../interfaces/cronograma_pagos.interface';
 import { Inventario } from '../interfaces/inventario.interface';
+import { Ticket } from '../interfaces/ticket.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -57,12 +58,12 @@ export class SearchService {
     return this.http.get<Inventario[]>(`${this.apiUrl}/inventario/searchTerm=`, { params });
   }
 
-  searchPrestamos(page: number, pageSize: number,searchTerm: string): Observable<Prestamo[]> {
+  searchPrestamos(page: number, pageSize: number,searchTerm: string): Observable<Ticket[]> {
     const params = new HttpParams().set('searchTerm', searchTerm)
     .set('page', page.toString())
     .set('page_size', pageSize.toString());
     ;
-    return this.http.get<Prestamo[]>(`${this.apiUrl}/prestamos/searchTerm=`, { params });
+    return this.http.get<Ticket[]>(`${this.apiUrl}/ticketsprestamos/searchTerm=`, { params });
   }
   searchCronogramaPagos(page: number, pageSize: number,searchTerm: string): Observable<CronogramaPago[]> {
     const params = new HttpParams().set('searchTerm', searchTerm)

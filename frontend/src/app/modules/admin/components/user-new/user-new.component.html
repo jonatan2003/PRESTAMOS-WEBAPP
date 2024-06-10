@@ -26,8 +26,8 @@
 					<div class="col-12 col-md-12">
 						<div class="form-group">
 							<label for="usuario" class="bmd-label-floating">USUARIO</label>
-							<input formControlName="usuario" id="usuario"  type="text" class="form-control"
-								 maxlength="20">
+							<input formControlName="usuario" id="usuario" type="text" class="form-control"
+								maxlength="20">
 							<div class="alert alert-danger mt-2"
 								[hidden]="form.get('usuario').valid || form.get('usuario').pristine">
 								<span *ngIf="form.get('usuario').errors?.['required']" class="text-danger">Este campo es
@@ -38,7 +38,8 @@
 					<div class="col-12 col-md-12 ">
 						<div class="form-group">
 							<label for="password" class="bmd-label-floating">CONTRASEÑA</label>
-							<input class="text-center" formControlName="password" id="password"  type="password" class="form-control" maxlength="10">
+							<input class="text-center" formControlName="password" id="password" type="password"
+								class="form-control" maxlength="10">
 							<div class="alert alert-danger mt-2"
 								[hidden]="form.get('password').valid || form.get('password').pristine">
 								<span *ngIf="form.get('password').errors?.['required']" class="text-danger">Este campo
@@ -46,32 +47,39 @@
 							</div>
 						</div>
 					</div>
-					
+
 				</div>
 			</div>
 		</fieldset>
 		<br><br><br>
 		<fieldset>
-			<div class="row justify-content-center"> 
-			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalEmpleado"><i class="fas fa-user"></i> &nbsp; Agregar empleado</button>
-			
-					<input style="display: none;" formControlName="id_empleado" id="id_empleado">
-		</div>
-		<div class="row justify-content-center"> 
-			<label  class="text-center" > <h2> EMPLEADO: {{ empleadoSeleccionado ? empleadoSeleccionado.nombre : '' }} </h2></label>
+			<div class="row justify-content-center">
+				<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalEmpleadoBuscar"><i
+						class="fas fa-user"></i> &nbsp; Buscar empleado</button>
+						<button type="button" class="btn btn-primary"  (click)="mostrarEmpleado()"><i class="fas fa-user-plus"></i> &nbsp; Agregar Empleado</button>
 
-		</div>
+				
+
+
+			</div>
+			<div class="row justify-content-center">
+				<label class="text-center">
+					<h2> EMPLEADO: {{ nombreEmpleadoSeleccionado}} </h2>
+					<input style="display: none;" formControlName="id_empleado" id="id_empleado">
+				</label>
+
+			</div>
 			<div class="container-fluid ">
 				<div class="row justify-content-center ">
 					<div class="col-md-6">
-						
-				
+
+
 						<div class="form-group">
-							<select formControlName="permiso" id="permiso"  class="form-control">
+							<select formControlName="permiso" id="permiso" class="form-control">
 								<option value="" selected="" disabled="">Seleccione una opción</option>
 								<option value="admin">ADMIN</option>
 								<option value="empleado">EMPLEADO</option>
-								
+
 							</select>
 						</div>
 						<legend><i class="fas fa-medal"></i> &nbsp; Nivel de privilegio</legend>
@@ -86,19 +94,20 @@
 			<button type="reset" class="btn btn-raised btn-secondary btn-sm"><i class="fas fa-paint-roller"></i> &nbsp;
 				LIMPIAR</button>
 			&nbsp; &nbsp;
-			<button [disabled]="!form.get('id_empleado').value || !empleadoSeleccionado || form.invalid " type="submit" class="btn btn-raised btn-info btn-sm"><i
-					class="far fa-save"></i> &nbsp; GUARDAR</button>
+			<button [disabled]="form.invalid " type="submit"
+				class="btn btn-raised btn-info btn-sm"><i class="far fa-save"></i> &nbsp; GUARDAR</button>
 		</p>
 	</form>
 </div>
 
 
 <!-- MODAL EMPLEADO -->
-<div class="modal fade" id="ModalEmpleado" tabindex="-1" role="dialog" aria-labelledby="ModalCliente" aria-hidden="true" >
+<div class="modal fade" id="ModalEmpleadoBuscar" tabindex="-1" role="dialog" aria-labelledby="ModalEmpleadoBuscar"
+	aria-hidden="true">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="ModalCliente">Agregar empleado</h5>
+				<h5 class="modal-title" id="ModalEmpleadoBuscar">Agregar empleado</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
@@ -107,20 +116,22 @@
 				<div class="container-fluid">
 					<div class="form-group">
 						<label for="agregar_cliente" class="bmd-label-floating">DNI, Nombre, Apellido, Telefono</label>
-						<input type="text" class="form-control" name="agregar_cliente" id="agregar_cliente" maxlength="30"  [(ngModel)]="terminoBusqueda">
+						<input type="text" class="form-control" name="agregar_cliente" id="agregar_cliente"
+							maxlength="30" [(ngModel)]="terminoBusqueda">
 					</div>
-					<form  (submit)="buscarEmpleados()">
-					  <div class="container-fluid">
-					   <div class="row justify-content-md-center">
-	
-							<div class="col-12">
-							 <p class="text-center" style="margin-top: 40px;">
-							<button type="submit" class="btn btn-raised btn-info"><i class="fas fa-search"></i> &nbsp; BUSCAR</button>
-						   </p>
-						  </div>
-						   </div>
-						 </div>
-					  </form>
+					<form (submit)="buscarEmpleados()">
+						<div class="container-fluid">
+							<div class="row justify-content-md-center">
+
+								<div class="col-12">
+									<p class="text-center" style="margin-top: 40px;">
+										<button type="submit" class="btn btn-raised btn-info"><i
+												class="fas fa-search"></i> &nbsp; BUSCAR</button>
+									</p>
+								</div>
+							</div>
+						</div>
+					</form>
 				</div>
 				<br>
 				<div class="container-fluid">
@@ -134,11 +145,13 @@
 									<td>{{ empleado.telefono }}</td>
 									<td>
 										<form action="">
-											<button type="button" class="btn btn-primary" (click)="seleccionarEmpleado(empleado)" data-dismiss="modal"><i class="fas fa-user-plus"></i></button>
+											<button type="button" class="btn btn-primary"
+												(click)="seleccionarEmpleado(empleado)" data-dismiss="modal"><i
+													class="fas fa-user-plus"></i></button>
 										</form>
 									</td>
 								</tr>
-	
+
 							</tbody>
 						</table>
 					</div>
@@ -149,5 +162,192 @@
 			</div>
 		</div>
 	</div>
+</div>
+
+
+
+<!-- modal-cliente -->
+<div class="modal fade" id="ModalEmpleado" tabindex="-1" role="dialog" aria-labelledby="ModalEmpleado" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="ModalEmpleado">AGREGAR CLIENTES</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="guardarEmpleado()">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-neon" [formGroup]="formempleado" (ngSubmit)="addEmpleado()">
+						<fieldset>
+							<legend><i class="fas fa-user"></i> &nbsp; Información básica </legend>
+							<div class="container-fluid">
+								<div class="row">
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="empleado_nombre" class="bmd-label-floating">Nombre</label>
+											<input formControlName="nombre" type="text" class="form-control"
+												maxlength="50">
+											<div class="alert alert-danger mt-2"
+												[hidden]="formempleado.get('nombre').valid || formempleado.get('nombre').pristine">
+												<span *ngIf="formempleado.get('nombre').errors?.['required']"
+													class="text-danger">Este campo es requerido</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="empleado_apellido" class="bmd-label-floating">Apellido</label>
+											<input formControlName="apellidos" type="text" class="form-control"
+												maxlength="50">
+											<div class="alert alert-danger mt-2"
+												[hidden]="formempleado.get('apellidos').valid || formempleado.get('apellidos').pristine">
+												<span *ngIf="formempleado.get('apellidos').errors?.['required']"
+													class="text-danger">Este campo es requerido</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="dni" class="bmd-label-floating">DNI</label>
+											<input formControlName="dni" type="text" class="form-control" maxlength="8"
+												minlength="8">
+											<div class="alert alert-danger mt-2"
+												[hidden]="formempleado.get('dni').valid || formempleado.get('dni').pristine">
+												<span *ngIf="formempleado.get('dni').errors?.['required']"
+													class="text-danger">Este campo es requerido</span>
+												<span *ngIf="formempleado.get('dni').errors?.['minlength']"
+													class="text-danger">El DNI debe tener exactamente 8 dígitos</span>
+												<br>
+												<span *ngIf="formempleado.get('dni').errors?.['maxlenght']"
+													class="text-danger">El DNI debe tener exactamente 8 dígitos</span>
+												<br>
+												<span *ngIf="formempleado.get('dni').errors?.['pattern']" class="text-danger">El
+													DNI solo puede contener números</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="fecha_nacimiento">FECHA NACIMIENTO</label>
+											<input formControlName="fecha_nacimiento" type="date" class="form-control"
+												maxlength="27">
+											<div class="alert alert-danger mt-2"
+												[hidden]="formempleado.get('fecha_nacimiento').valid || formempleado.get('fecha_nacimiento').pristine">
+												<span *ngIf="formempleado.get('fecha_nacimiento').errors?.['required']"
+													class="text-danger">Este campo es requerido</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="fecha_contratacion">FECHA CONTRATACION</label>
+											<input formControlName="fecha_contratacion" type="date" class="form-control"
+												maxlength="27">
+											<div class="alert alert-danger mt-2"
+												[hidden]="formempleado.get('fecha_contratacion').valid || formempleado.get('fecha_contratacion').pristine">
+												<span *ngIf="formempleado.get('fecha_contratacion').errors?.['required']"
+													class="text-danger">Este campo es requerido</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="item_categoria">Genero</label>
+											<select formControlName="genero" class="form-control">
+												<option value="" selected="" disabled="">Seleccione una opción</option>
+												<option value="masculino">Masculino</option>
+												<option value="femenino">Femenino</option>
+											</select>
+											<div class="alert alert-danger mt-2"
+												[hidden]="formempleado.get('genero').valid || formempleado.get('genero').pristine">
+												<span *ngIf="formempleado.get('genero').errors?.['required']"
+													class="text-danger">Este campo es requerido</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="empleado_direccion" class="bmd-label-floating">DIRECCION</label>
+											<input formControlName="direccion" type="text" class="form-control"
+												maxlength="50">
+											<div class="alert alert-danger mt-2"
+												[hidden]="formempleado.get('direccion').valid || formempleado.get('direccion').pristine">
+												<span *ngIf="formempleado.get('direccion').errors?.['required']"
+													class="text-danger">Este campo es requerido</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="empleado_telefono" class="bmd-label-floating">TELEFONO</label>
+											<input formControlName="telefono" type="text" class="form-control"
+												maxlength="9" minlength="9">
+											<div class="alert alert-danger mt-2"
+												[hidden]="formempleado.get('telefono').valid || formempleado.get('telefono').pristine">
+												<span *ngIf="formempleado.get('telefono').errors?.['required']"
+													class="text-danger">Este campo es requerido</span>
+												<span *ngIf="formempleado.get('telefono').errors?.['minlength']"
+													class="text-danger">El DNI debe tener exactamente 9 dígitos</span>
+												<br>
+												<span *ngIf="formempleado.get('telefono').errors?.['maxlenght']"
+													class="text-danger">El DNI debe tener exactamente 9 dígitos</span>
+												<br>
+												<span *ngIf="formempleado.get('telefono').errors?.['pattern']"
+													class="text-danger">El DNI solo puede contener números</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="empleado_correo" class="bmd-label-floating">CORREO</label>
+											<input formControlName="correo" type="email" class="form-control"
+												maxlength="50">
+											<div class="alert alert-danger mt-2"
+												[hidden]="formempleado.get('correo').valid || formempleado.get('correo').pristine">
+												<span *ngIf="formempleado.get('correo').errors?.['required']"
+													class="text-danger">Este campo es requerido</span>
+												<span *ngIf="formempleado.get('correo').errors?.['email']"
+													class="text-danger">el correo debe ser valido</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 col-md-4">
+										<div class="form-group">
+											<label for="tipo_contratacion">TIPO CONTRATACION</label>
+											<select formControlName="tipo_contrato" class="form-control">
+												<option value="" selected="" disabled="">Seleccione una opcion</option>
+												<option value="temporal">Temporal</option>
+												<option value="medio tiempo">Medio Tiempo</option>
+												<option value="tiempo completo">Tiempo Completo</option>
+											</select>
+											<div class="alert alert-danger mt-2"
+												[hidden]="formempleado.get('tipo_contrato').valid || formempleado.get('tipo_contrato').pristine">
+												<span *ngIf="formempleado.get('tipo_contrato').errors?.['required']"
+													class="text-danger">Este campo es requerido</span>
+											</div>
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</fieldset>
+						<p class="text-center" style="margin-top: 40px;">
+							<button type="reset" class="btn btn-raised btn-secondary btn-sm"><i
+									class="fas fa-paint-roller"></i> &nbsp; LIMPIAR</button>
+							&nbsp; &nbsp;
+							<button [disabled]="formempleado.invalid" type="submit"
+								class="btn btn-raised btn-info btn-sm"><i class="far fa-save"></i> &nbsp;
+								GUARDAR</button>
+						</p>
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal"
+					(click)="guardarEmpleado()">Cerrar</button>
+			</div>
+		</div>
 	</div>
-	
+</div>

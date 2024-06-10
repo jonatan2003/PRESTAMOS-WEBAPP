@@ -18,11 +18,16 @@ export class VentaListComponent implements OnInit {
 
   listdetalleVentas: DetalleVenta[] = [];
   listcomprobanteVenta: Comprobante_venta[] = [];
+  listBoleta:  Comprobante_venta[] = [];
+  listFactura:  Comprobante_venta[] = [];
+  listNotaCredito:  Comprobante_venta[] = [];
   loading: boolean = false;
   currentPage: number = 1;
   pageSize: number = 10;
   totalItems: number;
   totalPages: number = 0;
+  categoriaSeleccionada: number = 0; 
+
 
   constructor(
     private _ventaService: VentaService, 
@@ -35,17 +40,54 @@ export class VentaListComponent implements OnInit {
 
   ngOnInit(): void {
     
-    this.getListComprobanteventas();
   }
 
+  onCategoriaSelected(event: any) {
+    const selectedCategoryId = Number(event.target.value);
+    this.categoriaSeleccionada = selectedCategoryId;
+this.getListComprobanteventas();
+  }
 
   getListComprobanteventas() {
     this.loading = true;
-    this._paginacionService.getListDetaVentas(this.currentPage, this.pageSize).subscribe(
+    this._paginacionService.getListComprobanteventas(this.currentPage, this.pageSize).subscribe(
       (response: any) => {
         console.log('Comprobante Ventas Response:', response);  // Debugging line
-        this.listdetalleVentas = response.data;
-        this.totalPages = response.totalPages;
+        this.listcomprobanteVenta = response.data;
+  
+        // Inicializar listas vacías
+        this.listBoleta = [];
+        this.listFactura = [];
+        this.listNotaCredito = [];
+  
+        // Filtrar los resultados en función del tipo de comprobante
+        this.listBoleta = this.listcomprobanteVenta.filter(comprobante => comprobante.idtipo_comprobante === 1);
+        this.listFactura = this.listcomprobanteVenta.filter(comprobante => comprobante.idtipo_comprobante === 2);
+        this.listNotaCredito = this.listcomprobanteVenta.filter(comprobante => comprobante.idtipo_comprobante === 3);
+  
+        // Aplicar la categoría seleccionada para determinar qué lista mostrar
+        if (this.categoriaSeleccionada === 1) {
+          this.listcomprobanteVenta = this.listBoleta;
+        } else if (this.categoriaSeleccionada === 2) {
+          this.listcomprobanteVenta = this.listFactura;
+        } else if (this.categoriaSeleccionada === 3) {
+          this.listcomprobanteVenta = this.listNotaCredito;
+        }
+  
+        // Actualizar la paginación en función de la lista filtrada
+        this.totalItems = this.listcomprobanteVenta.length;
+        this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+  
+        // Mostrar mensaje si no se encontraron comprobantes del tipo seleccionado
+        if (this.listcomprobanteVenta.length === 0) {
+          this.toastr.warning('No se encontraron comprobantes del tipo seleccionado', 'Advertencia', {
+            timeOut: 2000,
+            progressBar: true,
+            progressAnimation: 'increasing',
+            positionClass: 'toast-top-right'
+          });
+        }
+  
         this.loading = false;
       },
       (error) => {
@@ -54,7 +96,7 @@ export class VentaListComponent implements OnInit {
       }
     );
   }
-
+  
   pageChanged(page: number) {
     this.currentPage = page;
 
@@ -67,8 +109,8 @@ export class VentaListComponent implements OnInit {
 
   deleteComprobante(id: number) {
     Swal.fire({
-      title: 'Eliminar Venta',
-      text: '¿Estás seguro de que deseas eliminar esta venta?',
+      title: 'Anular Venta',
+      text: '¿Estás seguro de que deseas ANULAR esta venta?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí',
@@ -178,8 +220,9 @@ export class VentaListComponent implements OnInit {
 
   
   async onImprimirFila(index: number) {
-    const detalleVenta = this.listdetalleVentas[index];
-    const idventa = detalleVenta.idventa;
+    const comprobante = this.listcomprobanteVenta[index];
+    const idventa = comprobante.idventa;
+    const tipo_comprobante = comprobante.idtipo_comprobante;
   
     try {
       // Obtener el comprobante de venta
@@ -188,12 +231,16 @@ export class VentaListComponent implements OnInit {
       // Obtener los detalles de venta
       const detallesVenta: DetalleVenta[] = await this._detalleventaService.getDetaventabyIdVenta(idventa).toPromise();
   
-      // Imprimir la fila con los datos obtenidos
-      this.imprimirFila(comprobante, detallesVenta);
-    } catch (error) {
-      console.error('Error al obtener los datos:', error);
+      if ( tipo_comprobante === 1 ){
+        this.imprimirFila(comprobante, detallesVenta);
+       }else if  ( tipo_comprobante === 2 ){
+        this.imprimirFilaF(comprobante, detallesVenta);
+    
+       }
+      } catch (error) {
+        console.error('Error al obtener los datos:', error);
+      }
     }
-  }
   
   private imprimirFila(comprobante: Comprobante_venta, detallesVenta: DetalleVenta[]) {
     const empleadoNombre = comprobante.Venta?.Empleado?.nombre || '';
@@ -254,6 +301,67 @@ export class VentaListComponent implements OnInit {
       serie: comprobante.num_serie || ''
     });
   }
+
+  
+private imprimirFilaF(comprobante: Comprobante_venta, detallesVenta: DetalleVenta[]) {
+  const empleadoNombre = comprobante.Venta?.Empleado?.nombre || '';
+  const empleadoApellidos = comprobante.Venta?.Empleado?.apellidos || '';
+  const clienteNombre = comprobante.Venta?.Cliente?.nombre || '';
+  const clienteApellido = comprobante.Venta?.Cliente?.apellido || '';
+  const clienteDNI = comprobante.Venta?.Cliente?.dni || '';
+
+  const detalleventa = detallesVenta.map(detalle => {
+    let descripcion = 'No hay descripción disponible';
+    let marca = 'No hay marca disponible';
+    let modelo = 'No hay modelo disponible';
+    let cantidad = 0;
+    let precio_unitario = 0;
+    let subtotal = 0;
+
+    if (detalle.Articulo) {
+      
+
+      if (detalle.Articulo.Vehiculo) {
+        cantidad = detalle.cantidad;
+      precio_unitario = detalle.precio_unitario;
+      subtotal = detalle.subtotal;
+        descripcion = detalle.Articulo.Vehiculo.descripcion || '';
+        marca = detalle.Articulo.Vehiculo.marca || '';
+        modelo = detalle.Articulo.Vehiculo.modelo || '';
+      } else if (detalle.Articulo.Electrodomestico) {
+        descripcion = detalle.Articulo.Electrodomestico.descripcion || '';
+        marca = detalle.Articulo.Electrodomestico.marca || '';
+        modelo = detalle.Articulo.Electrodomestico.modelo || '';
+        cantidad = detalle.cantidad;
+        precio_unitario = detalle.precio_unitario;
+        subtotal = detalle.subtotal;
+      }
+    }
+
+    return {
+      cantidad,
+      precio_unitario,
+      subtotal,
+      descripcion,
+      marca,
+      modelo
+    };
+  });
+
+  this.impresionService.imprimirFilaVentasF('Ventas', {
+    empleado: `${empleadoNombre} ${empleadoApellidos}`,
+    razon_social:  comprobante.Venta?.Cliente.razon_social || '',
+    detalleventa,
+    ruc:  comprobante.Venta?.Cliente.ruc || '',
+    fecha_venta: comprobante.Venta?.fecha_venta || '',
+    tipo_pago: comprobante.Venta?.tipo_pago || '',
+    total: comprobante.Venta?.total || '',
+    igv: comprobante.igv || 0,
+    descuento: comprobante.descuento || 0,
+    tipo_comprobante: comprobante.TipoComprobante?.nombre || '',
+    serie: comprobante.num_serie || ''
+  });
+}
   
   getDetalleVentaByIdVenta(idventa: number) {
     this._detalleventaService.getDetaventabyIdVenta(idventa).subscribe(

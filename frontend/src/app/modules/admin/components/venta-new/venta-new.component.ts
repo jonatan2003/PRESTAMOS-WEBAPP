@@ -39,6 +39,7 @@ export class VentaNewComponent implements OnInit {
   terminoBusqueda: string = ''; // Variable para almacenar el término de búsqueda
   listArticulos: Articulo[] = []
    listInventario : Inventario[] = []
+   listClientesRUC: Cliente[] = []
    mostrarFormBoleta = false;
    mostrarFormFactura = false;
    listComprobantes : Comprobante_venta[] = []
@@ -675,33 +676,77 @@ mostrarFormularioFactura(tipo: string): void {
     // Retorna un array de números enteros del 1 al totalPages
     return Array.from({ length: this.totalPages2 }, (_, i) => i + 1);
   }
-      seleccionarClientes(cliente: Cliente) {
+
+seleccionarClientes(cliente: Cliente) {
         //  this.empleadoSeleccionado = empleado.nombre;
         //    this.form.controls['empleado'].setValue(empleado.nombre);
           
           this.idClienteSeleccionado = cliente.id;
            this.form.controls['id_cliente'].setValue(cliente.id);
-           this.nombreClienteSeleccionado = cliente.nombre  + " " +cliente.apellido;
+           if(cliente.nombre === "no" ){
+            this.nombreClienteSeleccionado = cliente.razon_social ;
             this.clienteAgregado = true;
-          }
-      
-          buscarClientes() {
-            this.loading = true; // Establecer loading en true para mostrar la carga
+
+
+          }else{
+
           
-          this.searchService.searchClientes ( this.currentPage2, this.pageSize2,this.terminoBusqueda,).subscribe(
-            (response: any) => {
-              this.clientes = response.data; // Asignar los datos de empleados a la propiedad empleados
-              this.currentPage2 = response.page; // Actualizar currentPage con el número de página actual
-              this.totalPages2 = response.totalPages; // Actualizar totalPages con el número total de páginas
-              this.totalItems2 = response.totalItems; // Actualizar totalItems con el número total de elementos
-              this.loading = false; // Establecer loading en false al finalizar la carga
-            },
-            error => {
-              console.error('Error al buscar empleado:', error);
-              this.loading = false; // Manejar el error y establecer loading en false
-            }
-          );
+            this.nombreClienteSeleccionado = cliente.nombre  + " " +cliente.apellido;
+             this.clienteAgregado = true;
+ 
+           }
           }
+      // Método para realizar la búsqueda de clientes
+buscarClientes() {
+  this.loading = true; // Establecer loading en true para mostrar la carga
+
+  // Verificar si se ha ingresado un término de búsqueda
+  if (!this.terminoBusqueda) {
+    this.toastr.warning('INGRESAR DATOS DEL CLIENTE PARA BUSCAR', 'Advertencia', {
+      timeOut: 2000,
+      progressBar: true,
+      progressAnimation: 'increasing',
+      positionClass: 'toast-top-right'
+    });
+    this.loading = false; // Establecer loading en false al finalizar la carga
+    return; // Salir de la función si no se ha ingresado ningún término de búsqueda
+  }
+
+  // Continuar con la búsqueda si se ha ingresado un término de búsqueda
+  this.searchService.searchClientes(this.currentPage, this.pageSize, this.terminoBusqueda).subscribe(
+    (response: any) => {
+      this.clientes = response.data; // Asignar los datos de clientes a la propiedad clientes
+      this.currentPage = response.page; // Actualizar currentPage con el número de página actual
+      this.totalPages = response.totalPages; // Actualizar totalPages con el número total de páginas
+      this.totalItems = response.totalItems; // Actualizar totalItems con el número total de elementos
+      this.loading = false; // Establecer loading en false al finalizar la carga
+      
+      // Filtrar los clientes por tipo
+      
+      // Verificar si no se encontraron clientes después de la búsqueda
+      if (this.clientes.length === 0) {
+        this.toastr.warning('No se encontró el cliente especificado', 'Advertencia', {
+          timeOut: 2000,
+          progressBar: true,
+          progressAnimation: 'increasing',
+          positionClass: 'toast-top-right'
+        });
+      }
+    },
+    error => {
+      console.error('Error al buscar cliente:', error);
+      this.loading = false; // Manejar el error y establecer loading en false
+
+      this.toastr.error(error.msg, 'Cliente no encontrado', {
+        timeOut: 2000,
+        progressBar: true,
+        progressAnimation: 'increasing',
+        positionClass: 'toast-top-right'
+      });
+    }
+  );
+}
+
 
 
 async onImprimirFila(index: number) {
