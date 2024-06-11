@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
+import { Observable } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
+import { NotificationService } from './notificacion.service'; // Importa el nuevo servicio
 import { environment } from '../enviroments/environment';
 
 @Injectable({
@@ -10,19 +11,22 @@ import { environment } from '../enviroments/environment';
 export class WebSocketService {
   private socket: Socket;
 
-  constructor(private toastr: ToastrService) {
-    // Replace 'http://localhost:3000' with the URL of your WebSocket server
-    this.socket = io(`${environment.endpoint}` , { transports: ['websocket'] } ); // Actualiza esta URL según la configuración del servidor
+  constructor(private toastr: ToastrService, private notificationService: NotificationService) {
+    this.socket = io(`${environment.endpoint}`, { transports: ['websocket'] });
 
-   
+    this.notificationService.requestPermission();
   }
 
   listen(eventName: string): Observable<any> {
     return new Observable((subscriber) => {
       this.socket.on(eventName, (data: any) => {
         subscriber.next(data);
+
+        this.notificationService.showNotification('Nuevo evento', {
+          body: JSON.stringify(data),
+          icon: 'ruta/a/icono.png', // opcional
+        });
       });
     });
   }
-
 }

@@ -47,7 +47,7 @@
 						<th scope="col">PRECIO PRESTAMO</th>
 						<th scope="col">ESTADO</th>
 						<th scope="col">ACTUALIZAR</th>
-						<th scope="col">ELIMINAR</th>
+						<!-- <th scope="col">ELIMINAR</th> -->
 					  </tr>
 					</thead>
 					<tbody>
@@ -65,9 +65,9 @@
 						<td>{{ inventario.valor_precio }}</td>
 						<td>{{ inventario.estado_articulo }}</td>
 						<td>
-						  <!-- <button type="button" (click)="setSelectedArticulo(articulo)" class="btn btn-primary">
+						  <button type="button" (click)="setSelectedInventario(inventario!)" class="btn btn-primary">
 							<i class="fas fa-sync-alt"></i>
-						  </button> -->
+						  </button>
 						</td>
 						<td>
 						  <form action="">
@@ -95,7 +95,7 @@
 						<th scope="col">PRECIO PRESTAMO</th>
 						<th scope="col">ESTADO</th>
 						<th scope="col">ACTUALIZAR</th>
-						<th scope="col">ELIMINAR</th>
+						<!-- <th scope="col">ELIMINAR</th> -->
 					  </tr>
 					</thead>
 					<tbody>
@@ -110,9 +110,9 @@
 						<td>{{ inventario.valor_precio }}</td>
 						<td>{{ inventario.Articulo.estado }}</td>
 						<td>
-						  <!-- <button type="button" (click)="setSelectedArticulo(articulo)" class="btn btn-primary">
+						  <button type="button" (click)="setSelectedInventario(inventario!)" class="btn btn-primary">
 							<i class="fas fa-sync-alt"></i>
-						  </button> -->
+						  </button>
 						</td>
 						<td>
 						  <form action="">
@@ -147,140 +147,82 @@
 			  </div>
 
 
-			<!-- MODAL Cliente -->
-<!-- <div class="modal fade" id="ModalEmpleado" #modalEmpleado tabindex="-1" role="dialog" aria-labelledby="ModalEmpleado" aria-hidden="true" >
+			<!-- MODAL INVENTARIO -->
+			
+
+<!-- MODAL Cliente -->
+<div class="modal fade" id="ModalInventario" #ModalInventario tabindex="-1" role="dialog" aria-labelledby="ModalInventario" aria-hidden="true" >
 
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="ModalEmpleado">ACTUALIZAR EMPLEADO</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close" id="cerrarModalEmpleado" (click)="guardar()">
+				<h5 class="modal-title" id="ModalInventario">ACTUALIZAR INVENTARIO</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" id="cerrarModalInventario" (click)="guardar()">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
 			<div class="modal-body">
 				<div class="container-fluid">
 					
-					<form class="form-neon" [formGroup]="form" (ngSubmit)="updateEmpleado()">
+					<form class="form-neon" [formGroup]="form" (ngSubmit)="updateInventario()">
 						<fieldset>
-							<legend><i class="fas fa-user"></i> &nbsp; Información básica</legend>
-							<div class="container-fluid">
-								<div class="row">
-									<div class="col-12 col-md-4">
-										<div class="form-group">
-											<label for="empleado_nombre" >Nombre</label>
-											<input formControlName="nombre" type="text" class="form-control" maxlength="50">
-											<div class="alert alert-danger mt-2"[hidden]="form.get('nombre').valid || form.get('nombre').pristine">
-											<span *ngIf="form.get('nombre').errors?.['required']" class="text-danger">Este campo es requerido</span>
-											</div>
-										</div>
-									</div>
-									<div class="col-12 col-md-4">
-										<div class="form-group">
-											<label for="empleado_apellido" >Apellido</label>
-											<input formControlName="apellidos" type="text" class="form-control" maxlength="50">
-											<div class="alert alert-danger mt-2"[hidden]="form.get('apellidos').valid || form.get('apellidos').pristine">
-											<span *ngIf="form.get('apellidos').errors?.['required']" class="text-danger">Este campo es requerido</span>
-											</div>
-										</div>
-									</div>
-									<div class="col-12 col-md-4">
-										<div class="form-group">
-											<label for="dni" >DNI</label>
-											<input formControlName="dni" type="text" class="form-control" maxlength="8" minlength="8">
-											<div class="alert alert-danger mt-2"[hidden]="form.get('dni').valid || form.get('dni').pristine">
-											<span *ngIf="form.get('dni').errors?.['required']" class="text-danger">Este campo es requerido</span>
-											<span *ngIf="form.get('dni').errors?.['minlength']" class="text-danger">El DNI debe tener exactamente 8 dígitos</span>
+						  <legend><i class="fas fa-user"></i> &nbsp; Información básica</legend>
+						  <div class="container-fluid" >
+							<div class="row">
+								
+								
+							  <div class="col-12 col-md-4">
+								<div class="form-group">
+								  <label for="idarticulo" >Articulo</label>
+								  <input formControlName="idarticulo" type="text" class="form-control mt-2" >
+								</div>
+							  </div>
+
+							  <div style="display:none"  class="col-12 col-md-6">
+								<div style="display:none" class="form-group">
+								  <label style="display:none" for="stock" >Stock</label>
+								  <input style="display:none" formControlName="stock" type="text" class="form-control mt-2" >
+								</div>
+							  </div>
+
+							  <div class="col-12 col-md-4">
+								<div class="form-group">
+								  <label for="estado_articulo" >Estado Articulo</label>
+								  <input formControlName="estado_articulo" type="text" class="form-control mt-2" >
+								</div>
+							  </div>
+
+							  <!-- <div class="col-12 col-md-6">
+								<div class="form-group">
+								  <label for="valor_venta" >Valor Venta</label>
+								  <input formControlName="valor_venta" type="text" class="form-control mt-2" maxlength="6" minlength="6">
+								</div>
+							  </div> -->
+							  <div class="col-12 col-md-6">
+								<div class="form-group">
+								  <label for="valor_venta" >Valor Venta</label>
+								  <input formControlName="valor_venta" type="text" class="form-control mt-2" maxlength="6" minlength="6">
+								  <div class="alert alert-danger mt-2"[hidden]="form.get('valor_venta').valid || form.get('valor_venta').pristine">
+									<span *ngIf="form.get('valor_venta').errors?.['required']" class="text-danger">Este campo es requerido</span>
+									<span *ngIf="form.get('valor_venta').errors?.['minlength']" class="text-danger">El valor debe tener exactamente 6 dígitos</span>
 									  <br>
-											<span *ngIf="form.get('dni').errors?.['maxlenght']" class="text-danger">El DNI debe tener exactamente 8 dígitos</span>
-								  <br>
-											<span *ngIf="form.get('dni').errors?.['pattern']" class="text-danger">El DNI solo puede contener números</span>
-											</div>
-										</div>
-									</div>
-									<div class="col-12 col-md-4">
-										<div class="form-group">
-											<label for="fecha_nacimiento" >Fecha Nacimiento</label>
-											<input formControlName="fecha_nacimiento" type="date" class="form-control" maxlength="27">
-											<div class="alert alert-danger mt-2"[hidden]="form.get('fecha_nacimiento').valid || form.get('fecha_nacimiento').pristine">
-											<span *ngIf="form.get('fecha_nacimiento').errors?.['required']" class="text-danger">Este campo es requerido</span>
-											</div>
-										</div>
-									</div>
-									<div class="col-12 col-md-4">
-										<div class="form-group">
-											<label for="fecha_contratacion" >Fecha Contratacion</label>
-											<input formControlName="fecha_contratacion" type="date" class="form-control" maxlength="27">
-											<div class="alert alert-danger mt-2"[hidden]="form.get('fecha_contratacion').valid || form.get('fecha_contratacion').pristine">
-											<span *ngIf="form.get('fecha_contratacion').errors?.['required']" class="text-danger">Este campo es requerido</span>
-											</div>
-										</div>
-									</div>
-									<div class="col-12 col-md-4">
-										<div class="form-group">
-											<label for="item_categoria">Genero</label>
-											<select formControlName="genero" class="form-control" >
-												<option value="" selected="" disabled="">Seleccione una opción</option>
-												<option value="masculino">Masculino</option>
-												<option value="femenino">Femenino</option>
-											</select>
-											<div class="alert alert-danger mt-2"[hidden]="form.get('genero').valid || form.get('genero').pristine">
-											<span *ngIf="form.get('genero').errors?.['required']" class="text-danger">Este campo es requerido</span>
-											</div>
-										</div>
-									</div>
-									<div class="col-12 col-md-4">
-										<div class="form-group">
-											<label for="empleado_direccion" >Dirección</label>
-											<input formControlName="direccion" type="text" class="form-control" maxlength="50">
-											<div class="alert alert-danger mt-2"[hidden]="form.get('direccion').valid || form.get('direccion').pristine">
-											<span *ngIf="form.get('direccion').errors?.['required']" class="text-danger">Este campo es requerido</span>
-											</div>
-										</div>
-									</div>
-									<div class="col-12 col-md-4">
-										<div class="form-group">
-											<label for="empleado_telefono" >Telefono</label>
-											<input formControlName="telefono" type="text" class="form-control" maxlength="9" minlength="9">
-											<div class="alert alert-danger mt-2"[hidden]="form.get('telefono').valid || form.get('telefono').pristine">
-												<span *ngIf="form.get('telefono').errors?.['required']" class="text-danger">Este campo es requerido</span>
-												<span *ngIf="form.get('telefono').errors?.['minlength']" class="text-danger">El DNI debe tener exactamente 9 dígitos</span>
-								<br>
-												<span *ngIf="form.get('telefono').errors?.['maxlenght']" class="text-danger">El DNI debe tener exactamente 9 dígitos</span>
-								<br>
-												<span *ngIf="form.get('telefono').errors?.['pattern']" class="text-danger">El DNI solo puede contener números</span>
-											</div>
-										</div>
-									</div>
-									<div class="col-12 col-md-4">
-										<div class="form-group">
-											<label for="empleado_correo" >CORREO</label>
-											<input formControlName="correo" type="email" class="form-control" maxlength="50">
-											<div class="alert alert-danger mt-2"[hidden]="form.get('correo').valid || form.get('correo').pristine">
-											<span *ngIf="form.get('correo').errors?.['required']" class="text-danger">Este campo es requerido</span>
-											<span *ngIf="form.get('correo').errors?.['email']" class="text-danger">el correo debe ser valido</span>
-							</div>
-										</div>
-									</div>
-									<div class="col-12 col-md-4">
-										<div class="form-group">
-											<label for="tipo_contratacion">TIPO CONTRATACION</label>
-											<select formControlName="tipo_contrato" class="form-control"
-    >
-												<option value="" selected="" disabled="">Seleccione una opcion</option>
-												<option value="temporal">Temporal</option>
-												<option value="medio tiempo">Medio Tiempo</option>
-												<option value="tiempo completo">Tiempo Completo</option>
-											</select>
-											<div class="alert alert-danger mt-2"[hidden]="form.get('tipo_contrato').valid || form.get('tipo_contrato').pristine">
-											<span *ngIf="form.get('tipo_contrato').errors?.['required']" class="text-danger">Este campo es requerido</span>
-											</div>
-										</div>
+									<span *ngIf="form.get('valor_venta').errors?.['maxlenght']" class="text-danger">El valor debe tener exactamente 6 dígitos</span>
+									  <br>
+									<span *ngIf="form.get('valor_venta').errors?.['pattern']" class="text-danger">El valor solo puede contener números</span>
 									</div>
 								</div>
+							  </div>
+							  
+							  <div class="col-12 col-md-6">
+								<div class="form-group">
+								  <label for="valor_precio" >Valor Precio</label>
+								  <input formControlName="valor_precio" type="text" class="form-control mt-2" >
+								</div>
+							  </div>
+		
 							</div>
-						</fieldset>
-							<br>
+						  </div>
+							</fieldset>
 							<p class="text-center" style="margin-top: 40px;">
 								
 								<button [disabled]="form.untouched || form.invalid" type="submit" class="btn btn-raised btn-info btn-sm" (click)="guardar()">
@@ -289,13 +231,10 @@
 
 						</form>
 				</div>
-				<br>
-				
 			</div>
-
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="guardar()">Cerrar</button>
+				<button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="guardar()">Cerrar </button>
 			</div>
 		</div>
 	</div>
-	</div> -->
+	</div>

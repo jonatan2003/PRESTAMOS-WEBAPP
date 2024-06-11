@@ -18,10 +18,15 @@ export class InventarioListComponent {
 
   form: FormGroup;
   id: number;
+
   inventarioSeleccionado: Inventario | null = null;
+
   selectedInventario: Inventario | null = null;
+
   categoriaSeleccionada: number = 0; // Variable para almacenar la categoría seleccionada
+
   listInventarioArticulosVehiculos: Inventario[] = [];
+
   listInventarioArticulosElectrodomesticos: Inventario[] = [];
 
   listInventario: Inventario[] = []
@@ -44,17 +49,12 @@ constructor(private _inventarioService: InventarioService,
   ) { 
 
   this.form = this.fb.group({
-    nombre: ['', Validators.required],
-    apellidos: ['', Validators.required],
-    dni: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(8), Validators.pattern("^[0-9]*$")]],
-    fecha_nacimiento: ['', Validators.required],
-    fecha_contratacion: ['', Validators.required],
-    genero: ['', Validators.required],
-    direccion: ['', Validators.required],
-    telefono: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(9), Validators.pattern("^[0-9]*$")]],
-    correo: ['', [Validators.required, Validators.email]],
-    tipo_contrato: ['', Validators.required],
-    // ... Otros campos del formulario de empleado
+    idarticulo: [{ value: '', disabled: true }, Validators.required],
+    stock: [{ value: '', disabled: true }, Validators.required],
+    estado_articulo: [{ value: '', disabled: true }, Validators.required],
+    // valor_venta: ['', Validators.required],
+    valor_venta: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6), Validators.pattern("^[0-9].*$")]],
+    valor_precio: [{ value: '', disabled: true }, Validators.required],
   });
   this.id = Number(aRouter.snapshot.paramMap.get('id'));
 }
@@ -72,19 +72,17 @@ onCategoriaSelected(event: any) {
 getListInventario() {
   this.loading = true;
 
-  // Ajusta el método para aceptar parámetros de paginación
   this._paginacionService.getListInventario(this.currentPage, this.pageSize).subscribe(
     (response: any) => {
-      // Inicializar las listas de inventario
       this.listInventarioArticulosElectrodomesticos = [];
       this.listInventarioArticulosVehiculos = [];
 
       if (this.categoriaSeleccionada === 1) {
-        // Procesar los datos de acuerdo a la categoría seleccionada
         response.data.forEach((inventario: any) => {
           const articulo = inventario.Articulo;
           if (articulo && articulo.idcategoria === 1) {
             const mappedArticulo: Inventario = {
+              id: inventario.id,  // Asegúrate de asignar el id del inventario
               idarticulo: inventario.idarticulo,
               stock: inventario.stock,
               estado_articulo: inventario.estado_articulo,
@@ -111,16 +109,15 @@ getListInventario() {
                 Electrodomestico: undefined
               }
             };
-            // Agregar el artículo mapeado a la lista de vehículos
             this.listInventarioArticulosVehiculos.push(mappedArticulo);
           }
         });
       } else if (this.categoriaSeleccionada === 2) {
-        // Procesar los datos de acuerdo a la categoría seleccionada
         response.data.forEach((inventario: any) => {
           const articulo = inventario.Articulo;
           if (articulo && articulo.idcategoria === 2) {
             const mappedArticulo: Inventario = {
+              id: inventario.id,  // Asegúrate de asignar el id del inventario
               idarticulo: inventario.idarticulo,
               stock: inventario.stock,
               estado_articulo: inventario.estado_articulo,
@@ -144,7 +141,6 @@ getListInventario() {
                 }
               }
             };
-            // Agregar el artículo mapeado a la lista de electrodomésticos
             this.listInventarioArticulosElectrodomesticos.push(mappedArticulo);
           }
         });
@@ -153,20 +149,17 @@ getListInventario() {
       console.log('Artículos Electrodomésticos:', this.listInventarioArticulosElectrodomesticos);
       console.log('Artículos Vehículos:', this.listInventarioArticulosVehiculos);
 
-      // Actualiza el número total de páginas según la respuesta recibida
       this.totalPages = response.totalPages;
 
-      // Indica que la carga ha finalizado
       this.loading = false;
     },
     (error: any) => {
       console.error('Error al obtener los artículos:', error);
       this.loading = false;
-      // Manejar el error de manera apropiada, por ejemplo, mostrando un mensaje al usuario
-      // this.toastr.error('Error al obtener los artículos', 'Error');
     }
   );
 }
+
 // Método para cambiar de página
 pageChanged(page: number) {
   this.currentPage = page;
@@ -179,73 +172,75 @@ getPages(): number[] {
   return Array.from({ length: this.totalPages }, (_, i) => i + 1);
 }
 
-
-setSelectedEmpleado(inventario: Inventario) {
-  this.selectedInventario = inventario;
-
- 
+setSelectedInventario(inventario: Inventario) {
+  if (inventario && inventario.id !== undefined) {
+    this.selectedInventario = inventario;
     this.id = inventario.id;
-    // Establecer los valores del cliente seleccionado en el formulario
+
     this.form.patchValue({
-       idarticulo: 0,
-    stock: 0,
-     estado_articulo: "",
-     valor_venta: 0,
-     valor_precio: 0
+      idarticulo: inventario.Articulo?.Electrodomestico?.descripcion + ' '+ inventario.Articulo?.Electrodomestico?.modelo  + ' '+ inventario.Articulo?.Electrodomestico?.marca  
+      || inventario.Articulo?.Vehiculo?.descripcion + ' '+ inventario.Articulo?.Vehiculo?.modelo    + ' '+ inventario.Articulo?.Vehiculo?.marca  , 
+      stock: inventario.stock,
+      estado_articulo: inventario.estado_articulo,
+      valor_venta: inventario.valor_venta,
+      valor_precio: inventario.valor_precio,
     });
 
-    // Resetear el estado de validación del formulario
     this.form.markAsUntouched();
     this.mostrarModal();
     console.log('Estado del formulario:', this.form.valid);
- 
+    console.log('Id inventario:', this.selectedInventario.id);
+  } else {
+    console.error('Inventario no válido o ID no definido:', inventario);
+    this.toastr.error('Inventario no válido o ID no definido', 'Error');
+  }
 }
 
-updateEmpleado() {
+updateInventario() {
   const inventario: Inventario = {
-    idarticulo: 0,
-    stock: 0,
-     estado_articulo: "",
-     valor_venta: 0,
-     valor_precio: 0
+    idarticulo: this.form.value.idarticulo,
+    stock: this.form.value.stock,
+    estado_articulo: this.form.value.estado_articulo,
+    valor_venta: this.form.value.valor_venta,
+    valor_precio: this.form.value.valor_precio,
+    Articulo: this.selectedInventario?.Articulo // Use the existing Articulo if available
   };
 
-  console.log('Inventario a actualizar:', inventario); // Agregar registro de cliente a actualizar
+  console.log('Inventario a actualizar:', inventario); // Agregar registro de inventario a actualizar
 
-  if (this.id !== 0) {
-    console.log('ID del inventario a actualizar:', this.id); // Agregar registro del ID del cliente a actualizar
+  if (this.id !== 0 && this.id !== undefined) {  // Verifica que el ID es válido
+    console.log('ID del inventario a actualizar:', this.id); // Agregar registro del ID del inventario a actualizar
 
     this.loading = true;
 
     inventario.id = this.id;
     this._inventarioService.updateInventario(this.id, inventario).subscribe(() => {
-      this.toastr.info(`El Inventario fue actualizado con éxito`, 'Inventario actualizado' ,
-      {
+      this.toastr.info(`El Inventario ${inventario.estado_articulo} fue actualizado con éxito`, 'Inventario actualizado', {
         timeOut: 3000, // Duración en milisegundos (3 segundos en este caso)
         progressBar: true, // Muestra la barra de progreso
         progressAnimation: 'increasing', // Animación de la barra de progreso
         positionClass: 'toast-top-right'
-        }); // Posición del toastr en la pantalla
-      
+      }); // Posición del toastr en la pantalla
+
       this.loading = false;
       this.getListInventario();
 
-      console.log('empleado actualizado con éxito'); // Registro de cliente actualizado con éxito
+      console.log('Inventario actualizado con éxito'); // Registro de inventario actualizado con éxito
     }, error => {
-      console.error('Error al actualizar el empleado:', error); // Manejo de errores
-      this.toastr.error('Hubo un error al actualizar el empleado', 'Error');
+      console.error('Error al actualizar el Inventario:', error); // Manejo de errores
+      this.toastr.error('Hubo un error al actualizar el Inventario', 'Error');
       this.loading = false;
     });
   } else {
-    console.log('ID del empleado no válido:', this.id); // Registro del ID de cliente no válido
-    this.toastr.error('ID del empleado no válido', 'Error');
+    console.log('ID del Inventario no válido:', this.id); // Registro del ID de inventario no válido
+    this.toastr.error('ID del Inventario no válido', 'Error');
   }
 }
 
 
 mostrarModal() {
   // Mostrar el modal
-  const modal = document.getElementById('ModalEmpleado');
+  const modal = document.getElementById('ModalInventario');
   if (modal) {
     // Añadir las clases necesarias para mostrar el modal
     modal.classList.add('show');
@@ -271,7 +266,7 @@ mostrarModal() {
   // Aquí iría tu lógica para guardar el formulario
   
   // Luego, cierra el modal
-  const modal = document.getElementById('ModalEmpleado');
+  const modal = document.getElementById('ModalInventario');
   if (modal) {
     // Eliminar todas las clases de Bootstrap que controlan la visualización del modal
     modal.classList.remove('show');
