@@ -241,7 +241,7 @@ totalPages: number = 0;   // Inicializa totalPages en 0
   // constructor(private impresionService: ImpresionService) { }
 
   onImprimir() {
-    const entidad = 'Empleados'; // Nombre de la entidad (para el nombre del archivo PDF)
+    const entidad = 'Clientes'; // Nombre de la entidad (para el nombre del archivo PDF)
     const encabezado = this.getEncabezado(); // Obtener el encabezado de la tabla
     const cuerpo = this.getCuerpo(); // Obtener el cuerpo de la tabla
     const titulo = 'Lista de Empleados'; // Título del informe
@@ -253,7 +253,7 @@ totalPages: number = 0;   // Inicializa totalPages en 0
     const encabezado: string[] = [];
     document.querySelectorAll('table thead th').forEach((th: HTMLTableHeaderCellElement) => {
       const texto = th.textContent.trim();
-      if (texto !== 'ACTUALIZAR' && texto !== 'ELIMINAR' && texto !== 'IMPRIMIR') {
+      if (texto !== 'ACTUALIZAR' && texto !== 'ELIMINAR' && texto !== 'IMPRIMIR' &&  texto !== 'ACTIVAR/DESACTIVAR') {
         encabezado.push(texto);
       }
     });
@@ -267,7 +267,7 @@ totalPages: number = 0;   // Inicializa totalPages en 0
       const fila: string[] = [];
       tr.querySelectorAll('td').forEach((td: HTMLTableCellElement) => {
         const texto = td.textContent.trim();
-        if (texto !== 'Actualizar' && texto !== 'Eliminar' && texto !== 'Imprimir') {
+        if (texto !== 'Actualizar' && texto !== 'Eliminar' && texto !== 'Imprimir'  &&  texto !== 'DESACTIVAR/ACTIVAR') {
           fila.push(texto);
         }
       });
@@ -275,6 +275,7 @@ totalPages: number = 0;   // Inicializa totalPages en 0
     });
     return cuerpo;
   }
+
 
 
 

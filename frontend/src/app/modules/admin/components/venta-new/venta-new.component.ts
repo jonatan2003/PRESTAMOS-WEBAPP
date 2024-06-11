@@ -158,10 +158,10 @@ totalPages: number = 0;   // Inicializa totalPages en 0
       tipoClienteF: ['ruc'],
       nombre: ['no'],
       apellido: ['no'],
-      direccion: ['', [Validators.required, Validators.maxLength(80)]],
+      direccion: ['', [Validators.required, Validators.maxLength(100)]],
       dni: ['no'],
       ruc: ['', [Validators.required, Validators.maxLength(11), Validators.pattern("^[0-9]*$")]],
-      razon_social: ['', [Validators.required, Validators.maxLength(50)]],
+      razon_social: ['', [Validators.required, Validators.maxLength(100)]],
       telefono: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(9), Validators.pattern("^[0-9]*$")]],
       rubro: ['', [Validators.required, Validators.maxLength(25)]],
     });
@@ -493,31 +493,43 @@ calcularTotales(): void {
       direccion: this.formcliente.value.direccion,
       dni: this.formcliente.value.dni,
       ruc: "no",
-      razon_social:"no",
+      razon_social: "no",
       telefono: this.formcliente.value.telefono,
       rubro: this.formcliente.value.rubro,
     };
-
+  
     this.loading = true;
-    this._clientesService.saveCliente(cliente).subscribe((clienteid: Cliente) => {
-      this.loading = false;
-      this.idClienteSeleccionado = clienteid.id;
-      const idClienteControl = this.form.get('idcliente');
-      if (idClienteControl) {
-        idClienteControl.setValue(this.idClienteSeleccionado);
+    this._clientesService.saveCliente(cliente).subscribe(
+      (clienteid: Cliente) => {
+        this.loading = false;
+        this.idClienteSeleccionado = clienteid.id;
+        const idClienteControl = this.form.get('idcliente');
+        if (idClienteControl) {
+          idClienteControl.setValue(this.idClienteSeleccionado);
+        }
+        this.toastr.success('El Cliente fue registrado con éxito', 'Cliente registrado', {
+          timeOut: 2000,
+          progressBar: true,
+          progressAnimation: 'increasing',
+          positionClass: 'toast-top-right',
+        });
+        this.clienteAgregado = true;
+        this.nombreClienteSeleccionado = `${this.formcliente.value.nombre} ${this.formcliente.value.apellido}`;
+        this.guardarCliente();
+      },
+      (error) => {
+        this.loading = false;
+        console.error('Cliente ya existe:', error);
+        this.toastr.error('Cliente ya existe', 'NO', {
+          timeOut: 3000,
+          progressBar: true,
+          progressAnimation: 'increasing',
+          positionClass: 'toast-top-right',
+        });
       }
-      this.toastr.success('El Cliente fue registrado con éxito', 'Cliente registrado', {
-        timeOut: 2000,
-        progressBar: true,
-        progressAnimation: 'increasing',
-        positionClass: 'toast-top-right',
-      });
-      this.clienteAgregado = true;
-      this.nombreClienteSeleccionado = `${this.formcliente.value.nombre} ${this.formcliente.value.apellido}`;
-      this.guardarCliente();
-    });
+    );
   }
-
+  
   addClienteRUC() {
     const cliente: Cliente = {
       nombre: "no",
@@ -525,31 +537,42 @@ calcularTotales(): void {
       direccion: this.formclienteRUC.value.direccion,
       dni: "no",
       ruc: this.formclienteRUC.value.ruc,
-      razon_social:this.formclienteRUC.value.razon_social,
+      razon_social: this.formclienteRUC.value.razon_social,
       telefono: this.formclienteRUC.value.telefono,
       rubro: this.formclienteRUC.value.rubro,
     };
-
+  
     this.loading = true;
-    this._clientesService.saveCliente(cliente).subscribe((clienteid: Cliente) => {
-      this.loading = false;
-      this.idClienteSeleccionado = clienteid.id;
-      const idClienteControl = this.form.get('idcliente');
-      if (idClienteControl) {
-        idClienteControl.setValue(this.idClienteSeleccionado);
+    this._clientesService.saveCliente(cliente).subscribe(
+      (clienteid: Cliente) => {
+        this.loading = false;
+        this.idClienteSeleccionado = clienteid.id;
+        const idClienteControl = this.form.get('idcliente');
+        if (idClienteControl) {
+          idClienteControl.setValue(this.idClienteSeleccionado);
+        }
+        this.toastr.success('El Cliente fue registrado con éxito', 'Cliente registrado', {
+          timeOut: 2000,
+          progressBar: true,
+          progressAnimation: 'increasing',
+          positionClass: 'toast-top-right',
+        });
+        this.clienteAgregado = true;
+        this.nombreClienteSeleccionado = `${this.formclienteRUC.value.razon_social}`;
+        this.guardarClienteFactura();
+      },
+      (error) => {
+        this.loading = false;
+        console.error('Cliente ya existe:', error);
+        this.toastr.error('Cliente ya existe', 'NO', {
+          timeOut: 3000,
+          progressBar: true,
+          progressAnimation: 'increasing',
+          positionClass: 'toast-top-right',
+        });
       }
-      this.toastr.success('El Cliente fue registrado con éxito', 'Cliente registrado', {
-        timeOut: 2000,
-        progressBar: true,
-        progressAnimation: 'increasing',
-        positionClass: 'toast-top-right',
-      });
-      this.clienteAgregado = true;
-      this.nombreClienteSeleccionado = `${this.formclienteRUC.value.razon_social}`;
-      this.guardarClienteFactura();
-    });
+    );
   }
-
 
  
 // Dentro de tu componente
@@ -623,8 +646,8 @@ addComprobanteVenta(idVenta: number) {
     idtipo_comprobante: this.tipocomprobante, /* Asigna el ID del tipo de comprobante */
     num_serie: ""  /* Asigna el número de serie */,
     estado: "EMITIDO",
-    razon_anulacion:" ",
-    idnotacredito: 1,
+    razon_anulacion:null,
+    idnotacredito: null,
 
     // Otros campos que necesites para el comprobante de venta
   };

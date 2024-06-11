@@ -32,6 +32,13 @@ import { Comprobante_venta } from '../interfaces/comprobante_venta.interface';
     updateComprobanteventa(id: number, comprobanteventa: Comprobante_venta): Observable<Comprobante_venta> {
       return this.http.put<Comprobante_venta>(`${this.apiUrl}/${id}`, comprobanteventa);
     }
+
+    updateComprobanteventaEstado(id: number, comprobanteventa: Partial<Comprobante_venta>): Observable<any> {
+      return this.http.put<any>(`${this.apiUrl}/${id}`, comprobanteventa);
+    }
+
+  
+
   
     deleteComprobanteventa(id: number): Observable<void> {
       return this.http.delete<void>(`${this.apiUrl}/${id}`);

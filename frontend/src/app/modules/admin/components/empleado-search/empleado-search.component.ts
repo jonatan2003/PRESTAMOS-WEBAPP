@@ -62,8 +62,18 @@ totalPages: number = 0;   // Inicializa totalPages en 0
 
 
     buscarEmpleados() {
+      if (!this.terminoBusqueda || this.terminoBusqueda.trim() === '') {
+        this.toastr.warning('Ingrese un término de búsqueda.', 'Advertencia', {
+          timeOut: 2000,
+          progressBar: true,
+          progressAnimation: 'increasing',
+          positionClass: 'toast-top-right',
+        });
+        return;
+      }
+    
       this.loading = true; // Establecer loading en true para mostrar la carga
-  
+    
       this.searchService.searchEmpleados(this.currentPage, this.pageSize, this.terminoBusqueda).subscribe(
         (response: any) => {
           if (response.data && response.data.length > 0) {
@@ -72,19 +82,28 @@ totalPages: number = 0;   // Inicializa totalPages en 0
             this.totalPages = response.totalPages; // Actualizar totalPages con el número total de páginas
             this.totalItems = response.totalItems; // Actualizar totalItems con el número total de elementos
           } else {
-            this.toastr.warning('No se encontraron empleados.'); // Mostrar toast de error si no hay datos
+            this.toastr.warning('No se encontraron empleados.', 'Advertencia', {
+              timeOut: 2000,
+              progressBar: true,
+              progressAnimation: 'increasing',
+              positionClass: 'toast-top-right',
+            }); // Mostrar toast de advertencia si no hay datos
           }
           this.loading = false; // Establecer loading en false al finalizar la carga
         },
         error => {
           console.error('Error al buscar empleado:', error);
-          this.toastr.warning('Error al buscar empleados.'); // Mostrar toast de error en caso de error
+          this.toastr.error('Error al buscar empleados.', 'Error', {
+            timeOut: 2000,
+            progressBar: true,
+            progressAnimation: 'increasing',
+            positionClass: 'toast-top-right',
+          }); // Mostrar toast de error en caso de error
           this.loading = false; // Manejar el error y establecer loading en false
         }
       );
     }
-  
-
+    
   
   // Método para cambiar de página
   pageChanged(page: number) {
@@ -258,6 +277,43 @@ totalPages: number = 0;   // Inicializa totalPages en 0
       this.buscarEmpleados();
       this.toastr.warning('El Empleado fue eliminado con exito', 'Empleado eliminado');
     })
+  }
+
+
+  onImprimir() {
+    const entidad = 'Clientes'; // Nombre de la entidad (para el nombre del archivo PDF)
+    const encabezado = this.getEncabezado(); // Obtener el encabezado de la tabla
+    const cuerpo = this.getCuerpo(); // Obtener el cuerpo de la tabla
+    const titulo = 'Lista de Empleados'; // Título del informe
+    this.impresionService.imprimir(entidad, encabezado, cuerpo, titulo, true); // Llama al servicio de impresión
+  }
+
+  // Método para obtener el encabezado de la tabla
+  getEncabezado(): string[] {
+    const encabezado: string[] = [];
+    document.querySelectorAll('table thead th').forEach((th: HTMLTableHeaderCellElement) => {
+      const texto = th.textContent.trim();
+      if (texto !== 'ACTUALIZAR' && texto !== 'ELIMINAR' && texto !== 'IMPRIMIR' &&  texto !== 'ACTIVAR/DESACTIVAR') {
+        encabezado.push(texto);
+      }
+    });
+    return encabezado;
+  }
+
+  // Método para obtener el cuerpo de la tabla
+  getCuerpo(): string[][] {
+    const cuerpo: string[][] = [];
+    document.querySelectorAll('table tbody tr').forEach((tr: HTMLTableRowElement) => {
+      const fila: string[] = [];
+      tr.querySelectorAll('td').forEach((td: HTMLTableCellElement) => {
+        const texto = td.textContent.trim();
+        if (texto !== 'Actualizar' && texto !== 'Eliminar' && texto !== 'Imprimir'  &&  texto !== 'DESACTIVAR/ACTIVAR') {
+          fila.push(texto);
+        }
+      });
+      cuerpo.push(fila);
+    });
+    return cuerpo;
   }
 
 

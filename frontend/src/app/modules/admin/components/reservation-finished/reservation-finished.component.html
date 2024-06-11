@@ -37,9 +37,9 @@
                					 <th  scope="col">MONTO PAGO</th>
 								<th  scope="col">OBSERVACION</th>
 								<th  scope="col">ESTADO</th>
-								<th  scope="col">VENDER</th>
+								<!-- <th  scope="col">VENDER</th> -->
 								<!-- <th scope="col">PAGAR</th> -->
-								<th scope="col">ELIMINAR</th>
+								<!-- <th scope="col">ELIMINAR</th> -->
 
 								<!-- <th  scope="col">ELIMINAR</th> -->
 							</tr>
@@ -66,31 +66,31 @@
 								<td>{{ ticket.Prestamo?.Articulo?.observaciones }}</td>
 								<td>{{ ticket.Prestamo?.estado }}</td>
 								
-								<td>
-									<!-- <button type="button" 
+								<!-- <td>
+									<button type="button" 
 											(click)="setSelectedVenta(prestamos)" 
 											class="btn btn-primary"
 											[disabled]="prestamos.estado.toLowerCase().trim() === 'vendido'">
 										<i class="fas fa-shopping-cart fa-fw"></i>
-									</button> -->
-								</td>
+									</button>
+								</td> -->
 								<!-- <td>
 									<button type="button" (click)="setSelectedVenta(prestamos)" class="btn btn-primary">
 										<i class="fas fa-sync-alt"></i>
 									 </button>
 									
 								</td> -->
-								<td>
+								<!-- <td>
 									<form action="">
 										<button (click)="deletePrestamo(ticket.id!)" type="button" class="btn btn-warning">
 											<i class="far fa-trash-alt"></i>
 										</button>
 									</form>
-								</td>
+								</td> -->
 							</tr>
 						</tbody>
 					</table>
-					<div class="justify-content-center text-center" > <h2 *ngIf="listTickets.length == 0">No hay productos para VENDER</h2>
+					<div class="justify-content-center text-center" > <h2 *ngIf="listTickets.length == 0">No hay prestamos vencidos</h2>
 					</div>
 					
 				</div>
@@ -105,6 +105,11 @@
 					  </li>
 					  <li class="page-item" [class.disabled]="currentPage === totalPages">
 						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
+					  </li>
+					  <li class="page-item" >
+						<button type="button" class="btn btn-danger" (click)="onImprimir()">
+							<i class="fas fa-file-pdf"></i>
+						</button>
 					  </li>
 					</ul>
 				  </nav>

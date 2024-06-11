@@ -52,14 +52,15 @@ export class VentaListComponent implements OnInit {
 
 // Inicializar los formularios en el constructor
 this.formanular = this.fb.group({
-  id_Venta: ['', Validators.required],
-  igv: ['', Validators.required],
-  descuento: ['', Validators.required],
-  id_tipo_comprobante: ['', Validators.required],
-  num_serie: ['', Validators.required],
-  estado: ['', Validators.required],
-  razon_anulacion: [''],
-  id_nota_credito: [''],
+  id_Venta: [{ value: '', disabled: true }, Validators.required],
+  igv: [{ value: '', disabled: true }, Validators.required],
+  descuento: [{ value: '', disabled: true }, Validators.required],
+  id_tipo_comprobante: [{ value: '', disabled: true }, Validators.required],
+  num_serie: [{ value: '', disabled: true }, Validators.required],
+  estado: [{ value: '', disabled: true }, Validators.required],
+  razon_anulacion: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(100)]],
+  id_nota_credito:['', Validators.required],
+  total: ['', Validators.required],
 });
 
 
@@ -74,11 +75,11 @@ this.formanular = this.fb.group({
   }
 
   onTipoNCSelected(event: any): void {
-    const selectedTipoPagoId = event.target.value;
-    if (selectedTipoPagoId === "4") {
-      this.formanular.get('pago').enable();
+    const TipoNCSelected = event.target.value;
+    if (TipoNCSelected === "") {
+      
     } else {
-      this.formanular.get('pago').disable();
+      
     }
   }
 
@@ -111,7 +112,7 @@ this.formanular = this.fb.group({
         id_tipo_comprobante: comprobante.TipoComprobante?.nombre,
         num_serie: comprobante.num_serie,
         estado: comprobante.estado,
-      
+        total: comprobante.Venta.total
       });
       this.getListNotaCreditos();
 
@@ -193,27 +194,21 @@ this.getListComprobanteventas();
 
 
   updateComprobante() {
-    const comprobante: Comprobante_venta = {
-      idventa: 0,
-      igv: 0,
-      descuento: 0,
-      idtipo_comprobante: 0,
-      num_serie: '',
-      estado: 'EMITIDO',
-      razon_anulacion: null,
-      idnotacredito: null
+    const comprobante: Partial<Comprobante_venta> = {
+      
+      estado: 'ANULADO',
+      
     };
   
     console.log('Comprobante a actualizar:', comprobante); // Agregar registro del comprobante a actualizar
   
   
-      console.log('ID del comprobante a actualizar:', comprobante.id); // Agregar registro del ID del comprobante a actualizar
+      console.log('ID del comprobante a actualizar:', this.selectedComprobante.id); // Agregar registro del ID del comprobante a actualizar
   
       this.loading = true;
   
-      comprobante.id = comprobante.id;
-      this._comprobanteventaService.updateComprobanteventa(comprobante.id, comprobante).subscribe(() => {
-        this.toastr.info(`El comprobante con ID ${comprobante.id} fue actualizado con éxito`, 'Comprobante actualizado', {
+      this._comprobanteventaService.updateComprobanteventaEstado(this.selectedComprobante.id, comprobante).subscribe(() => {
+        this.toastr.info(`El comprobante fue ANULADO con éxito`, 'Comprobante ANULADO', {
           timeOut: 3000, // Duración en milisegundos (3 segundos en este caso)
           progressBar: true, // Muestra la barra de progreso
           progressAnimation: 'increasing', // Animación de la barra de progreso
@@ -315,38 +310,44 @@ this.getListComprobanteventas();
 
   getEncabezado(): string[] {
     return [
+       'VENTA NRO',
+      'TIPO COMPROBANTE',
       'EMPLEADO',
       'CLIENTE',
-      'ARTICULO',
       'FECHA VENTA',
       'TIPO PAGO',
-      'CANTIDAD',
-      'PRECIO UNITARIO',
-      'SUBTOTAL',
-      'TOTAL'
+      'TOTAL',
+
+    
     ];
   }
 
   getCuerpo(): any[][] {
     const cuerpo: any[][] = [];
     const filasVistas = new Set();
-    this.listdetalleVentas.forEach((venta) => {
+
+
+    if(this.categoriaSeleccionada === 1  || 2 ){
+    this.listcomprobanteVenta.forEach((comprobante) => {
       const fila: any[] = [
-        venta.Venta?.Empleado?.nombre + ' ' + venta.Venta?.Empleado?.apellidos,
-        venta.Venta?.Cliente?.nombre,
-        venta.Articulo ?
-          (venta.Articulo.Vehiculo ?
-            venta.Articulo.Vehiculo.descripcion :
-            (venta.Articulo.Electrodomestico ?
-              venta.Articulo.Electrodomestico.descripcion :
-              'No hay descripción disponible')) :
-          'No hay descripción disponible',
-        venta.Venta?.fecha_venta,
-        venta.Venta?.tipo_pago,
-        venta.cantidad,
-        venta.precio_unitario,
-        venta.subtotal,
-        venta.Venta?.total
+        comprobante.id,
+        comprobante.TipoComprobante?.nombre,
+        comprobante.Venta?.Empleado?.nombre + ' ' + comprobante.Venta?.Empleado?.apellidos,
+        comprobante.Venta?.Cliente?.nombre,
+        // comprobante.Articulo ?
+        //   (comprobante.Articulo.Vehiculo ?
+        //     comprobante.Articulo.Vehiculo.descripcion :
+        //     (comprobante.Articulo.Electrodomestico ?
+        //       comprobante.Articulo.Electrodomestico.descripcion :
+        //       'No hay descripción disponible')) :
+        //   'No hay descripción disponible',
+          comprobante.Venta?.fecha_venta,
+          comprobante.Venta?.tipo_pago,
+          // comprobante.cantidad,
+          // comprobante.precio_unitario,
+          // comprobante.subtotal,
+          comprobante.Venta?.total,
+
       ];
       const filaString = fila.join('|');
       if (!filasVistas.has(filaString)) {
@@ -354,6 +355,42 @@ this.getListComprobanteventas();
         filasVistas.add(filaString);
       }
     });
+
+   }
+
+
+   if(this.categoriaSeleccionada === 3 ){
+    this.listcomprobanteVenta.forEach((comprobante) => {
+      const fila: any[] = [
+        comprobante.id,
+        comprobante.TipoComprobante?.nombre,
+        comprobante.Venta?.Empleado?.nombre + ' ' + comprobante.Venta?.Empleado?.apellidos,
+        comprobante.Venta?.Cliente?.nombre,
+        // comprobante.Articulo ?
+        //   (comprobante.Articulo.Vehiculo ?
+        //     comprobante.Articulo.Vehiculo.descripcion :
+        //     (comprobante.Articulo.Electrodomestico ?
+        //       comprobante.Articulo.Electrodomestico.descripcion :
+        //       'No hay descripción disponible')) :
+        //   'No hay descripción disponible',
+          comprobante.Venta?.fecha_venta,
+          comprobante.Venta?.tipo_pago,
+          // comprobante.cantidad,
+          // comprobante.precio_unitario,
+          // comprobante.subtotal,
+          comprobante.Venta?.total,
+
+      ];
+      const filaString = fila.join('|');
+      if (!filasVistas.has(filaString)) {
+        cuerpo.push(fila);
+        filasVistas.add(filaString);
+      }
+    });
+
+   }
+
+
     return cuerpo;
   }
 

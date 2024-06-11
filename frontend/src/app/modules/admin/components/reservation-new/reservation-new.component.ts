@@ -100,7 +100,7 @@ id_articulo = null;
   totalItems: number;
   totalPages: number = 0;   // Inicializa totalPages en 0
 
-
+datedevolucion: Date;
 
 
   constructor(
@@ -123,9 +123,10 @@ id_articulo = null;
       this.form = this.fb.group({
       id_cliente: ['', Validators.required , ],
       id_articulo: ['', Validators.required],
-      fecha_devolucion: ['', Validators.required],
+      fecha_devolucion: [{ value: '', disabled: true }],
       monto_prestamo: ['', Validators.required],
       tasa_interes: [{ value: '', disabled: true }, ],
+      cuotas: ['', Validators.required],
     });
 
     this.formcliente = this.fb.group({
@@ -187,6 +188,22 @@ this.onTipoClienteChange();
 
   // this.getListCategorias();
 }
+
+onCuotasSelected(event: any): void {
+  const selectedCuotas = event.target.value;
+  const diasExtra = selectedCuotas === "2" ? 60 : 90; // Cambiado el nombre de la variable y simplificada la lógica
+
+  const fechaActual = new Date(); // Obtener la fecha actual
+  const fechaDevolucion = new Date(fechaActual.getTime() + diasExtra * 24 * 60 * 60 * 1000); // Añadir días extra
+
+  // Convertir la fecha de devolución a formato YYYY-MM-DD
+  const year = fechaDevolucion.getFullYear();
+  const month = String(fechaDevolucion.getMonth() + 1).padStart(2, '0'); // Agregar ceros a la izquierda si es necesario
+  const day = String(fechaDevolucion.getDate()).padStart(2, '0'); // Agregar ceros a la izquierda si es necesario
+  this.form.controls['fecha_devolucion'].setValue(`${year}-${month}-${day}`); // Establecer la fecha en el FormControl
+  this.datedevolucion= (`${year}-${month}-${day}`);
+}
+
 
 
 onTipoClienteChange() {
@@ -266,8 +283,7 @@ addPrestamo() {
     idcliente: this.form.value.id_cliente,
     idarticulo: this.form.value.id_articulo,
     fecha_prestamo: this.fechaActual,
-    fecha_devolucion:
-     this.form.value.fecha_devolucion,
+    fecha_devolucion: this.datedevolucion,
     monto_prestamo: this.form.value.monto_prestamo,
     monto_pago: pagar,
     estado: 'pendiente'

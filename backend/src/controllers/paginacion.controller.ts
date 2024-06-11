@@ -1135,14 +1135,13 @@ export const getPrestamosVenta = async (req: Request, res: Response) => {
     // Realiza la consulta paginada para obtener los préstamos en estado 'venta'
     const prestamosVenta = await Prestamo.findAndCountAll({
       where: {
-        estado: 'venta'
+        estado: 'vencido'
       },
       limit: pageSize,
       offset: offset,
       order: [['id', 'DESC']],
             include: [
         { model: Cliente, as: 'Cliente' },
-        { model: Empleado, as: 'Empleado' },
         {
           model: Articulo,
           as: 'Articulo',

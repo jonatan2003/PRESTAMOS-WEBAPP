@@ -2,21 +2,32 @@ import { Request, Response } from 'express';
 import Cliente from '../models/cliente.model';
 import { Op } from 'sequelize'; // Agregar esta línea
 
+
 export const createCliente = async (req: Request, res: Response) => {
   const { nombre, apellido, direccion, dni, ruc, razon_social, telefono, rubro } = req.body;
 
   try {
+    // Construir condiciones dinámicamente
+    let condiciones: any = {};
+
+    if (dni && dni !== 'no') {
+      condiciones.dni = dni;
+    } else if (ruc && ruc !== 'no') {
+      condiciones.ruc = ruc;
+    } else {
+      return res.status(400).json({ msg: 'Debe proporcionar al menos DNI o RUC' });
+    }
+
     // Verificar si ya existe un cliente con el mismo DNI o RUC
     const clienteExistente = await Cliente.findOne({
-      where: {
-        [Op.or]: [{ dni }, { ruc }]
-      }
+      where: condiciones
     });
 
     if (clienteExistente) {
       return res.status(400).json({ msg: 'Ya existe un cliente con el mismo DNI o RUC' });
     }
 
+    // Crear el nuevo cliente
     const nuevoCliente = await Cliente.create({
       nombre,
       apellido,
@@ -28,9 +39,10 @@ export const createCliente = async (req: Request, res: Response) => {
       rubro
     });
 
+    // Devolver el nuevo cliente creado
     res.status(201).json(nuevoCliente);
   } catch (error) {
-    console.error(error);
+    console.error('Error al crear el cliente:', error);
     res.status(500).json({ msg: 'Ocurrió un error al crear el cliente' });
   }
 };

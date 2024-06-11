@@ -27,7 +27,7 @@
 		  <div class="form-group">
 		   
 			<select class="form-control " id="selectCategoria" (change)="onCategoriaSelected($event)">
-			  <option [ngClass]="{'text-danger': !categoriaSeleccionada}"  selected disabled>Tipo Comrobante</option>
+			  <option [ngClass]="{'text-danger': !categoriaSeleccionada}"  selected disabled>Tipo Comprobante</option>
 			  <option value="1">BOLETA</option>
 			  <option value="2">FACTURA</option>
 			  <option value="3">NOTA CREDITO</option>
@@ -86,6 +86,26 @@
 				</tr>
 			</tbody>
 		</table>
+
+		<nav aria-label="Page navigation example">
+			<ul class="pagination justify-content-center">
+			  <li class="page-item" [class.disabled]="currentPage === 1">
+				<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage - 1)" tabindex="-1">Atras</a>
+			  </li>
+			  <li class="page-item" *ngFor="let page of getPages()">
+				<a class="page-link" href="javascript:void(0)" (click)="pageChanged(page)">{{ page }}</a>
+			  </li>
+			  <li class="page-item" [class.disabled]="currentPage === totalPages">
+				<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
+			  </li>
+			  <li class="page-item" >
+				<button type="button" class="btn btn-danger" (click)="onImprimir()">
+					<i class="fas fa-file-pdf"></i>
+				</button>
+			  </li>
+			</ul>
+		  </nav>
+
 	</div>
 
 
@@ -139,27 +159,30 @@
 				</tr>
 			</tbody>
 		</table>
+
+		<nav aria-label="Page navigation example">
+			<ul class="pagination justify-content-center">
+			  <li class="page-item" [class.disabled]="currentPage === 1">
+				<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage - 1)" tabindex="-1">Atras</a>
+			  </li>
+			  <li class="page-item" *ngFor="let page of getPages()">
+				<a class="page-link" href="javascript:void(0)" (click)="pageChanged(page)">{{ page }}</a>
+			  </li>
+			  <li class="page-item" [class.disabled]="currentPage === totalPages">
+				<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
+			  </li>
+			  <li class="page-item" >
+				<button type="button" class="btn btn-danger" (click)="onImprimir()">
+					<i class="fas fa-file-pdf"></i>
+				</button>
+			  </li>
+			</ul>
+		  </nav>
+
 	</div>
 
 
-	<nav aria-label="Page navigation example">
-		<ul class="pagination justify-content-center">
-		  <li class="page-item" [class.disabled]="currentPage === 1">
-			<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage - 1)" tabindex="-1">Atras</a>
-		  </li>
-		  <li class="page-item" *ngFor="let page of getPages()">
-			<a class="page-link" href="javascript:void(0)" (click)="pageChanged(page)">{{ page }}</a>
-		  </li>
-		  <li class="page-item" [class.disabled]="currentPage === totalPages">
-			<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
-		  </li>
-		  <li class="page-item" >
-			<button type="button" class="btn btn-danger" (click)="onImprimir()">
-				<i class="fas fa-file-pdf"></i>
-			</button>
-		  </li>
-		</ul>
-	  </nav>
+	
 </div>
 
 
@@ -185,7 +208,16 @@
 									  <legend><i class="fas fa-user"></i> &nbsp; Información básica</legend>
 									  <div class="container-fluid">
 										<div class="row">
-										  <div class="col-12 col-md-4">
+											<div class="col-12 col-md-4">
+												<div class="form-group">
+													<label for="id_nota_credito">Nota de Crédito</label>
+													<select formControlName="id_nota_credito" class="form-control" (change)="onTipoNCSelected($event)">
+													  <option value="" disabled selected>Seleccione Tipo de Nota de Credito </option>
+													  <option *ngFor="let nota of listTiposNotasCreditos" [value]="nota.id">{{ nota.descripcion}}</option>
+													</select>
+												</div>
+											  </div>
+										  <div class="col-12 col-md-4" style="display: none;">
 											<div class="form-group">
 											  <label for="id_Venta">ID Venta</label>
 											  <input formControlName="id_Venta" type="text" class="form-control" maxlength="50">
@@ -194,34 +226,17 @@
 											  </div>
 											</div>
 										  </div>
-										  <div class="col-12 col-md-4">
+
+										  <div class="col-12 col-md-3">
 											<div class="form-group">
-											  <label for="igv">IGV</label>
-											  <input formControlName="igv" type="text" class="form-control" maxlength="50">
-											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('igv').valid || formanular.get('igv').pristine">
-												<span *ngIf="formanular.get('igv').errors?.['required']" class="text-danger">Este campo es requerido</span>
-											  </div>
-											</div>
-										  </div>
-										  <div class="col-12 col-md-4">
-											<div class="form-group">
-											  <label for="descuento">Descuento</label>
-											  <input formControlName="descuento" type="text" class="form-control" maxlength="50">
-											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('descuento').valid || formanular.get('descuento').pristine">
-												<span *ngIf="formanular.get('descuento').errors?.['required']" class="text-danger">Este campo es requerido</span>
-											  </div>
-											</div>
-										  </div>
-										  <div class="col-12 col-md-4">
-											<div class="form-group">
-											  <label for="id_tipo_comprobante">ID Tipo Comprobante</label>
+											  <label for="id_tipo_comprobante">Tipo Comprobante</label>
 											  <input formControlName="id_tipo_comprobante" type="text" class="form-control" maxlength="50">
 											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('id_tipo_comprobante').valid || formanular.get('id_tipo_comprobante').pristine">
 												<span *ngIf="formanular.get('id_tipo_comprobante').errors?.['required']" class="text-danger">Este campo es requerido</span>
 											  </div>
 											</div>
 										  </div>
-										  <div class="col-12 col-md-4">
+										  <div class="col-12 col-md-3">
 											<div class="form-group">
 											  <label for="num_serie">Número de Serie</label>
 											  <input formControlName="num_serie" type="text" class="form-control" maxlength="50">
@@ -230,7 +245,48 @@
 											  </div>
 											</div>
 										  </div>
+										 
 										  <div class="col-12 col-md-4">
+											<div class="form-group">
+											  <label  for="razon_anulacion">Razón de Anulación</label>
+											  <input formControlName="razon_anulacion" type="text" class="form-control" maxlength="100">
+											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('razon_anulacion').valid || formanular.get('razon_anulacion').pristine">
+												<span *ngIf="formanular.get('razon_anulacion').errors?.['required']" class="text-danger">Este campo es requerido</span>
+												<span *ngIf="formanular.get('razon_anulacion').errors?.['minlength']" class="text-danger">Escribe una razon de anulacion</span>
+											  </div>
+											</div>
+										  </div>
+
+										  <div class="col-12 col-md-4">
+											<div class="form-group">
+											  <label  for="total">Total</label>
+											  <input formControlName="total" type="text" class="form-control" maxlength="100">
+											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('total').valid || formanular.get('total').pristine">
+												<span *ngIf="formanular.get('total').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											  </div>
+											</div>
+										  </div>
+										  
+										  <div class="col-12 col-md-4" style="display: none;">
+											<div class="form-group">
+											  <label for="igv">IGV</label>
+											  <input formControlName="igv" type="text" class="form-control" maxlength="50">
+											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('igv').valid || formanular.get('igv').pristine">
+												<span *ngIf="formanular.get('igv').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											  </div>
+											</div>
+										  </div>
+										  <div class="col-12 col-md-4" style="display: none;">
+											<div class="form-group">
+											  <label for="descuento">Descuento</label>
+											  <input formControlName="descuento" type="text" class="form-control" maxlength="50">
+											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('descuento').valid || formanular.get('descuento').pristine">
+												<span *ngIf="formanular.get('descuento').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											  </div>
+											</div>
+										  </div>
+										  
+										  <div class="col-12 col-md-4" style="display: none;">
 											<div class="form-group">
 											  <label for="estado">Estado</label>
 											  <input formControlName="estado" type="text" class="form-control" maxlength="50">
@@ -239,21 +295,8 @@
 											  </div>
 											</div>
 										  </div>
-										  <div class="col-12 col-md-4">
-											<div class="form-group">
-											  <label style="display:none" for="razon_anulacion">Razón de Anulación</label>
-											  <input formControlName="razon_anulacion" type="text" class="form-control" maxlength="50">
-											</div>
-										  </div>
-										  <div class="col-12 col-md-4">
-											<div class="form-group">
-												<label for="id_nota_credito">ID Nota de Crédito</label>
-												<select formControlName="id_nota_credito" class="form-control" (change)="onTipoNCSelected($event)">
-												  <option value="" disabled selected>Seleccione Tipo de Nota de Credito </option>
-												  <option *ngFor="let nota of listTiposNotasCreditos" [value]="nota.id">{{ nota.descripcion}}</option>
-												</select>
-											</div>
-										  </div>
+										
+										  
 										</div>
 									  </div>
 									</fieldset>

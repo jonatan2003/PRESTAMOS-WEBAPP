@@ -68,7 +68,7 @@
 						<th>TELEFONO</th>
 						<th>RUBRO</th>
 						<th>ACTUALIZAR</th>
-						<th>ELIMINAR</th>
+						<!-- <th>ELIMINAR</th> -->
 					  </tr>
 					</thead>
 					<tbody>
@@ -86,10 +86,10 @@
 								<i class="fas fa-sync-alt"></i>
 							 </button>
 												 </td>
-						<td>
+						<!-- <td>
 							<button  (click)="deleteCliente(cliente.id!)" type="button" class="btn btn-warning">
 								<i class="far fa-trash-alt"></i>
-							 </button>						</td>
+							 </button>						</td> -->
 					  </tr>
 					</tbody>
 				  </table>
@@ -105,6 +105,9 @@
 					  </li>
 					  <li class="page-item" [class.disabled]="currentPage === totalPages">
 						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
+					  </li>
+					  <li class="page-item" [class.disabled]="currentPage === totalPages">
+						<button type="button" class="btn btn-danger" (click)="onImprimir()" ><i class="fas fa-file-pdf"></i></button>
 					  </li>
 					</ul>
 				  </nav>
@@ -177,6 +180,9 @@
 					  </li>
 					  <li class="page-item" [class.disabled]="currentPage === totalPages">
 						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
+					  </li>
+					  <li class="page-item" [class.disabled]="currentPage === totalPages">
+						<button type="button" class="btn btn-danger" (click)="onImprimir()" ><i class="fas fa-file-pdf"></i></button>
 					  </li>
 					</ul>
 				  </nav>

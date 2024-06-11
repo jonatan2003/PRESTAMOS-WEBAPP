@@ -155,6 +155,11 @@
 					  <li class="page-item" [class.disabled]="currentPage === totalPages">
 						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
 					  </li>
+					  <li class="page-item" >
+						<button type="button" class="btn btn-danger" (click)="onImprimir()">
+							<i class="fas fa-file-pdf"></i>
+						</button>
+					  </li>
 					</ul>
 				  </nav>
 			</div>

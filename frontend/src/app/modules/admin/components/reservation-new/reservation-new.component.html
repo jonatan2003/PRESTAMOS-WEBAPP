@@ -97,6 +97,21 @@
 							</div>
 						</div>
 					</div>
+
+					<div class="col-12 col-md-4">
+						<div class="form-group">
+							<label for="cuotas">CUOTAS MENSUALES</label>
+							<select formControlName="cuotas" class="form-control" (change)="onCuotasSelected($event)">				
+							  <option value="2" selected >2 </option>
+							  <option value="3"  >3 </option>
+							</select>
+							<div class="alert alert-danger mt-2"[hidden]="form.get('cuotas').valid || form.get('cuotas').pristine">
+								<span *ngIf="form.get('cuotas').errors?.['required']" class="text-danger">Este campo es requerido</span>
+								</div>
+						</div>
+					  </div>
+
+					  
 					<div class="col-12 col-md-4">
 						<div class="form-group">
 							<label for="monto_prestamo" class="bmd-label-floating">Monto Prestamo</label>

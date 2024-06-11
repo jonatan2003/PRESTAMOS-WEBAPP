@@ -588,7 +588,7 @@ montoRestante: number ;
     const entidad = 'Prestamos';
     const encabezado = this.getEncabezado();
     const cuerpo = this.getCuerpo();
-    const titulo = 'Lista de Prestmaos';
+    const titulo = 'Lista de Prestamos';
     const cuerpoUnico = this.eliminarFilasDuplicadas(cuerpo);
     this.impresionService.imprimir(entidad, encabezado, cuerpoUnico, titulo, true);
   }
@@ -654,38 +654,6 @@ getCuerpo(): any[][] {
 
 
 
-  
-  
-  
-  // onImprimirFila(index: number) {
-  //   const ticket = this.listTickets[index];
-  //   this.impresionService.imprimirFilaPrestamos('Ticket', {
-  //     num_serie: ticket.num_serie,
-  //     num_ticket: ticket.num_ticket,
-  //     cliente: ticket.Prestamo?.Cliente?.nombre +" " + ticket.Prestamo?.Cliente?.apellido || '',
-  //     dni: ticket.Prestamo?.Cliente?.dni || '',
-  //     empleado: ticket.Empleado?.nombre +" " + ticket.Empleado?.apellidos || '',
-
-  //     articulo: ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.descripcion : 
-  //       (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.descripcion :
-  //          'No hay descripción disponible')) : 'No hay descripción disponible',
-
-  //          marca:ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.marca : 
-  //           (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.marca :
-  //              'No hay marca disponible')) : 'No hay marca disponible',
-
-  //          modelo: ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.modelo : 
-  //           (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.modelo :
-  //              'No hay modelo disponible')) : 'No hay modelo disponible',
-
-  //     fechaPrestamo: this.formatDate(ticket.Prestamo?.fecha_prestamo) || '',
-  //     fechaDevolucion: this.formatDate(ticket.Prestamo?.fecha_devolucion) || '',
-  //     montoPrestamo: ticket.Prestamo?.monto_prestamo || '',
-  //     montoPago: ticket.Prestamo?.monto_pago || '',
-  //     observaciones: ticket.Prestamo?.Articulo?.observaciones|| '',
-  //     estado:ticket.Prestamo?.estado || ''
-  //   } );
-  // }
 
 
   onImprimirFila(index: number) {

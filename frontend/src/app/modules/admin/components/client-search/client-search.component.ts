@@ -149,8 +149,10 @@ buscarClientes() {
   // Método para eliminar la búsqueda
   eliminarBusqueda() {
     // Lógica para eliminar la búsqueda, si es necesario
-    this.clientes = []; // Limpiar la lista de clientes
+    this.listClientesDNI = []; // Limpiar la lista de clientes
+    this.listClientesRUC = []; // Limpiar la lista de clientes
   }
+
 
 
 
@@ -363,6 +365,47 @@ buscarClientes() {
       }
     }
   }
+
+
+  
+  onImprimir() {
+    const entidad = 'Clientes'; // Nombre de la entidad (para el nombre del archivo PDF)
+    const encabezado = this.getEncabezado(); // Obtener el encabezado de la tabla
+    const cuerpo = this.getCuerpo(); // Obtener el cuerpo de la tabla
+    const titulo = 'Lista de Clientes'; // Título del informe
+    this.impresionService.imprimir(entidad, encabezado, cuerpo, titulo, true); // Llama al servicio de impresión
+  }
+
+  // Método para obtener el encabezado de la tabla
+  getEncabezado(): string[] {
+    const encabezado: string[] = [];
+    document.querySelectorAll('table thead th').forEach((th: HTMLTableHeaderCellElement) => {
+      const texto = th.textContent.trim();
+      if (texto !== 'ACTUALIZAR' && texto !== 'ELIMINAR' && texto !== 'IMPRIMIR') {
+        encabezado.push(texto);
+      }
+    });
+    return encabezado;
+  }
+
+  // Método para obtener el cuerpo de la tabla
+  getCuerpo(): string[][] {
+    const cuerpo: string[][] = [];
+    document.querySelectorAll('table tbody tr').forEach((tr: HTMLTableRowElement) => {
+      const fila: string[] = [];
+      tr.querySelectorAll('td').forEach((td: HTMLTableCellElement) => {
+        const texto = td.textContent.trim();
+        if (texto !== 'Actualizar' && texto !== 'Eliminar' && texto !== 'Imprimir') {
+          fila.push(texto);
+        }
+      });
+      cuerpo.push(fila);
+    });
+    return cuerpo;
+  }
+
+
+
 
   
 }

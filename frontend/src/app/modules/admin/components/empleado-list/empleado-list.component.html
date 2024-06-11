@@ -33,10 +33,11 @@
 								<th scope="col">TELEFONO</th>
 								<th scope="col">CORREO</th>
                 <th scope="col">CONTRATO</th>
-                <th scope="col">ACTUALIZAR</th>
-								<th scope="col">ELIMINAR</th>
+                <th scope="col">ESTADO</th>
+				<th scope="col">ACTUALIZAR</th>
+								<th scope="col">ACTIVAR/DESACTIVAR</th>
 
-                <th scope="col">IMPRIMIR</th>
+                <!-- <th scope="col">IMPRIMIR</th> -->
 							</tr>
 						</thead>
 						<tbody>
@@ -51,6 +52,8 @@
                 <td>{{ empleados.telefono }}</td>
                 <td>{{ empleados.correo }}</td>
                 <td>{{ empleados.tipo_contrato }}</td>
+				<td>{{ empleados.estado }}</td>
+
 
 								<td>
 									<button type="button" (click)="setSelectedEmpleado(empleados)" class="btn btn-primary" >
@@ -60,11 +63,11 @@
                   <td>
                   <form action="">
                      <button  (click)="deleteEmpleado(empleados.id!)" type="button" class="btn btn-warning">
-                         <i class="far fa-trash-alt"></i>
-                      </button>
+                           DESACTIVAR/ACTIVAR         
+					</button>
                   </form>
                   </td>
-                  <td> <button type="button" class="btn btn-danger" (click)="onImprimir()" ><i class="fas fa-file-pdf"></i></button></td>
+                  <!-- <td> <button type="button" class="btn btn-danger" (click)="onImprimir()" ><i class="fas fa-file-pdf"></i></button></td> -->
 							</tr>
 
 						</tbody>
@@ -80,6 +83,9 @@
 					  </li>
 					  <li class="page-item" [class.disabled]="currentPage === totalPages">
 						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
+					  </li>
+					  <li class="page-item" [class.disabled]="currentPage === totalPages">
+						<button type="button" class="btn btn-danger" (click)="onImprimir()" ><i class="fas fa-file-pdf"></i></button>
 					  </li>
 					</ul>
 				  </nav>
