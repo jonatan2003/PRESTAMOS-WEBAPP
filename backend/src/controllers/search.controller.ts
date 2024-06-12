@@ -14,6 +14,9 @@ import DetalleVenta from '../models/detalleventa.model';
 import CronogramaPagos from '../models/cronograma_pagos.model';
 import Inventario from '../models/inventario.model';
 import Ticket from '../models/ticket.model';
+import ComprobanteVenta from '../models/comprobante_venta.model';
+import TipoComprobante from '../models/tipo_comprobante.model';
+import NotaCredito from '../models/notacredito.model';
 //CLIENTES
 export const searchClientes = async (req: Request, res: Response) => {
   const { searchTerm } = req.query;
@@ -343,6 +346,76 @@ export const searchTicketsPrestamos = async (req: Request, res: Response) => {
         res.status(500).json({ msg: 'Error al realizar la búsqueda de préstamos' });
       }
     };
+
+
+    export const searchComprobantesVentas = async (req: Request, res: Response) => {
+      const { searchTerm } = req.query;
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+      const offset = (page - 1) * pageSize;
+    
+      try {
+        const comprobantesVenta = await ComprobanteVenta.findAndCountAll({
+          limit: pageSize,
+          offset: offset,
+          order: [['id', 'DESC']],
+          include: [
+            { 
+              model: TipoComprobante, 
+              as: 'TipoComprobante' 
+            },
+            { 
+              model: NotaCredito, 
+              as: 'NotaCredito' 
+            },
+            { 
+              model: Venta, 
+              as: 'Venta',
+              include: [
+                { 
+                  model: Empleado, 
+                  as: 'Empleado' 
+                },
+                { 
+                  model: Cliente, 
+                  as: 'Cliente' 
+                },
+              ],
+            },
+          ],
+          where: {
+            [Op.or]: [
+              { id: { [Op.like]: `%${searchTerm}%` } }, // Buscar por ID de venta
+              { num_serie: { [Op.like]: `%${searchTerm}%` } }, // Buscar por número de serie
+              { '$Venta.Empleado.nombre$': { [Op.like]: `%${searchTerm}%` } }, // Buscar por nombre de empleado
+              { '$Venta.Empleado.apellidos$': { [Op.like]: `%${searchTerm}%` } }, // Buscar por apellidos de empleado
+              { '$Venta.Cliente.nombre$': { [Op.like]: `%${searchTerm}%` } }, // Buscar por nombre de cliente
+              { '$Venta.Cliente.apellido$': { [Op.like]: `%${searchTerm}%` } }, // Buscar por apellido de cliente
+              { '$NotaCredito.descripcion$': { [Op.like]: `%${searchTerm}%` } }, // Buscar por descripción de nota de crédito
+              { estado: { [Op.like]: `%${searchTerm}%` } }, // Buscar por estado del comprobante de venta
+            ]
+          }
+        });
+    
+        // Calcular información de paginación
+        const totalItems = comprobantesVenta.count;
+        const totalPages = Math.ceil(totalItems / pageSize);
+    
+        // Enviar respuesta con los datos y la información de paginación
+        res.json({
+          page,
+          pageSize,
+          totalItems,
+          totalPages,
+          data: comprobantesVenta.rows
+        });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: 'Error al realizar la búsqueda de Comprobantes de Venta' });
+      }
+    };
+    
+    
   // CATEGORIA
   export const searchCategorias = async (req: Request, res: Response) => {
     const { searchTerm } = req.query;

@@ -38,7 +38,7 @@ import { ReservationFinishedComponent } from '../modules/admin/components/reserv
 
 import { AuthService } from '../services/auth.service';
 import { HomeComponent } from '../modules/empleado/components/home/home.component';
-import { PagosComponent } from '../modules/empleado/components/pagos/pagos.component';
+import { PagosComponent } from '../modules/empleado/components/pagos2-new/pagos2-new.component';
 import { PrestamosListComponent } from '../modules/empleado/components/prestamos-list/prestamos-list.component';
 import { PrestamosNewComponent } from '../modules/empleado/components/prestamos-new/prestamos-new.component';
 import { PrestamosPendingComponent } from '../modules/empleado/components/prestamos-pending/prestamos-pending.component';
@@ -49,11 +49,12 @@ import { EmpleadoGuard } from '../services/empleado.guard';
 import { EmpresaComponent } from '../modules/empleado/components/empresa/empresa.component';
 import { User2UpdateComponent } from '../modules/empleado/components/user-update2/user2-update.component';
 import { PagosSearchComponent } from '../modules/admin/components/pagos-search/pagos-search.component';
-import { Pagos2SearchComponent } from '../modules/empleado/components/pagos2-search/pagos2-search.component';
+import { Pagos2SearchComponent } from '../modules/empleado/components/pagos2-list/pagos2-list.component';
 import { VentasList2Component } from '../modules/empleado/components/ventas-list2/ventas-list2.component';
 import { PagosNewComponent } from '../modules/admin/components/pagos-new/pagos-new.component';
 import { InventarioListComponent } from '../modules/admin/components/inventario-list/inventario-list.component';
 import { InventarioSearchComponent } from '../modules/admin/components/inventario-search/inventario-search.component';
+import { VentasNew2Component } from '../modules/empleado/components/ventas-new2/ventas-new2.component';
 
 
 const routes: Routes = [
@@ -113,13 +114,14 @@ const routes: Routes = [
       { path: '', component: HomeComponent},
       { path: 'empresa', component: EmpresaComponent},
       { path: 'pagos-list', component: PagosComponent },
-      { path: 'pagos-search', component: Pagos2SearchComponent },
+      { path: 'pagos-new', component: Pagos2SearchComponent },
       { path: 'prestamos-list', component: PrestamosListComponent },
       { path: 'prestamos-new', component: PrestamosNewComponent},
       { path: 'prestamos-pending', component: PrestamosPendingComponent },
       { path: 'prestamos-search', component: PrestamosSearchComponent },
       { path: 'prestamos-finished', component: PrestamosFinishedComponent },
       { path: 'ventas-list', component: VentasList2Component },
+      { path: 'ventas-new', component: VentasNew2Component},
 
       { path: 'user-update', component: User2UpdateComponent },
 

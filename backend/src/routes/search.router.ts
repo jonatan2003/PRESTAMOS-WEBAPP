@@ -11,6 +11,7 @@ import {searchClientes,
         searchCronogramaPagos,
         searchInventario,
         searchTicketsPrestamos,
+        searchComprobantesVentas,
 } from '../controllers/search.controller';
 
 const SearchRouter = Router();
@@ -32,6 +33,12 @@ SearchRouter.get('/cronograma_pagos/:searchTerm', searchCronogramaPagos); // Obt
 SearchRouter.get('/prestamos/:searchTerm', searchPrestamos); // Obtener la lista de prestamos
 
 SearchRouter.get('/ticketsprestamos/:searchTerm', searchTicketsPrestamos); // Obtener la lista de tickets de prestamos
+
+SearchRouter.get('/comprobantesventas/:searchTerm', searchComprobantesVentas); // Obtener la lista de tickets de prestamos
+
+
+
+
 
 
 SearchRouter.get('/pagos/:searchTerm', searchPagos); // Obtener la lista de pagos

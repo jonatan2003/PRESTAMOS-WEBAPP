@@ -6,7 +6,7 @@ export const environment = {
   production: false,
   // endpoint: 'https://gato.digital-tec.site/'
   endpoint: 'http://localhost:3000/'
-
+  // endpoint: 'http://161.132.49.58:4001/'
 };
 
 /*

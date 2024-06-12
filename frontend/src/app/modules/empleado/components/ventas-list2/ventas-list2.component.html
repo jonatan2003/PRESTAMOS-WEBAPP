@@ -5,7 +5,7 @@
 			<div class="container-fluid">
 				<ul class="full-box list-unstyled page-nav-tabs">
 					<li>
-						<a routerLink="/empleado/prestamos-list"><i class="fas fa-plus fa-fw"></i> &nbsp; Lista de Prestamos</a>
+						<a routerLink="/empleado/ventas-new"><i class="fas fa-plus fa-fw"></i> &nbsp; AGREGAR VENTA</a>
 					</li>
 					<li>
 						<a class="active" routerLink="/empleado/venta-list"><i class="fas fa-clipboard-list fa-fw"></i> &nbsp; LISTA DE VENTA</a>
@@ -13,94 +13,310 @@
 					<!-- <li>
 						<a routerLink="/admin/venta-search"><i class="fas fa-search fa-fw"></i> &nbsp; BUSCAR VENTA</a>
 					</li> -->
-          <li>
-            <a routerLink="/empleado/prestamos-finished"><i class="fas fa-hand-holding-usd fa-fw"></i> &nbsp; VENDER ARTICULOS</a>
-        </li>
+         			 <!-- <li>
+         			   <a routerLink="/empleado/prestamos-finished"><i class="fas fa-hand-holding-usd fa-fw"></i> &nbsp; VENDER ARTICULOS</a>
+       				 </li> -->
 				</ul>
 			</div>
 
-			<!-- Content here-->
-			<div class="container-fluid">
-				<div *ngIf="!loading"  class="table-responsive">
-					<table *ngIf="listdetalleVentas.length > 0" class="table table-dark table-sm">
-						<thead>
-							
+<!-- Content here-->
+<div class="container-fluid" >
 
 
-							<tr class="text-center roboto-medium">
-								<th scope="col">EMPLEADO</th>
-								<th scope="col">CLIENTE</th>
-								<th scope="col">ARTICULO</th>
-								<th scope="col">FECHA VENTA</th>
-								<th scope="col">TIPO PAGO</th>
-								<th scope="col">CANTIDAD</th>
-								<th scope="col">PRECIO UNITARIO</th>
-								<th scope="col">SUBTOTAL</th>
-								<th scope="col">TOTAL</th>
-								<th scope="col">IMPRIMIR</th>
-								<!-- <th scope="col">ACTUALIZAR</th> -->
-								<th scope="col">ELIMINAR</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr *ngFor="let detalleventas of listdetalleVentas  let i = index"  class="text-center"  >
-								<td>{{ detalleventas.Venta?.Empleado?.nombre}}  {{ detalleventas.Venta?.Empleado?.apellidos}}</td>
-								<td>{{detalleventas.Venta?.Cliente?.nombre}}</td>
-								
-								<td> <span>
-									{{ detalleventas.Articulo ?
-										(detalleventas.Articulo.Vehiculo ?
-										detalleventas.Articulo.Vehiculo.descripcion :
-											(detalleventas.Articulo.Electrodomestico ?
-											detalleventas.Articulo.Electrodomestico.descripcion :
-												'No hay descripción disponible')) :
-										'No hay descripción disponible' }}
-								</span></td>
-								<td>{{ detalleventas.Venta?.fecha_venta }}</td>
-								<td>{{ detalleventas.Venta?.tipo_pago }}</td>
-								<td>{{ detalleventas.cantidad }}</td>
-								<td>{{ detalleventas.precio_unitario }}</td>
-								<td>{{ detalleventas.subtotal }}</td>
-								<td>{{ detalleventas.Venta?.total }}</td>
+	
+	<div class="row justify-content-center">
+		<div class="col-md-6">
+		  <div class="form-group">
+		   
+			<select class="form-control " id="selectCategoria" (change)="onCategoriaSelected($event)">
+			  <option [ngClass]="{'text-danger': !categoriaSeleccionada}"  selected disabled>Tipo Comprobante</option>
+			  <option value="1">BOLETA</option>
+			  <option value="2">FACTURA</option>
+			  <option value="3">NOTA CREDITO</option>
 
-								<td>
-									<button type="button" class="btn btn-danger" (click)="onImprimirFila(i)">
-										<i class="fas fa-file-pdf"></i>
-									</button>
-								</td>
-								<!-- <td>
-									<a routerLink="/venta-update/{{ detalleventas.id }}"class="btn btn-success">
-	  									<i class="fas fa-sync-alt"></i>
-									</a>
-								</td> -->
-								<td>
-									<form action="">
-										<button (click)="deleteVenta(detalleventas.id!)"  type="button" class="btn btn-warning">
-		  									<i class="far fa-trash-alt"></i>
-										</button>
-									</form>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-				<nav aria-label="Page navigation example">
-					<ul class="pagination justify-content-center">
-					  <li class="page-item" [class.disabled]="currentPage === 1">
-						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage - 1)" tabindex="-1">Atras</a>
-					  </li>
-					  <li class="page-item" *ngFor="let page of getPages()">
-						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(page)">{{ page }}</a>
-					  </li>
-					  <li class="page-item" [class.disabled]="currentPage === totalPages">
-						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
-					  </li>
-					  <li class="page-item" >
-						<button type="button" class="btn btn-danger" (click)="onImprimir()">
+			</select>
+		  </div>
+		</div>
+	  </div>
+
+	<div *ngIf="this.categoriaSeleccionada === 1 || this.categoriaSeleccionada === 2 "  class="table-responsive">
+		<table *ngIf="listcomprobanteVenta.length > 0" class="table table-dark table-sm">
+			<thead>
+				
+
+
+				<tr class="text-center roboto-medium">
+					<th scope="col">VENTA NRO</th>
+					<th scope="col">TIPO COMPROBANTE</th>
+					<th scope="col">EMPLEADO</th>
+					<th scope="col">CLIENTE</th>
+					<th scope="col">FECHA VENTA</th>
+					<th scope="col">TIPO PAGO</th>
+					<th scope="col">TOTAL</th>
+					<th scope="col">ESTADO</th>
+					<th scope="col">IMPRIMIR</th>
+					<!-- <th scope="col">ACTUALIZAR</th> -->
+					<th scope="col">ELIMINAR</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let comprobante of listcomprobanteVenta  let i = index"  class="text-center"  >
+					<td>{{ comprobante.Venta?.id}}</td>
+					<td>{{ comprobante.TipoComprobante?.nombre}}</td>
+					<td>{{ comprobante.Venta?.Empleado?.nombre}}</td>
+					<td>{{comprobante.Venta?.Cliente?.nombre ||comprobante.Venta?.Cliente?.razon_social  }}</td>
+					<td>{{ comprobante.Venta?.fecha_venta }}</td>
+					<td>{{ comprobante.Venta?.tipo_pago }}</td>
+					<td>{{ comprobante.Venta?.total }}</td>
+					<td>{{ comprobante.estado}}</td>
+
+					<td>
+						<button type="button" class="btn btn-danger" (click)="onImprimirFila(i)">
 							<i class="fas fa-file-pdf"></i>
 						</button>
-					  </li>
-					</ul>
-				  </nav>
-			</div>
+					</td>
+					<!-- <td>
+						<a routerLink="/venta-update/{{ detalleventas.id }}"class="btn btn-success">
+							  <i class="fas fa-sync-alt"></i>
+						</a>
+					</td> -->
+					<td>
+						<button (click)="setSelectedComprobante(comprobante!)"  type="button" class="btn btn-warning">
+							  ANULAR
+						</button>
+				</td>
+				</tr>
+			</tbody>
+		</table>
 
+		<nav aria-label="Page navigation example">
+			<ul class="pagination justify-content-center">
+			  <li class="page-item" [class.disabled]="currentPage === 1">
+				<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage - 1)" tabindex="-1">Atras</a>
+			  </li>
+			  <li class="page-item" *ngFor="let page of getPages()">
+				<a class="page-link" href="javascript:void(0)" (click)="pageChanged(page)">{{ page }}</a>
+			  </li>
+			  <li class="page-item" [class.disabled]="currentPage === totalPages">
+				<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
+			  </li>
+			  <li class="page-item" >
+				<button type="button" class="btn btn-danger" (click)="onImprimir()">
+					<i class="fas fa-file-pdf"></i>
+				</button>
+			  </li>
+			</ul>
+		  </nav>
+
+	</div>
+
+
+	
+	<div *ngIf="this.categoriaSeleccionada === 3"  class="table-responsive">
+		<table *ngIf="listcomprobanteVenta.length > 0" class="table table-dark table-sm">
+			<thead>
+				
+
+
+				<tr class="text-center roboto-medium">
+					<th scope="col">VENTA NRO</th>
+					<th scope="col">TIPO COMPROBANTE</th>
+					<th scope="col">EMPLEADO</th>
+					<th scope="col">CLIENTE</th>
+					<th scope="col">FECHA VENTA</th>
+					<th scope="col">TIPO PAGO</th>
+					<th scope="col">TOTAL</th>
+					<th scope="col">ESTADO</th>
+					<th scope="col">IMPRIMIR</th>
+					<!-- <th scope="col">ACTUALIZAR</th> -->
+					<th scope="col">ELIMINAR</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let comprobante of listcomprobanteVenta  let i = index"  class="text-center"  >
+					<td>{{ comprobante.Venta?.id}}</td>
+					<td>{{ comprobante.TipoComprobante?.nombre}}</td>
+					<td>{{ comprobante.Venta?.Empleado?.nombre}}</td>
+					<td>{{comprobante.Venta?.Cliente?.nombre ||comprobante.Venta?.Cliente?.razon_social  }}</td>
+					<td>{{ comprobante.Venta?.fecha_venta }}</td>
+					<td>{{ comprobante.Venta?.tipo_pago }}</td>
+					<td>{{ comprobante.Venta?.total }}</td>
+					<td>{{ comprobante.estado}}</td>
+
+					<td>
+						<button type="button" class="btn btn-danger" (click)="onImprimirFila(i)">
+							<i class="fas fa-file-pdf"></i>
+						</button>
+					</td>
+					<!-- <td>
+						<a routerLink="/venta-update/{{ detalleventas.id }}"class="btn btn-success">
+							  <i class="fas fa-sync-alt"></i>
+						</a>
+					</td> -->
+					<td>
+							<button (click)="setSelectedComprobante(comprobante!)"  type="button" class="btn btn-warning">
+								  ANULAR
+							</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<nav aria-label="Page navigation example">
+			<ul class="pagination justify-content-center">
+			  <li class="page-item" [class.disabled]="currentPage === 1">
+				<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage - 1)" tabindex="-1">Atras</a>
+			  </li>
+			  <li class="page-item" *ngFor="let page of getPages()">
+				<a class="page-link" href="javascript:void(0)" (click)="pageChanged(page)">{{ page }}</a>
+			  </li>
+			  <li class="page-item" [class.disabled]="currentPage === totalPages">
+				<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
+			  </li>
+			  <li class="page-item" >
+				<button type="button" class="btn btn-danger" (click)="onImprimir()">
+					<i class="fas fa-file-pdf"></i>
+				</button>
+			  </li>
+			</ul>
+		  </nav>
+
+	</div>
+
+
+	
+</div>
+
+
+
+
+
+			<!-- MODAL Cliente -->
+			<div class="modal fade" id="ModalAnulacion" #modalEmpleado tabindex="-1" role="dialog" aria-labelledby="ModalAnulacion" aria-hidden="true" >
+
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="ModalAnulacion">ANULACIÓN DE VENTA</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close" id="ModalAnulacion" (click)="guardarANULACION()">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="container-fluid">
+								
+								<form class="form-neon" [formGroup]="formanular" (ngSubmit)="updateComprobante()">
+									<fieldset>
+									  <legend><i class="fas fa-user"></i> &nbsp; Información básica</legend>
+									  <div class="container-fluid">
+										<div class="row">
+											<div class="col-12 col-md-4">
+												<div class="form-group">
+													<label for="id_nota_credito">Nota de Crédito</label>
+													<select formControlName="id_nota_credito" class="form-control" (change)="onTipoNCSelected($event)">
+													  <option value="" disabled selected>Seleccione Tipo de Nota de Credito </option>
+													  <option *ngFor="let nota of listTiposNotasCreditos" [value]="nota.id">{{ nota.descripcion}}</option>
+													</select>
+												</div>
+											  </div>
+										  <div class="col-12 col-md-4" style="display: none;">
+											<div class="form-group">
+											  <label for="id_Venta">ID Venta</label>
+											  <input formControlName="id_Venta" type="text" class="form-control" maxlength="50">
+											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('id_Venta').valid || formanular.get('id_Venta').pristine">
+												<span *ngIf="formanular.get('id_Venta').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											  </div>
+											</div>
+										  </div>
+
+										  <div class="col-12 col-md-3">
+											<div class="form-group">
+											  <label for="id_tipo_comprobante">Tipo Comprobante</label>
+											  <input formControlName="id_tipo_comprobante" type="text" class="form-control" maxlength="50">
+											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('id_tipo_comprobante').valid || formanular.get('id_tipo_comprobante').pristine">
+												<span *ngIf="formanular.get('id_tipo_comprobante').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											  </div>
+											</div>
+										  </div>
+										  <div class="col-12 col-md-3">
+											<div class="form-group">
+											  <label for="num_serie">Número de Serie</label>
+											  <input formControlName="num_serie" type="text" class="form-control" maxlength="50">
+											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('num_serie').valid || formanular.get('num_serie').pristine">
+												<span *ngIf="formanular.get('num_serie').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											  </div>
+											</div>
+										  </div>
+										 
+										  <div class="col-12 col-md-4">
+											<div class="form-group">
+											  <label  for="razon_anulacion">Razón de Anulación</label>
+											  <input formControlName="razon_anulacion" type="text" class="form-control" maxlength="100">
+											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('razon_anulacion').valid || formanular.get('razon_anulacion').pristine">
+												<span *ngIf="formanular.get('razon_anulacion').errors?.['required']" class="text-danger">Este campo es requerido</span>
+												<span *ngIf="formanular.get('razon_anulacion').errors?.['minlength']" class="text-danger">Escribe una razon de anulacion</span>
+											  </div>
+											</div>
+										  </div>
+
+										  <div class="col-12 col-md-4">
+											<div class="form-group">
+											  <label  for="total">Total</label>
+											  <input formControlName="total" type="text" class="form-control" maxlength="100">
+											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('total').valid || formanular.get('total').pristine">
+												<span *ngIf="formanular.get('total').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											  </div>
+											</div>
+										  </div>
+										  
+										  <div class="col-12 col-md-4" style="display: none;">
+											<div class="form-group">
+											  <label for="igv">IGV</label>
+											  <input formControlName="igv" type="text" class="form-control" maxlength="50">
+											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('igv').valid || formanular.get('igv').pristine">
+												<span *ngIf="formanular.get('igv').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											  </div>
+											</div>
+										  </div>
+										  <div class="col-12 col-md-4" style="display: none;">
+											<div class="form-group">
+											  <label for="descuento">Descuento</label>
+											  <input formControlName="descuento" type="text" class="form-control" maxlength="50">
+											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('descuento').valid || formanular.get('descuento').pristine">
+												<span *ngIf="formanular.get('descuento').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											  </div>
+											</div>
+										  </div>
+										  
+										  <div class="col-12 col-md-4" style="display: none;">
+											<div class="form-group">
+											  <label for="estado">Estado</label>
+											  <input formControlName="estado" type="text" class="form-control" maxlength="50">
+											  <div class="alert alert-danger mt-2" [hidden]="formanular.get('estado').valid || formanular.get('estado').pristine">
+												<span *ngIf="formanular.get('estado').errors?.['required']" class="text-danger">Este campo es requerido</span>
+											  </div>
+											</div>
+										  </div>
+										
+										  
+										</div>
+									  </div>
+									</fieldset>
+									<br>
+									<p class="text-center" style="margin-top: 40px;">
+									  <button [disabled]="formanular.untouched || formanular.invalid" type="submit" class="btn btn-raised btn-info btn-sm" (click)="guardarANULACION()">
+										<i class="far fa-save"></i> &nbsp; GUARDAR
+									  </button>
+									</p>
+								  </form>
+							</div>
+							<br>
+							
+						</div>
+			
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="guardarANULACION()">Cerrar</button>
+						</div>
+					</div>
+				</div>
+				</div>

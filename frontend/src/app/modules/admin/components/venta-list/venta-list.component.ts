@@ -12,6 +12,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotaCreditoService } from 'src/app/services/notacredito.service';
 import { NotaCredito } from 'src/app/interfaces/notacredito.interface';
+import { mergeMap, tap,switchMap } from 'rxjs/operators';
 
 
 @Component({
@@ -60,7 +61,7 @@ this.formanular = this.fb.group({
   estado: [{ value: '', disabled: true }, Validators.required],
   razon_anulacion: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(100)]],
   id_nota_credito:['', Validators.required],
-  total: ['', Validators.required],
+  // total: ['', Validators.required],
 });
 
 
@@ -112,7 +113,7 @@ this.formanular = this.fb.group({
         id_tipo_comprobante: comprobante.TipoComprobante?.nombre,
         num_serie: comprobante.num_serie,
         estado: comprobante.estado,
-        total: comprobante.Venta.total
+
       });
       this.getListNotaCreditos();
 
@@ -188,9 +189,44 @@ this.getListComprobanteventas();
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 
-
-
-
+  addComprobanteVenta() {
+    const comprobante: Comprobante_venta = {
+      idventa: this.selectedComprobante.idventa,
+      igv: 0, // Puedes calcular el IGV aquí si es necesario
+      descuento: 0, // Puedes calcular el descuento aquí si es necesario
+      idtipo_comprobante: 3, // Asigna el ID del tipo de comprobante
+      num_serie: "", // Asigna el número de serie (reemplaza con el valor adecuado)
+      estado: "EMITIDO",
+      razon_anulacion: this.formanular.value.razon_anulacion,
+      idnotacredito: this.formanular.value.id_nota_credito,
+      // Otros campos que necesites para el comprobante de venta
+    };
+  
+    this._comprobanteventaService.saveComprobanteventa(comprobante).subscribe(
+      () => {
+        this.toastr.success('NOTA DE CREDITO fue registrado con éxito', 'NOTA DE CREDITO registrado', {
+          timeOut: 2000,
+          progressBar: true,
+          progressAnimation: 'increasing',
+          positionClass: 'toast-top-right',
+        });
+  
+        this.guardarANULACION();
+        this.updateComprobante();
+        this.getListComprobanteventas();
+      },
+      error => {
+        // Manejar errores aquí
+        console.error('Error al registrar el comprobante de venta:', error);
+        this.toastr.error('Ocurrió un error al registrar el comprobante de venta', 'Error', {
+          timeOut: 2000,
+          progressBar: true,
+          progressAnimation: 'increasing',
+          positionClass: 'toast-top-right',
+        });
+      }
+    );
+  }
 
 
   updateComprobante() {
@@ -216,7 +252,6 @@ this.getListComprobanteventas();
         });
   
         this.loading = false;
-        this.getListComprobanteventas();
   
         console.log('Comprobante actualizado con éxito'); // Registro del comprobante actualizado con éxito
       }, error => {
@@ -225,6 +260,13 @@ this.getListComprobanteventas();
         this.loading = false;
       });
   
+  }
+
+  shouldDisableButton(comprobante: any): boolean {
+    console.log("Comprobante:", comprobante);
+    const estado = comprobante.estado.toLowerCase().trim();
+    console.log("Estado:", estado);
+    return estado === 'anulado';
   }
 
   mostrarAnulacion() {
@@ -308,18 +350,17 @@ this.getListComprobanteventas();
 
   
 
+ 
+  // Método para obtener el encabezado de la tabla
   getEncabezado(): string[] {
-    return [
-       'VENTA NRO',
-      'TIPO COMPROBANTE',
-      'EMPLEADO',
-      'CLIENTE',
-      'FECHA VENTA',
-      'TIPO PAGO',
-      'TOTAL',
-
-    
-    ];
+    const encabezado: string[] = [];
+    document.querySelectorAll('table thead th').forEach((th: HTMLTableHeaderCellElement) => {
+      const texto = th.textContent.trim();
+      if (texto !== 'ACTUALIZAR' && texto !== 'ELIMINAR' && texto !== 'IMPRIMIR' &&  texto !== 'ANULACION') {
+        encabezado.push(texto);
+      }
+    });
+    return encabezado;
   }
 
   getCuerpo(): any[][] {
@@ -327,7 +368,7 @@ this.getListComprobanteventas();
     const filasVistas = new Set();
 
 
-    if(this.categoriaSeleccionada === 1  || 2 ){
+    if(this.categoriaSeleccionada === 1 ){
     this.listcomprobanteVenta.forEach((comprobante) => {
       const fila: any[] = [
         comprobante.id,
@@ -347,6 +388,40 @@ this.getListComprobanteventas();
           // comprobante.precio_unitario,
           // comprobante.subtotal,
           comprobante.Venta?.total,
+          comprobante.estado,
+
+      ];
+      const filaString = fila.join('|');
+      if (!filasVistas.has(filaString)) {
+        cuerpo.push(fila);
+        filasVistas.add(filaString);
+      }
+    });
+
+   }
+
+   
+   if(this.categoriaSeleccionada === 2 ){
+    this.listcomprobanteVenta.forEach((comprobante) => {
+      const fila: any[] = [
+        comprobante.id,
+        comprobante.TipoComprobante?.nombre,
+        comprobante.Venta?.Empleado?.nombre + ' ' + comprobante.Venta?.Empleado?.apellidos,
+        comprobante.Venta?.Cliente?.razon_social,
+        // comprobante.Articulo ?
+        //   (comprobante.Articulo.Vehiculo ?
+        //     comprobante.Articulo.Vehiculo.descripcion :
+        //     (comprobante.Articulo.Electrodomestico ?
+        //       comprobante.Articulo.Electrodomestico.descripcion :
+        //       'No hay descripción disponible')) :
+        //   'No hay descripción disponible',
+          comprobante.Venta?.fecha_venta,
+          comprobante.Venta?.tipo_pago,
+          // comprobante.cantidad,
+          // comprobante.precio_unitario,
+          // comprobante.subtotal,
+          comprobante.Venta?.total,
+          comprobante.estado,
 
       ];
       const filaString = fila.join('|');
@@ -374,12 +449,14 @@ this.getListComprobanteventas();
         //       'No hay descripción disponible')) :
         //   'No hay descripción disponible',
           comprobante.Venta?.fecha_venta,
-          comprobante.Venta?.tipo_pago,
+          comprobante.razon_anulacion,
           // comprobante.cantidad,
           // comprobante.precio_unitario,
           // comprobante.subtotal,
-          comprobante.Venta?.total,
+          comprobante.NotaCredito?.descripcion,
 
+  // comprobante.subtotal,
+          comprobante.estado,
       ];
       const filaString = fila.join('|');
       if (!filasVistas.has(filaString)) {

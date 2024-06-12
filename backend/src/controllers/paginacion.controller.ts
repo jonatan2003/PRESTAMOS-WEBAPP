@@ -18,6 +18,7 @@ import TipoComprobante from '../models/tipo_comprobante.model';
 import Ticket from '../models/ticket.model';
 import TipoPago from '../models/tipo_pago.model';
 import CronogramaPagos from '../models/cronograma_pagos.model';
+import NotaCredito from '../models/notacredito.model';
 
 export const getClientes = async (req: Request, res: Response) => {
     try {
@@ -424,6 +425,10 @@ export const getComprobantesVenta = async (req: Request, res: Response) => {
         { 
           model: TipoComprobante, 
           as: 'TipoComprobante' 
+        },
+        { 
+          model: NotaCredito, 
+          as: 'NotaCredito' 
         },
             { 
               model: Venta, 

@@ -14,6 +14,7 @@ import { Usuario } from '../interfaces/usuario.interface';
 import { CronogramaPago } from '../interfaces/cronograma_pagos.interface';
 import { Inventario } from '../interfaces/inventario.interface';
 import { Ticket } from '../interfaces/ticket.interface';
+import { Comprobante_venta } from '../interfaces/comprobante_venta.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -108,5 +109,13 @@ export class SearchService {
     .set('page_size', pageSize.toString());
     ;
     return this.http.get<Usuario[]>(`${this.apiUrl}/usuarios/searchTerm=`, { params });
+  }
+
+  searchComprobanteVenta(page: number, pageSize: number,searchTerm: string): Observable<Comprobante_venta[]> {
+    const params = new HttpParams().set('searchTerm', searchTerm)
+    .set('page', page.toString())
+    .set('page_size', pageSize.toString());
+    ;
+    return this.http.get<Comprobante_venta[]>(`${this.apiUrl}/comprobantesventas/searchTerm=`, { params });
   }
 }

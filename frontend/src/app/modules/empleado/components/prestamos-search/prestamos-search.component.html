@@ -12,12 +12,12 @@
                     <li>
                         <a class="active" routerLink="/empleado/prestamos-search"><i class="fas fa-search-dollar fa-fw"></i> &nbsp; BUSCAR PRÉSTAMOS</a>
                     </li>
-					<li>
+					<!-- <li>
                         <a  routerLink="/empleado/prestamos-finished"><i class="fas fa-hand-holding-usd fa-fw"></i> &nbsp; PRÉSTAMOS VENCIDOS</a>
                     </li>
                     <li>
                         <a routerLink="/empleado/prestamos-pending"><i class="fas fa-hand-holding-usd fa-fw"></i> &nbsp; PRÉSTAMOS PENDIENTES</a>
-                    </li>
+                    </li> -->
                 </ul>
             </div>
 
@@ -28,11 +28,16 @@
 						<div class="row justify-content-md-center">
 							<div class="col-12 col-md-6">
 								<div class="form-group">
-									<label for="inputSearch" class="bmd-label-floating">¿Qué prestamo estas buscando?</label>
-									<input type="text" class="form-control" name="busqueda_reservation" id="inputSearch" maxlength="30"  [(ngModel)]="terminoBusqueda">
-									<input type="date" class="form-control" name="busqueda_reservation" id="inputSearch" maxlength="30"  [(ngModel)]="terminoBusqueda">
+								  <label for="inputSearchTerm">¿Qué préstamo estás buscando?</label>
+								  <input type="text" class="form-control" name="busqueda_termino" id="inputSearchTerm" maxlength="30" [(ngModel)]="terminoBusqueda">
 								</div>
-							</div>
+							  </div>
+							  <div class="col-12 col-md-4">
+								<div class="form-group">
+								  <label for="inputSearchDate">¿Buscar por Fecha del préstamo?</label>
+								  <input type="date" class="form-control custom-date-input" name="busqueda_fecha" id="inputSearchDate" [(ngModel)]="terminoBusqueda">
+								</div>
+							  </div>
 							<div class="col-12">
 								<p class="text-center" style="margin-top: 40px;">
 									<button type="submit" class="btn btn-raised btn-info"><i class="fas fa-search"></i> &nbsp; BUSCAR</button>
@@ -44,7 +49,7 @@
 			</div>
 
 
-			<div class="container-fluid mt-3" *ngIf="prestamos.length > 0">
+			<div class="container-fluid mt-3" *ngIf="listTickets.length > 0">
 				<form (submit)="eliminarBusqueda()">
 					<input type="hidden" name="eliminar_busqueda_reservation" value="eliminar">
 					<div class="container-fluid">
@@ -67,58 +72,71 @@
 
 			 <!-- <div class="container-fluid"> -->
 				<div  class="table-responsive">
-					<table  class="table table-dark table-sm">
+					<table *ngIf="listTickets.length > 0"  class="table table-dark table-sm">
 						<thead>
-              <tr class="text-center roboto-medium">
-								<th >CLIENTE</th>
-                <th >EMPLEADO</th>
-								<th >ARTICULO</th>
-								<th >FECHA DE PRÉSTAMO</th>
-								<th >FECHA DE DEVOLUCION</th>
-								<th >MONTO PRESTAMO</th>
-                <th >MONRO PAGO</th>
-								<th >OBSERVACION</th>
-								<th >ESTADO</th>
+							<tr class="text-center roboto-medium">
+								<th  scope="col">CLIENTE</th>
+               					 <th  scope="col">EMPLEADO</th>
+								<th  scope="col">ARTICULO</th>
+								<th  scope="col">FECHA DE PRÉSTAMO</th>
+								<th  scope="col">FECHA DE DEVOLUCION</th>
+								<th  scope="col">MONTO PRESTAMO</th>
+               					 <th  scope="col">MONTO PAGO</th>
+								<th  scope="col">OBSERVACION</th>
+								<th  scope="col">ESTADO</th>
+								<th  scope="col">IMPRIMIR</th>
+								<!-- <th  scope="col">PAGOS</th> -->
+								<!-- <th scope="col">ACTUALIZAR</th> -->
+								<th scope="col">ANULAR</th>
 
-								<th >TICKET</th>
-								<th >PAGOS</th>
-								<!-- <th >ACTUALIZAR</th> -->
-								<th >ELIMINAR</th>
+								<!-- <th  scope="col">ELIMINAR</th> -->
 							</tr>
 						</thead>
 						<tbody>
-              <tr class="text-center" *ngFor="let prestamo of prestamos let i = index"  >
-
-								<td>{{ prestamo.Cliente?.nombre}}</td>
-								<!-- <td>{{ prestamo.Empleado?.nombre }}</td> -->
-								<td>{{ prestamo.Articulo?.Vehiculo?.descripcion ||prestamo.Articulo?.Electrodomestico?.descripcion }}</td>
-                <td>{{ prestamo.fecha_prestamo }}</td>
-								<td>{{ prestamo.fecha_devolucion }}</td>
-								<td>{{ prestamo.monto_prestamo }}</td>
-                <td>{{ prestamo.monto_pago }}</td>
-								<td>{{ prestamo.Articulo?.observaciones }}</td>
-								<td>{{ prestamo.estado }}</td>
+							<tr *ngFor="let ticket of listTickets; let i = index"  class="text-center" >
+								<td>{{ ticket.Prestamo?.Cliente?.nombre }}</td>
+								<td>{{ ticket.Empleado?.nombre }} {{ ticket.Empleado?.apellidos }}</td>
+								<td>
+								  <span>
+									{{ ticket.Prestamo?.Articulo ?
+									  (ticket.Prestamo.Articulo.Vehiculo ?
+										ticket.Prestamo.Articulo.Vehiculo.descripcion :
+										(ticket.Prestamo.Articulo.Electrodomestico ?
+										  ticket.Prestamo.Articulo.Electrodomestico.descripcion :
+										  'No hay descripción disponible')) :
+									  'No hay descripción disponible' }}
+								  </span>
+								</td>
+								<td>{{ ticket.Prestamo?.fecha_prestamo }}</td>
+								<td>{{ ticket.Prestamo?.fecha_devolucion }}</td>
+								<td>{{ ticket.Prestamo?.monto_prestamo }}</td>
+								<td>{{ ticket.Prestamo?.monto_pago }}</td>
+								<td>{{ ticket.Prestamo?.Articulo?.observaciones }}</td>
+								<td>{{ ticket.Prestamo?.estado }}</td>
 
 								<td>
 									<button type="button" class="btn btn-danger" (click)="onImprimirFila(i)">
 										<i class="fas fa-file-pdf"></i>
 									</button>
 								</td>
-								<td>
-									<button type="button" (click)="setSelectedPago(prestamo)" class="btn btn-primary">
-										<i class="fas fa-money-bill-alt" > </i>
-									 </button>
-								</td>
 								<!-- <td>
-									<button type="button" (click)="setSelectedPrestamo(prestamo)" class="btn btn-primary">
+									<button type="button" 
+											(click)="setSelectedPago(ticket.Prestamo)" 
+											class="btn btn-primary"
+											[disabled]="ticket.Prestamo?.estado?.toLowerCase().trim() === 'pagado' || ticket.Prestamo?.estado?.toLowerCase().trim() === 'vendido'">
+									  <i class="fas fa-money-bill-alt"></i>
+									</button>
+								  </td> -->
+								<!-- <td>
+									<button type="button" (click)="setSelectedPrestamo(prestamos)" class="btn btn-primary">
 										<i class="fas fa-sync-alt"></i>
 									 </button>
 									
 								</td> -->
 								<td>
 									<form action="">
-										<button (click)="deletePrestamo(prestamo.id)" type="button" class="btn btn-warning">
-											<i class="far fa-trash-alt"></i>
+										<button (click)="deletePrestamo(ticket!)" type="button" class="btn btn-warning" [disabled]="shouldDisableButton(ticket!)">
+											ANULAR
 										</button>
 									</form>
 								</td>
@@ -136,6 +154,11 @@
 					  </li>
 					  <li class="page-item" [class.disabled]="currentPage === totalPages">
 						<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
+					  </li>
+					  <li class="page-item" >
+						<button type="button" class="btn btn-danger" (click)="onImprimir()">
+							<i class="fas fa-file-pdf"></i>
+						</button>
 					  </li>
 					</ul>
 				  </nav>

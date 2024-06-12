@@ -50,7 +50,7 @@ import { ReservationFinishedComponent } from '../modules/admin/components/reserv
 import { AuthService } from '../services/auth.service';
 import { EmpresaComponent } from '../modules/empleado/components/empresa/empresa.component';
 import { HomeComponent } from '../modules/empleado/components/home/home.component';
-import { PagosComponent } from '../modules/empleado/components/pagos/pagos.component';
+import { PagosComponent } from '../modules/empleado/components/pagos2-new/pagos2-new.component';
 import { PrestamosFinishedComponent } from '../modules/empleado/components/prestamos-finished/prestamos-finished.component';
 import { PrestamosListComponent } from '../modules/empleado/components/prestamos-list/prestamos-list.component';
 import { PrestamosNewComponent } from '../modules/empleado/components/prestamos-new/prestamos-new.component';
@@ -62,13 +62,13 @@ import { Navbar2Component } from '../components/empleado/navbar2/navbar2.compone
 import { EmpleadoGuard } from '../services/empleado.guard';
 import { User2UpdateComponent } from '../modules/empleado/components/user-update2/user2-update.component';
 import { PagosSearchComponent } from '../modules/admin/components/pagos-search/pagos-search.component';
-import { Pagos2SearchComponent } from '../modules/empleado/components/pagos2-search/pagos2-search.component';
+import { Pagos2SearchComponent } from '../modules/empleado/components/pagos2-list/pagos2-list.component';
 import { WebSocketService } from '../services/websocket.service';
 import { VentasList2Component } from '../modules/empleado/components/ventas-list2/ventas-list2.component';
 import { PagosNewComponent } from '../modules/admin/components/pagos-new/pagos-new.component';
 import { InventarioListComponent } from '../modules/admin/components/inventario-list/inventario-list.component';
 import { InventarioSearchComponent } from '../modules/admin/components/inventario-search/inventario-search.component';
-
+import { VentasNew2Component } from '../modules/empleado/components/ventas-new2/ventas-new2.component';
 
 
 
@@ -125,7 +125,8 @@ import { InventarioSearchComponent } from '../modules/admin/components/inventari
   Navbar2Component,
  User2UpdateComponent,
  Pagos2SearchComponent,
-  VentasList2Component
+  VentasList2Component,
+  VentasNew2Component
 
   ],
   imports: [

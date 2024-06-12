@@ -20,6 +20,9 @@ import { Pago } from 'src/app/interfaces/pago.interface';
 import { PagosService } from 'src/app/services/pago.service';
 import { formatDate } from '@angular/common';
 import { switchMap } from 'rxjs/operators';
+import { Ticket } from 'src/app/interfaces/ticket.interface';
+import { CronogramaPagosService } from 'src/app/services/cronograma_pagos.service';
+import { CronogramaPago } from 'src/app/interfaces/cronograma_pagos.interface';
 
 
 @Component({
@@ -35,8 +38,9 @@ export class PrestamosListComponent implements OnInit  {
   formVehiculo: FormGroup;
   id: number;
   listPrestamos: Prestamo[] = [];
+  listCronogramaPago: CronogramaPago[] = [];
   listPagos: Pago[] = [];
-
+  listTickets: Ticket[] = [];
   loading: boolean = false;
   encabezado: string[] = [];
   cuerpo: string[][] = [];
@@ -67,6 +71,7 @@ montoRestante: number ;
    private _articulosService: ArticulosService,
    private _empleadosService: EmpleadoService,
    private _prestamosService: PrestamoService,
+   private _CronogramaPagos: CronogramaPagosService,
    private _pagoService: PagosService,
    private router: Router,
    private toastr: ToastrService,
@@ -81,14 +86,13 @@ montoRestante: number ;
       interes_pago:   ['', Validators.required],
       monto_restante:  ['', Validators.required],
       capital_pago:  ['', Validators.required],
-      idcliente:  [{ value: '', disabled: true }, ],
-      idarticulo:  [{ value: '', disabled: true }, ],
       fecha_prestamo: [{ value: '', disabled: true }, ],
       fecha_devolucion: [{ value: '', disabled: true }, ],
       monto_prestamo:  [{ value: '', disabled: true }, ],
       tasa_interes:  [{ value: '', disabled: true }, ],
       monto_pago:  [{ value: '', disabled: true }, ],
       descripcion: [{ value: '', disabled: true }, ],
+      observacion: [{ value: '', disabled: true }, ],
       // ... Otros campos del formulario de articulos
     });
 
@@ -104,49 +108,31 @@ montoRestante: number ;
 
                 this.getListPrestamos();
 
-
-                this.formPago.valueChanges.subscribe(() => {
-                  this.setMontoRestante(); // Llama a la función para actualizar el monto restante
-                });
+                
               }
-              setMontoRestante() {
-                const tipoPago = this.formPago.value.tipo_pago;
-                const interes = this.formPago.value.interes_pago || 0;
-                const capitalPago = this.formPago.value.capital_pago || 0;
-              
-                let montoRestante = this.selectedPrestamo.monto_pago; // Iniciar con el monto total del préstamo
-              
-                if (tipoPago === 'interes') {
-                  montoRestante -= interes; // Restar el interés del monto restante
-                } else if (tipoPago === 'prestamo') {
-                  montoRestante -= capitalPago; // Restar el capital de pago del monto restante
-                } else if (tipoPago === 'completo') {
-                  montoRestante -= (interes + capitalPago); // Restar ambos interés y capital de pago del monto restante
-                  this.formPago.get('estado').setValue('pagado'); // Establecer el estado como 'pagado'
-                }
-              
-                this.formPago.get('monto_restante').setValue(montoRestante);
-              
-                // Verificar si el monto restante es igual a cero para establecer el estado como 'pagado'
-                if (montoRestante === 0) {
-                  this.estado = "pagado";
-                  this.formPago.get('estado').setValue('pagado');
-                }
-              }
-            
+           
 
 
               getListPrestamos() {
                 this.loading = true;
               
                 // Ajusta el método para aceptar parámetros de paginación
-                this._paginacionService.getListPrestamos(this.currentPage, this.pageSize).subscribe((response: any) => {
-                  this.listPrestamos = response.data; // Asigna los datos de clientes del objeto devuelto por el servicio
-                  this.loading = false;
+                this._paginacionService.getListPrestamos(this.currentPage, this.pageSize).subscribe(
+                  (response: any) => {
+                    // Filtrar los tickets para mostrar solo aquellos que tienen un préstamo y no tienen un pago
+                    this.listTickets = response.data;
               
-                  // Utiliza totalItems del objeto de respuesta para calcular totalPages
-                  this.totalPages = response.totalPages;
-                });
+                    this.loading = false;
+              
+                    // Utiliza totalItems del objeto de respuesta para calcular totalPages
+                    this.totalPages = response.totalPages;
+                  },
+                  error => {
+                    console.error('Error al cargar los préstamos:', error);
+                    this.toastr.error('Hubo un error al cargar los préstamos', 'Error');
+                    this.loading = false;
+                  }
+                );
               }
               
               // Método para cambiar de página
@@ -161,63 +147,7 @@ montoRestante: number ;
                 return Array.from({ length: this.totalPages }, (_, i) => i + 1);
               }
             
-              setSelectedPago(prestamo: Prestamo) {
-                this.selectedPrestamo = prestamo;
-               this.nombreClienteSeleccionado = prestamo.Cliente.nombre + " " +prestamo.Cliente.apellido ;
-            //  this.nombresempleado = prestamo.Empleado.nombre + " " +prestamo.Empleado.apellidos ;
-             this.estado = "pendiente";
-
-               
-                  this.id = prestamo.id;
-                  // Establecer los valores del cliente seleccionado en el formulario
-                  if(prestamo.Articulo.Categoria.id === 1){
-
-                    this.descripcionArticuloSeleccionado = prestamo.Articulo.Vehiculo.descripcion + " " 
-                  +prestamo.Articulo.Vehiculo.marca + " " 
-                   +prestamo.Articulo.Vehiculo.modelo + " " +prestamo.Articulo.Vehiculo.placa;
-                   this.monto_pago = prestamo.monto_pago;
-                   this.monto_prestamo = prestamo.monto_prestamo;
-  
-
-
-                  this.formPago.patchValue({
-                    fecha_pago : this.fechaActual,
-                    idprestamo : prestamo.id,
-                    fecha_prestamo: prestamo.fecha_prestamo,
-                    fecha_devolucion: prestamo.fecha_devolucion,
-                    monto_prestamo: prestamo.monto_prestamo,
-                    estado: "pendiente"
-
-
-                  });
-
-                }else if (prestamo.Articulo.Categoria.id === 2 ){
-
-                  this.descripcionArticuloSeleccionado = prestamo.Articulo.Electrodomestico.descripcion + " " 
-                  +prestamo.Articulo.Electrodomestico.marca + " " 
-                   +prestamo.Articulo.Electrodomestico.modelo + " " +prestamo.Articulo.Electrodomestico.numero_serie;
-                 this.monto_pago = prestamo.monto_pago;
-                 this.monto_prestamo = prestamo.monto_prestamo;
-
-
-                  this.formPago.patchValue({
-                    fecha_pago : this.fechaActual,
-                    idprestamo : prestamo.id,
-                    fecha_prestamo: prestamo.fecha_prestamo,
-                    fecha_devolucion: prestamo.fecha_devolucion,
-                    monto_prestamo: prestamo.monto_prestamo,
-                    estado: "pendiente"
-                  });
-
-                }
-                  // Resetear el estado de validación del formulario y establecer formularioModificado a false
-                  this.formPago.markAsUntouched();
-                  this.mostrarModalPago();
-                  console.log('Estado del formulario:', this.formPago.valid);
-               
-              }
-
-             
+          
 
               setSelectedPrestamo(prestamo: Prestamo) {
                 this.selectedPrestamo = prestamo;
@@ -288,130 +218,7 @@ montoRestante: number ;
                 }
               }
             
-              updatePrestamo() {
-                const prestamo: Prestamo = {
-                  idarticulo : 1 ,
-                  idcliente : 2 ,
-                  fecha_prestamo: this.formPago.value.monto_pago,
-                  fecha_devolucion: this.formPago.value.monto_pago,
-                  monto_prestamo : 44 ,
-                  monto_pago: this.formPago.value.monto_pago,
-                  estado: this.formPago.value.monto_pago,
-                 
-                };
-              
-                console.log('Prestamo a actualizar:', prestamo); // Agregar registro de cliente a actualizar
-              
-                if (this.id !== 0) {
-                  console.log('ID del Prestamo a actualizar:', this.id); // Agregar registro del ID del cliente a actualizar
-              
-                  this.loading = true;
-              
-                  prestamo.id = this.id;
-                  this._prestamosService.updatePrestamo(this.id, prestamo).subscribe(() => {
-                    this.toastr.info(`El prestamo ${prestamo.Articulo.Electrodomestico.descripcion} fue actualizado con éxito`, 'Prestamo actualizado' ,
-                    {
-                      timeOut: 3000, // Duración en milisegundos (3 segundos en este caso)
-                      progressBar: true, // Muestra la barra de progreso
-                      progressAnimation: 'increasing', // Animación de la barra de progreso
-                      positionClass: 'toast-top-right'
-                      }); // Posición del toastr en la pantalla
-                    
-                    this.loading = false;
-                    this.getListPrestamos();
-              
-                    console.log('Prestamo actualizado con éxito'); // Registro de cliente actualizado con éxito
-                  }, error => {
-                    console.error('Error al actualizar el Prestamo:', error); // Manejo de errores
-                    this.toastr.error('Hubo un error al actualizar la Prestamo', 'Error');
-                    this.loading = false;
-                  });
-                } else {
-                  console.log('ID del Prestamo no válido:', this.id); // Registro del ID de cliente no válido
-                  this.toastr.error('ID del Prestamo no válido', 'Error');
-                }
-              }
-
-              addPago(){
-
-                const pago: Pago = {
- 
-                  id_tipopago: this.formPago.value.tipo_pago,
-                  fecha_pago: this.fechaActual,
-                  interes_pago: this.formPago.value.interes_pago,
-                  monto_restante: this.formPago.value.monto_restante,
-                  capital_pago: this.formPago.value.capital_pago
-                  
-                  // ... Otros campos del formulario de articulo según la interfaz
-                };
-               const idprestamo = this.selectedPrestamo.id;
-                const prestamo: Prestamo = {
-                 
-                  idcliente: this.selectedPrestamo.idcliente,
-                  // idempleado: this.selectedPrestamo.idempleado,
-                  idarticulo:  this.selectedPrestamo.idarticulo,
-                  fecha_prestamo:  this.selectedPrestamo.fecha_prestamo,
-                  fecha_devolucion: this.selectedPrestamo.fecha_devolucion,
-                  monto_prestamo: this.selectedPrestamo.monto_prestamo,
-                  monto_pago: this.formPago.value.monto_restante,
-                  estado: this.estado
-                };
             
-                this.loading = true;
-              
-                 
-
-                  this._prestamosService.updatePrestamo(this.selectedPrestamo.id, prestamo).subscribe(() => {
-                  
-                    this.loading = false;
-                   
-              
-                    console.log('Monto pago actualizado con éxito'); // Registro de cliente actualizado con éxito
-                  }, error => {
-                    console.error('Error al actualizar el Prestamo:', error); // Manejo de errores
-                    this.toastr.error('Hubo un error al actualizar el Prestamo', 'Error');
-                    this.loading = false;
-                  });
-
-                  this.getListPrestamos();
-                  this.guardarPago();
-                   // Es agregar
-                   
-  this._pagoService.savePago(pago).pipe(
-    switchMap((response: Pago) => {
-      this.toastr.success(`El pago fue registrado con éxito`, 'Pago registrado');
-      const idPago = response.id;
-
-      // Obtener el pago completo usando su ID
-      return this._pagoService.getPago(idPago);
-    })
-  ).subscribe(
-    (pagoGuardado: Pago) => {
-      // Agregar el pago guardado a la lista de pagos
-      this.listPagos.push(pagoGuardado);
-      this.loading = false;
- console.log(this.listPagos);
- 
-      // Obtener el índice del último elemento agregado
-      const lastIndex = this.listPagos.length - 1;
-
-      // Llamar a la función para imprimir fila del último pago agregado
-    //  this.onImprimirFilaPagos(lastIndex);
-
-      // Redirigir después de guardar
-      this.router.navigate(['admin/pagos-list']);
-    },
-    error => {
-      console.error('Error al obtener el pago guardado:', error);
-      this.loading = false;
-    }
-  );
-               
-                  
-
-
-              }
-              
             
             
               guardar() {
@@ -484,11 +291,11 @@ montoRestante: number ;
 
 
 
-  deletePrestamo(id: number) {
+  deletePrestamo(ticket : Ticket) {
     // Mostrar confirmación antes de eliminar el prestamo
     Swal.fire({
-      title: 'Eliminar Prestamo',
-      text: '¿Estás seguro de que deseas eliminar este Prestamo?',
+      title: 'ANULAR Prestamo',
+      text: '¿Estás seguro de que deseas ANULAR este Prestamo?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí',
@@ -496,138 +303,198 @@ montoRestante: number ;
     }).then((result) => {
       if (result.isConfirmed) {
         // Confirmación aceptada, realizar eliminación
-        this.performDeletePrestamo(id);
+        this.performUpdatePrestamo(ticket);
       }
     });
   }
 
-  performDeletePrestamo(id: number) {
+  performUpdatePrestamo(ticket : Ticket) {
     
-    this.loading = true;
-    this._prestamosService.deletePrestamo(id).subscribe(() => {
-      this.getListPrestamos();
-      this.toastr.warning('El Prestamo fue eliminado con exito', 'Prestamo eliminado');
-    })
+    
+      const prestamo: Partial<Prestamo> = {
+        estado: "anulado"
+      };
+    
+      console.log('Prestamo a actualizar:', prestamo); // Log del objeto a actualizar
+      console.log('ID del Prestamo a actualizar:', ticket.idprestamo); // Log del ID del préstamo a actualizar
+    
+      this.loading = true;
+    
+      
+     
+      this._prestamosService.updatePrestamoEstado(ticket.idprestamo, prestamo).subscribe(
+        () => {
+          this.loading = false;
+          console.log('Préstamo actualizado con éxito'); // Log de éxito
+          this.toastr.info('Préstamo ANULADO con éxito', 'ANULADO', {
+            timeOut: 2000,
+            progressBar: true,
+            progressAnimation: 'increasing',
+            positionClass: 'toast-top-right'
+          });
+
+          this.getListPrestamos();
+        },
+        error => {
+          console.error('Error al actualizar el Préstamo:', error); // Manejo de errores
+          this.toastr.error('Hubo un error al actualizar el Préstamo', 'Error', {
+            timeOut: 2000,
+            progressBar: true,
+            progressAnimation: 'increasing',
+            positionClass: 'toast-top-right'
+          });
+          this.loading = false;
+        }
+      );
+    
 
 
 
   }
 
-
+  shouldDisableButton(Ticket: Ticket): boolean {
+    const estado = Ticket.Prestamo?.estado?.toLowerCase().trim();
+   
   
-onImprimir() {
-  const entidad = 'Prestamos'; // Nombre de la entidad (para el nombre del archivo PDF)
-  const encabezado = this.getEncabezado(); // Obtener el encabezado de la tabla
-  const cuerpo = this.getCuerpo(); // Obtener el cuerpo de la tabla
-  const titulo = 'Lista de Prestamos'; // Título del informe
+    return estado === 'pagado' || 
+           estado === 'vencido' ||
+           estado === 'anulado' 
+         ;
+  }
   
-  // Eliminar filas duplicadas del cuerpo
-  const cuerpoUnico = this.eliminarFilasDuplicadas(cuerpo);
 
-  // Llamar al servicio de impresión
-  this.impresionService.imprimir(entidad, encabezado, cuerpoUnico, titulo, true);
-}
+  getCronogramaPagos(idPrestamo: number, callback: (cronograma: CronogramaPago[]) => void) {
+    this.loading = true;
+    
+    this._CronogramaPagos.getCronogramaPagosByIdPrestamo(idPrestamo).subscribe((response: CronogramaPago[]) => {
+      const cronograma = response.slice(0, 2); // Obtener solo los dos primeros registros
+      this.loading = false;
+      console.log(cronograma);
+      callback(cronograma); // Llamar al callback con los datos del cronograma
+    });
+  }
+  
+
+
+ 
+  onImprimir() {
+    const entidad = 'Prestamos';
+    const encabezado = this.getEncabezado();
+    const cuerpo = this.getCuerpo();
+    const titulo = 'Lista de Prestamos';
+    const cuerpoUnico = this.eliminarFilasDuplicadas(cuerpo);
+    this.impresionService.imprimir(entidad, encabezado, cuerpoUnico, titulo, true);
+  }
 
 // Método para eliminar filas duplicadas del cuerpo de la tabla
 eliminarFilasDuplicadas(cuerpo: Array<any>): Array<any> {
   const cuerpoUnico: Array<any> = [];
-  const filasVistas = new Set(); // Usamos un conjunto para mantener un registro de las filas vistas
+  const filasVistas = new Set();
   cuerpo.forEach((fila) => {
-      // Convertimos la fila en una cadena para poder compararla con otras filas
-      const filaString = JSON.stringify(fila);
-      if (!filasVistas.has(filaString)) {
-          // Si la fila no ha sido vista antes, la agregamos al cuerpo único y al conjunto de filas vistas
-          cuerpoUnico.push(fila);
-          filasVistas.add(filaString);
-      }
+    const filaString = JSON.stringify(fila);
+    if (!filasVistas.has(filaString)) {
+      cuerpoUnico.push(fila);
+      filasVistas.add(filaString);
+    }
   });
   return cuerpoUnico;
 }
 
-  getEncabezado(): string[] {
-    const encabezado: string[] = [
-      'CLIENTE',
-      'EMPLEADO',
-      'ARTICULO',
-      'FECHA DE PRÉSTAMO',
-      'FECHA DE DEVOLUCION',
-      'MONTO PRESTAMO',
-      'MONTO PAGO',
-      'OBSERVACION',
-      'ESTADO'
-    ];
-  
-    return encabezado;
-  }
-
-
-
-  getCuerpo(): any[][] {
-    const cuerpo: any[][] = [];
-    const textosExcluidos = new Set(['Actualizar', 'Eliminar', 'Imprimir', 'Pagos']); // Textos a excluir
-    const filasVistas = new Set(); // Usar un conjunto para mantener un registro de las filas ya vistas
-    
-    this.listPrestamos.forEach((prestamo) => {
-      const fila: any[] = [
-        prestamo.Cliente?.nombre + ' ' + prestamo.Cliente?.apellido,
-        // prestamo.Empleado?.nombre + ' ' + prestamo.Empleado?.apellidos,
-        prestamo.Articulo ? (prestamo.Articulo.Vehiculo ? prestamo.Articulo.Vehiculo.descripcion : (prestamo.Articulo.Electrodomestico ? prestamo.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
-        prestamo.fecha_prestamo,
-        prestamo.fecha_devolucion,
-        prestamo.monto_prestamo,
-        prestamo.monto_pago,
-        prestamo.Articulo?.observaciones,
-        prestamo.estado
-      ];
-  
-      // Convertir la fila en una cadena para compararla
-      const filaString = fila.join('|');
-  
-      // Solo agregar la fila al cuerpo si no se ha visto antes
-      if (!filasVistas.has(filaString)) {
-        cuerpo.push(fila);
-        filasVistas.add(filaString);
-      }
-    });
-  
-    return cuerpo;
-  }
-
-  
-  // onImprimirFilaPagos(index: number) {
-  //   const pago = this.listPagos[index];
-  //   this.impresionService.imprimirFilaPagos('Pagos', {
-  //     cliente: pago.Prestamo.Cliente?.nombre +" " + pago.Prestamo.Cliente?.apellido || '',
-  //     dni: pago.Prestamo.Cliente?.dni || '',
-  //     empleado:pago.Prestamo.Empleado?.nombre +" " + pago.Prestamo.Empleado?.apellidos || '',
-  //     articulo: pago.Prestamo?.Articulo ? (pago.Prestamo?.Articulo.Vehiculo ? pago.Prestamo?.Articulo.Vehiculo.descripcion :  (pago.Prestamo?.Articulo.Electrodomestico ? pago.Prestamo?.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
-  //     tipo_pago: pago.tipo_pago || '',
-  //     fecha_pago: this.formatDate(pago.fecha_pago) || '',
-  //     interes_pago: pago.interes_pago || '',
-  //     monto_restante: pago.monto_restante || '',
-  //     capital_pago: pago.capital_pago || '',
-  //     estado: pago.Prestamo?.estado || ''
-  //   } );
-  // }
-
-  
-  
-onImprimirFila(index: number) {
-  const prestamo = this.listPrestamos[index];
-  this.impresionService.imprimirFilaPrestamos('Prestamos', {
-    cliente: prestamo.Cliente?.nombre +" " + prestamo.Cliente?.apellido || '',
-    dni: prestamo.Cliente?.dni || '',
-    // empleado: prestamo.Empleado?.nombre +" " + prestamo.Empleado?.apellidos || '',
-    articulo: prestamo.Articulo ? (prestamo.Articulo.Vehiculo ? prestamo.Articulo.Vehiculo.descripcion : (prestamo.Articulo.Electrodomestico ? prestamo.Articulo.Electrodomestico.descripcion : 'No hay descripción disponible')) : 'No hay descripción disponible',
-    fechaPrestamo: this.formatDate(prestamo.fecha_prestamo) || '',
-    fechaDevolucion: this.formatDate(prestamo.fecha_devolucion) || '',
-    montoPrestamo: prestamo.monto_prestamo || '',
-    montoPago: prestamo.monto_pago || '',
-    observaciones: prestamo.Articulo?.observaciones || '',
-    estado:prestamo.estado || ''
-  } );
+getEncabezado(): string[] {
+  return [
+    'CLIENTE',
+    'EMPLEADO',
+    'ARTICULO',
+    'FECHA PRESTMO',
+    'FECHA DEVOLUCION ',
+    'MONTO PRESTAMO',
+    'MONTO PAGO',
+    'OBSERVACION',
+    'ESTADO'
+  ];
 }
 
+getCuerpo(): any[][] {
+  const cuerpo: any[][] = [];
+  const filasVistas = new Set();
+  this.listTickets.forEach((ticket) => {
+    const fila: any[] = [
+    
+      ticket.Prestamo?.Cliente?.nombre,
+      ticket.Empleado?.nombre + ' ' + ticket.Empleado?.apellidos,
+      ticket.Prestamo?.Articulo ?
+        (ticket.Prestamo?.Articulo.Vehiculo ?
+          ticket.Prestamo?.Articulo.Vehiculo.descripcion :
+          (ticket.Prestamo?.Articulo.Electrodomestico ?
+            ticket.Prestamo?.Articulo.Electrodomestico.descripcion :
+            'No hay descripción disponible')) :
+        'No hay descripción disponible',
+        ticket.Prestamo?.fecha_prestamo,
+        ticket.Prestamo?.fecha_devolucion,
+        ticket.Prestamo?.monto_prestamo,
+        ticket.Prestamo?.monto_pago,
+        ticket.Prestamo?.Articulo?.observaciones,
+        ticket.Prestamo?.estado
+    ];
+    const filaString = fila.join('|');
+    if (!filasVistas.has(filaString)) {
+      cuerpo.push(fila);
+      filasVistas.add(filaString);
+    }
+  });
+  return cuerpo;
+}
+
+
+
+
+
+  onImprimirFila(index: number) {
+    const ticket = this.listTickets[index];
+    const idPrestamo = ticket.Prestamo?.id;
+  
+    if (idPrestamo) {
+      this.getCronogramaPagos(idPrestamo, (cronograma) => {
+        const detallesCronograma = cronograma.map(( item) => ({
+          fechaPago: this.formatDate(item.fecha_pago),
+          montoPagado:item.monto_pagado,
+        }));
+  
+        this.impresionService.imprimirFilaPrestamos('Ticket', {
+          num_serie: ticket.num_serie,
+          num_ticket: ticket.num_ticket,
+          cliente:ticket.Prestamo?.Cliente?.nombre+" "+ticket.Prestamo?.Cliente?.apellido,
+          dni: ticket.Prestamo?.Cliente?.dni || '',
+          empleado: ticket.Empleado?.nombre + " " + ticket.Empleado?.apellidos || '',
+  
+          articulo: ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.descripcion : 
+            (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.descripcion :
+              'No hay descripción disponible')) : 'No hay descripción disponible',
+  
+          marca: ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.marca : 
+            (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.marca :
+              'No hay marca disponible')) : 'No hay marca disponible',
+  
+          modelo: ticket.Prestamo?.Articulo ? (ticket.Prestamo?.Articulo.Vehiculo ? ticket.Prestamo?.Articulo.Vehiculo.modelo : 
+            (ticket.Prestamo?.Articulo.Electrodomestico ? ticket.Prestamo?.Articulo.Electrodomestico.modelo :
+              'No hay modelo disponible')) : 'No hay modelo disponible',
+  
+          fechaPrestamo: this.formatDate(ticket.Prestamo?.fecha_prestamo) || '',
+          fechaDevolucion: this.formatDate(ticket.Prestamo?.fecha_devolucion) || '',
+
+          montoPrestamo: ticket.Prestamo?.monto_prestamo || '',
+          montoPago: ticket.Prestamo?.monto_pago || '',
+          observaciones: ticket.Prestamo?.Articulo?.observaciones || '',
+          estado: ticket.Prestamo?.estado || '',
+  
+          cronogramaPagos: detallesCronograma
+        });
+      });
+    } else {
+      console.error('ID del préstamo no encontrado');
+    }
+  }
+  
 
   formatDate(date: string | Date): string {
     // Utiliza la función formatDate de Angular para formatear la fecha

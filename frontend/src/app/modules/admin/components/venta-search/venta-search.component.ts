@@ -50,7 +50,7 @@ totalPages: number = 0;   // Inicializa totalPages en 0
   buscarVentas() {
     this.loading = true; // Establecer loading en true para mostrar la carga
 
-  this.searchService.searchEmpleados( this.currentPage, this.pageSize,this.terminoBusqueda,).subscribe(
+  this.searchService.searchComprobanteVenta( this.currentPage, this.pageSize,this.terminoBusqueda,).subscribe(
     (response: any) => {
       this.ventas = response.data; // Asignar los datos de empleados a la propiedad empleados
       this.currentPage = response.page; // Actualizar currentPage con el número de página actual
