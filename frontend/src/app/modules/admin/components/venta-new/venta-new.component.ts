@@ -16,7 +16,7 @@ import { ArticulosService } from 'src/app/services/articulo.service';
 import { Categoria } from 'src/app/interfaces/categoria.interface';
 import { ElectrodomesticoService } from 'src/app/services/electrodomestico.service';
 import { VehiculoService } from 'src/app/services/vehiculo.service';
-import { mergeMap, tap, switchMap } from 'rxjs/operators';
+import { mergeMap, tap,switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import Swal from 'sweetalert2';
 import { Electrodomestico } from 'src/app/interfaces/electrodomestico.interface';
@@ -38,26 +38,26 @@ import { ImpresionService } from 'src/app/shared/services/impresion.service';
 export class VentaNewComponent implements OnInit {
   terminoBusqueda: string = ''; // Variable para almacenar el término de búsqueda
   listArticulos: Articulo[] = []
-  listInventario: Inventario[] = []
-  listClientesRUC: Cliente[] = []
-  mostrarFormBoleta = false;
-  mostrarFormFactura = false;
-  listComprobantes: Comprobante_venta[] = []
-  listDetalleVenta: DetalleVenta[] = []
+   listInventario : Inventario[] = []
+   listClientesRUC: Cliente[] = []
+   mostrarFormBoleta = false;
+   mostrarFormFactura = false;
+   listComprobantes : Comprobante_venta[] = []
+   listDetalleVenta : DetalleVenta [] = []
   clienteSeleccionado: any;
   articuloSeleccionado: any;
   empleadoSeleccionado: any;
   inventarioSeleccionado: any;
-  tipocomprobante: number;
-  idelectrodomestico: number;
-  idvehiculo: number;
+  tipocomprobante : number;
+  idelectrodomestico : number;
+  idvehiculo : number;
   selectedInventario: Inventario[] = [];
   selectedArticulos: Articulo[] = [];
   articuloAgregado: boolean = false;
-  clienteAgregado: boolean = false;
+clienteAgregado: boolean = false;
 
   id_cliente = null;
-  id_articulo = null;
+id_articulo = null;
 
   categoriaSeleccionada: number = 0; // Variable para almacenar la categoría seleccionada
   listCategorias: Categoria[] = [];
@@ -75,16 +75,16 @@ export class VentaNewComponent implements OnInit {
   listClientes: Cliente[] = [];
 
 
-  // Define propiedades para la paginación
-  currentPage: number = 1;
-  pageSize: number = 10; // Tamaño de la página
-  totalItems: number;
-  totalPages: number = 0;   // Inicializa totalPages en 0
+    // Define propiedades para la paginación
+currentPage: number = 1;
+pageSize: number = 10; // Tamaño de la página
+totalItems: number;
+totalPages: number = 0;   // Inicializa totalPages en 0
 
 
   nombreClienteSeleccionado: string = '';
   idClienteSeleccionado: number | null = null;
-  formcliente: FormGroup;
+  formcliente: FormGroup; 
   formclienteRUC: FormGroup;
   form: FormGroup;
   loading: boolean = false;
@@ -110,7 +110,7 @@ export class VentaNewComponent implements OnInit {
 
 
   constructor(private searchService: SearchService,
-    private _articulosService: ArticulosService,
+    private _articulosService: ArticulosService, 
     private _inventarioService: InventarioService,
     private fb: FormBuilder,
     private _empleadosService: EmpleadoService,
@@ -118,10 +118,10 @@ export class VentaNewComponent implements OnInit {
     private _ventasService: VentaService,
     private router: Router,
     private toastr: ToastrService,
-    private apiDniService: ApiDniService,
+    private apiDniService: ApiDniService, 
     private apiRucService: ApiRucService,
     private aRouter: ActivatedRoute,
-    private _electrodomesticoService: ElectrodomesticoService,
+    private _electrodomesticoService: ElectrodomesticoService, 
     private _vehiculoService: VehiculoService,
     private _detaventasService: DetaventaService,
     private _comprobanteventasService: ComprobanteventaService,
@@ -135,7 +135,7 @@ export class VentaNewComponent implements OnInit {
     // Inicializar los formularios en el constructor
     this.form = this.fb.group({
       id_empleado: [{ value: '', disabled: true }, Validators.required],
-      id_cliente: [Validators.required],
+      id_cliente: [ Validators.required],
       id_articulo: [{ value: '', disabled: true }, Validators.required],
       fecha_venta: [{ value: '', disabled: true }, Validators.required],
       // monto_total: [{ value: '', disabled: false }, [Validators.required]],
@@ -168,7 +168,7 @@ export class VentaNewComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+   
 
     const fechaActual = new Date();
     const fechaActualString = fechaActual.toISOString().slice(0, 10);
@@ -213,7 +213,7 @@ export class VentaNewComponent implements OnInit {
       // this.formclienteRUC.controls['nombre'].enable();
       // this.formclienteRUC.controls['apellido'].enable();
 
-
+    
     }
   }
 
@@ -228,7 +228,7 @@ export class VentaNewComponent implements OnInit {
           nombre: responseData.nombres, // Acceder a las propiedades dentro de 'body'
           apellido: responseData.apellidoPaterno + " " + responseData.apellidoMaterno,
           dni: responseData.numeroDocumento,
-
+       
         });
       }, error => {
         this.toastr.error('DNI DESCONOCIDO', 'NO ENCONTRADO');
@@ -247,7 +247,7 @@ export class VentaNewComponent implements OnInit {
           ruc: data.numeroDocumento,
           direccion: data.direccion,
           razon_social: data.nombre,
-
+          
         });
       }, error => {
         this.toastr.error('RUC DESCONOCIDO', 'NO ENCONTRADO');
@@ -265,35 +265,35 @@ export class VentaNewComponent implements OnInit {
     })
   }
 
-
-  // Método para realizar la búsqueda de clientes
-  buscarArticulos() {
+  
+   // Método para realizar la búsqueda de clientes
+   buscarArticulos() {
     this.loading = true; // Establecer loading en true para mostrar la carga
 
-    this.searchService.searchInventario(this.currentPage, this.pageSize, this.terminoBusqueda).subscribe(
-      (response: any) => {
-        this.listInventario = response.data; // Asignar los datos de empleados a la propiedad empleados
-        this.loading = false; // Establecer loading en false al finalizar la carga
-        this.currentPage = response.page; // Actualizar currentPage con el número de página actual
-        this.totalPages = response.totalPages; // Actualizar totalPages con el número total de páginas
-        this.totalItems = response.totalItems; // Actualizar totalItems con el número total de elementos
-        console.log(this.listInventario);
-      },
-      error => {
-        console.error('Error al buscar articulos:', error);
-        this.loading = false; // Manejar el error y establecer loading en false
-      }
-    );
+  this.searchService.searchInventario(this.currentPage, this.pageSize, this.terminoBusqueda).subscribe(
+    (response: any) => {
+      this.listInventario = response.data; // Asignar los datos de empleados a la propiedad empleados
+      this.loading = false; // Establecer loading en false al finalizar la carga
+      this.currentPage = response.page; // Actualizar currentPage con el número de página actual
+      this.totalPages = response.totalPages; // Actualizar totalPages con el número total de páginas
+      this.totalItems = response.totalItems; // Actualizar totalItems con el número total de elementos
+ console.log(this.listInventario);
+    },
+    error => {
+      console.error('Error al buscar articulos:', error);
+      this.loading = false; // Manejar el error y establecer loading en false
+    }
+  );
   }
 
 
-
+    
   // Método para cambiar de página
   pageChanged(page: number) {
     this.currentPage = page;
     this.buscarArticulos();
   }
-
+  
   // Método para generar las páginas disponibles
   getPages(): number[] {
     // Retorna un array de números enteros del 1 al totalPages
@@ -323,20 +323,21 @@ export class VentaNewComponent implements OnInit {
           tapToDismiss: true,
           onActivateTick: true
         }
-      );
-
+    );
+  
       return; // Exit the function if the article is already selected
     }
-
+  
 
     // If the article is not already selected, proceed to select it
+    
     this.inventarioSeleccionado = inventario;
     this.descripcionArticulo = inventario.Articulo?.Electrodomestico?.descripcion || inventario.Articulo?.Vehiculo?.descripcion || '';
     this.modeloArticulo = inventario.Articulo?.Electrodomestico?.modelo || inventario.Articulo?.Vehiculo?.modelo || '';
     this.marcaArticulo = inventario.Articulo?.Electrodomestico?.marca || inventario.Articulo?.Vehiculo?.marca || '';
     this.serieArticulo = inventario.Articulo?.Electrodomestico?.numero_serie || inventario.Articulo?.Vehiculo?.numero_serie || '';
     this.form.patchValue({ id_articulo: inventario.Articulo.id });
-
+  console.log("id es " +this.inventarioSeleccionado.id);
     // Add the selected article to the list
     this.selectedInventario.push(inventario);
     this.calcularTotales();
@@ -348,13 +349,13 @@ export class VentaNewComponent implements OnInit {
     this.calcularTotales();
     this.articuloAgregado = false;
 
-  }
+}
 
-  calcularTotales(): void {
-    this.subtotal = this.selectedInventario.reduce((total, inventario) => total + (inventario.valor_venta * inventario.stock), 0);
-    this.igv = 0; // IGV es 0% en tu caso
-    this.total = this.subtotal + this.igv;
-  }
+calcularTotales(): void {
+  this.subtotal = this.selectedInventario.reduce((total, inventario) => total + (inventario.valor_venta * inventario.stock), 0);
+  this.igv = 0; // IGV es 0% en tu caso
+  this.total = this.subtotal + this.igv;
+}
 
   closeModal() {
     const modal = document.getElementById('ModaArticuloBuscar');
@@ -373,11 +374,11 @@ export class VentaNewComponent implements OnInit {
   seleccionarEmpleado(empleado: Empleado) {
     //  this.empleadoSeleccionado = empleado.nombre;
     //    this.form.controls['empleado'].setValue(empleado.nombre);
-    this.empleadoSeleccionado = empleado;
-    this.id_empleado = empleado.id;
+      this.empleadoSeleccionado = empleado;
+      this.id_empleado = empleado.id;
 
-    this.form.controls['id_empleado'].setValue(empleado.id);
-  }
+       this.form.controls['id_empleado'].setValue(empleado.id);
+      }
 
   getListEmpleados() {
     this.loading = true;
@@ -459,6 +460,8 @@ export class VentaNewComponent implements OnInit {
   guardarCliente() {
     const modal = document.getElementById('ModalCliente');
     if (modal) {
+
+      this.formcliente.reset();
       modal.classList.remove('show', 'fade', 'showing');
       modal.style.display = 'none';
       modal.setAttribute('aria-modal', 'false');
@@ -471,10 +474,11 @@ export class VentaNewComponent implements OnInit {
   }
 
 
-  guardarClienteFactura() {
+  guardarClienteFactura(){
 
     const modal = document.getElementById('ModalClienteFactura');
     if (modal) {
+      this.formclienteRUC.reset();
       modal.classList.remove('show', 'fade', 'showing');
       modal.style.display = 'none';
       modal.setAttribute('aria-modal', 'false');
@@ -497,7 +501,7 @@ export class VentaNewComponent implements OnInit {
       telefono: this.formcliente.value.telefono,
       rubro: this.formcliente.value.rubro,
     };
-
+  
     this.loading = true;
     this._clientesService.saveCliente(cliente).subscribe(
       (clienteid: Cliente) => {
@@ -529,7 +533,7 @@ export class VentaNewComponent implements OnInit {
       }
     );
   }
-
+  
   addClienteRUC() {
     const cliente: Cliente = {
       nombre: "no",
@@ -541,7 +545,7 @@ export class VentaNewComponent implements OnInit {
       telefono: this.formclienteRUC.value.telefono,
       rubro: this.formclienteRUC.value.rubro,
     };
-
+  
     this.loading = true;
     this._clientesService.saveCliente(cliente).subscribe(
       (clienteid: Cliente) => {
@@ -574,392 +578,419 @@ export class VentaNewComponent implements OnInit {
     );
   }
 
+ 
+// Dentro de tu componente
+addVenta() {
+  const venta: Venta = {
+    idempleado: this.id_empleado,
+    idcliente: this.idClienteSeleccionado,
+    fecha_venta: this.form.get('fecha_venta').value,
+    total: this.total, // Asegúrate de calcular el total correctamente
+    tipo_pago: this.form.get('tipo_pago').value,
+    // Otros campos que necesites para la venta
+  };
 
-  // Dentro de tu componente
-  addVenta() {
-    const venta: Venta = {
-      idempleado: this.id_empleado,
-      idcliente: this.idClienteSeleccionado,
-      fecha_venta: this.form.get('fecha_venta').value,
-      total: this.total, // Asegúrate de calcular el total correctamente
-      tipo_pago: this.form.get('tipo_pago').value,
-      // Otros campos que necesites para la venta
-    };
+  this.loading = true;
+  this._ventasService.saveVenta(venta).pipe(
+    switchMap((ventaCreada) => {
+      this.toastr.success('La venta fue registrada con éxito', 'Venta registrada', {
+        timeOut: 2000,
+        progressBar: true,
+        progressAnimation: 'increasing',
+        positionClass: 'toast-top-right',
+      });
 
-    this.loading = true;
-    this._ventasService.saveVenta(venta).pipe(
-      switchMap((ventaCreada) => {
-        this.toastr.success('La venta fue registrada con éxito', 'Venta registrada', {
-          timeOut: 2000,
-          progressBar: true,
-          progressAnimation: 'increasing',
-          positionClass: 'toast-top-right',
-        });
+      // Luego de agregar la venta, guarda los detalles de la venta (productos)
+      return this.addDetallesVenta(ventaCreada.id).pipe(
+        switchMap(() => this.addComprobanteVenta(ventaCreada.id))
+      );
+    })
+  ).subscribe({
+    next: () => {
+      this.loading = false;
+      this.deleteInventario(this.inventarioSeleccionado.id);
+      this.updateArticulo(this.inventarioSeleccionado.Articulo.id);
+      this.router.navigate(['admin/venta-list']);
+    },
+    error: (err) => {
+      this.loading = false;
+      console.error('Error al registrar la venta:', err);
+      this.toastr.error('Error al registrar la venta', 'Error', {
+        timeOut: 2000,
+        progressBar: true,
+        progressAnimation: 'decreasing',
+        positionClass: 'toast-top-right',
+      });
+    }
+  });
+}
 
-        // Luego de agregar la venta, guarda los detalles de la venta (productos)
-        return this.addDetallesVenta(ventaCreada.id).pipe(
-          switchMap(() => this.addComprobanteVenta(ventaCreada.id))
-        );
-      })
-    ).subscribe({
-      next: () => {
-        this.loading = false;
-        this.router.navigate(['admin/venta-list']);
-      },
-      error: (err) => {
-        this.loading = false;
-        console.error('Error al registrar la venta:', err);
-        this.toastr.error('Error al registrar la venta', 'Error', {
-          timeOut: 2000,
-          progressBar: true,
-          progressAnimation: 'decreasing',
-          positionClass: 'toast-top-right',
-        });
-      }
-    });
-  }
+addDetallesVenta(idVenta: number) {
+  const detallesVenta: DetalleVenta[] = this.selectedInventario.map((inventario: Inventario) => ({
+    idventa: idVenta,
+    idarticulo: inventario.Articulo.id,
+    cantidad: inventario.stock,
+    precio_unitario: inventario.valor_venta,
+    subtotal: inventario.valor_venta,
+    // Otros campos que necesites para el detalle de venta
+  }));
 
-  addDetallesVenta(idVenta: number) {
-    const detallesVenta: DetalleVenta[] = this.selectedInventario.map((inventario: Inventario) => ({
-      idventa: idVenta,
-      idarticulo: inventario.Articulo.id,
-      cantidad: inventario.stock,
-      precio_unitario: inventario.valor_venta,
-      subtotal: inventario.valor_venta,
-      // Otros campos que necesites para el detalle de venta
-    }));
+  return this._detaventasService.saveDetaventa(detallesVenta).pipe(
+    switchMap(() => this._detaventasService.getDetaventabyIdVenta(idVenta)),
+    tap((detalleVenta) => {
+     
+      console.log('Detalle de venta por ID de venta:', detalleVenta);
+    })
+  );
+}
 
-    return this._detaventasService.saveDetaventa(detallesVenta).pipe(
-      switchMap(() => this._detaventasService.getDetaventabyIdVenta(idVenta)),
-      tap((detalleVenta) => {
+addComprobanteVenta(idVenta: number) {
+  const comprobante: Comprobante_venta = {
+    idventa: idVenta,
+    igv: 0, /* Calcula el valor del IGV */
+    descuento: 0, /* Calcula el valor del descuento */
+    idtipo_comprobante: this.tipocomprobante, /* Asigna el ID del tipo de comprobante */
+    num_serie: ""  /* Asigna el número de serie */,
+    estado: "EMITIDO",
+    razon_anulacion: null,
+    idnotacredito: null,
 
-        console.log('Detalle de venta por ID de venta:', detalleVenta);
-      })
-    );
-  }
+    // Otros campos que necesites para el comprobante de venta
+  };
 
-  addComprobanteVenta(idVenta: number) {
-    const comprobante: Comprobante_venta = {
-      idventa: idVenta,
-      igv: 0, /* Calcula el valor del IGV */
-      descuento: 0, /* Calcula el valor del descuento */
-      idtipo_comprobante: this.tipocomprobante, /* Asigna el ID del tipo de comprobante */
-      num_serie: ""  /* Asigna el número de serie */,
-      estado: "EMITIDO",
-      razon_anulacion: null,
-      idnotacredito: null,
-
-      // Otros campos que necesites para el comprobante de venta
-    };
-
-    return this._comprobanteventasService.saveComprobanteventa(comprobante).pipe(
-      switchMap((comprobanteCreado) => this._comprobanteventasService.getComprobanteventa(comprobanteCreado.id)),
-      tap((comprobanteCompleto) => {
-        this.deleteInventario(this.inventarioSeleccionado.id);
-        this.toastr.success('El comprobante de venta fue registrado con éxito', 'Comprobante de venta registrado', {
-          timeOut: 2000,
-          progressBar: true,
-          progressAnimation: 'increasing',
-          positionClass: 'toast-top-right',
-        });
-
-        this.listComprobantes.push(comprobanteCompleto);
-        console.log(this.listComprobantes);
-        this.onImprimirFila(this.listComprobantes.length - 1);
-      })
-    );
-  }
-
-
-  deleteInventario(id : number){
+  return this._comprobanteventasService.saveComprobanteventa(comprobante).pipe(
+    switchMap((comprobanteCreado) => this._comprobanteventasService.getComprobanteventa(comprobanteCreado.id)),
+    tap((comprobanteCompleto) => {
     
-    this._inventarioService.deleteInventario(id).subscribe(() => {
-    
+      this.toastr.success('El comprobante de venta fue registrado con éxito', 'Comprobante de venta registrado', {
+        timeOut: 2000,
+        progressBar: true,
+        progressAnimation: 'increasing',
+        positionClass: 'toast-top-right',
+      });
 
-    });
+      this.listComprobantes.push(comprobanteCompleto);
+      console.log(this.listComprobantes);
+      this.onImprimirFila(this.listComprobantes.length - 1);
+    })
+  );
+}
 
-  }
+
+deleteInventario(id : number){
+  
+  this._inventarioService.deleteInventario(id).subscribe(() => {
+  
+
+  });
+
+}
+
+updateArticulo (id: number) {
+  const articulo: Partial<Articulo> = {
+    estado: "vendido"
+  };
+
+  console.log('Articulo a actualizar:', articulo); // Log del objeto a actualizar
+
+  this.loading = true;
+  this._articulosService.updateArticuloEstado(id, articulo).subscribe(
+    () => {
+      this.loading = false;
+      console.log('Articulo actualizado con éxito'); // Log de éxito
+    },
+    error => {
+      console.error('Error al actualizar el Articulo:', error); // Manejo de errores
+      this.toastr.error('Hubo un error al actualizar el Articulo', 'Error');
+      this.loading = false;
+    }
+  );
+}
+
+
+
+
 
   mostrarFormularioBoleta(tipo: string): void {
     this.mostrarFormBoleta = true;
     this.mostrarFormFactura = false;
-    this.tipocomprobante = 1;
+    this.tipocomprobante = 1 ;
 
     // Additional logic if necessary for different form types
-  }
-  mostrarFormularioFactura(tipo: string): void {
-    this.mostrarFormFactura = true;
-    this.mostrarFormBoleta = false;
-    this.tipocomprobante = 2;
+}
+mostrarFormularioFactura(tipo: string): void {
+  this.mostrarFormFactura = true;
+  this.mostrarFormBoleta = false;
+  this.tipocomprobante = 2 ;
 
-    // Additional logic if necessary for different form types
-
-
-  }
+  // Additional logic if necessary for different form types
 
 
+}
 
-  // Método para cambiar de página
+
+
+       // Método para cambiar de página
   pageChanged2(page: number) {
     this.currentPage2 = page;
     this.buscarClientes();
   }
-
+  
   // Método para generar las páginas disponibles
   getPages2(): number[] {
     // Retorna un array de números enteros del 1 al totalPages
     return Array.from({ length: this.totalPages2 }, (_, i) => i + 1);
   }
 
-  seleccionarClientes(cliente: Cliente) {
-    //  this.empleadoSeleccionado = empleado.nombre;
-    //    this.form.controls['empleado'].setValue(empleado.nombre);
-
-    this.idClienteSeleccionado = cliente.id;
-    this.form.controls['id_cliente'].setValue(cliente.id);
-    if (cliente.nombre === "no") {
-      this.nombreClienteSeleccionado = cliente.razon_social;
-      this.clienteAgregado = true;
-
-
-    } else {
+seleccionarClientes(cliente: Cliente) {
+        //  this.empleadoSeleccionado = empleado.nombre;
+        //    this.form.controls['empleado'].setValue(empleado.nombre);
+          
+          this.idClienteSeleccionado = cliente.id;
+           this.form.controls['id_cliente'].setValue(cliente.id);
+           if(cliente.nombre === "no" ){
+            this.nombreClienteSeleccionado = cliente.razon_social ;
+            this.clienteAgregado = true;
 
 
-      this.nombreClienteSeleccionado = cliente.nombre + " " + cliente.apellido;
-      this.clienteAgregado = true;
+          }else{
 
-    }
+          
+            this.nombreClienteSeleccionado = cliente.nombre  + " " +cliente.apellido;
+             this.clienteAgregado = true;
+ 
+           }
+          }
+      // Método para realizar la búsqueda de clientes
+buscarClientes() {
+  this.loading = true; // Establecer loading en true para mostrar la carga
+
+  // Verificar si se ha ingresado un término de búsqueda
+  if (!this.terminoBusqueda) {
+    this.toastr.warning('INGRESAR DATOS DEL CLIENTE PARA BUSCAR', 'Advertencia', {
+      timeOut: 2000,
+      progressBar: true,
+      progressAnimation: 'increasing',
+      positionClass: 'toast-top-right'
+    });
+    this.loading = false; // Establecer loading en false al finalizar la carga
+    return; // Salir de la función si no se ha ingresado ningún término de búsqueda
   }
-  // Método para realizar la búsqueda de clientes
-  buscarClientes() {
-    this.loading = true; // Establecer loading en true para mostrar la carga
 
-    // Verificar si se ha ingresado un término de búsqueda
-    if (!this.terminoBusqueda) {
-      this.toastr.warning('INGRESAR DATOS DEL CLIENTE PARA BUSCAR', 'Advertencia', {
-        timeOut: 2000,
-        progressBar: true,
-        progressAnimation: 'increasing',
-        positionClass: 'toast-top-right'
-      });
+  // Continuar con la búsqueda si se ha ingresado un término de búsqueda
+  this.searchService.searchClientes(this.currentPage, this.pageSize, this.terminoBusqueda).subscribe(
+    (response: any) => {
+      this.clientes = response.data; // Asignar los datos de clientes a la propiedad clientes
+      this.currentPage = response.page; // Actualizar currentPage con el número de página actual
+      this.totalPages = response.totalPages; // Actualizar totalPages con el número total de páginas
+      this.totalItems = response.totalItems; // Actualizar totalItems con el número total de elementos
       this.loading = false; // Establecer loading en false al finalizar la carga
-      return; // Salir de la función si no se ha ingresado ningún término de búsqueda
-    }
-
-    // Continuar con la búsqueda si se ha ingresado un término de búsqueda
-    this.searchService.searchClientes(this.currentPage, this.pageSize, this.terminoBusqueda).subscribe(
-      (response: any) => {
-        this.clientes = response.data; // Asignar los datos de clientes a la propiedad clientes
-        this.currentPage = response.page; // Actualizar currentPage con el número de página actual
-        this.totalPages = response.totalPages; // Actualizar totalPages con el número total de páginas
-        this.totalItems = response.totalItems; // Actualizar totalItems con el número total de elementos
-        this.loading = false; // Establecer loading en false al finalizar la carga
-
-        // Filtrar los clientes por tipo
-
-        // Verificar si no se encontraron clientes después de la búsqueda
-        if (this.clientes.length === 0) {
-          this.toastr.warning('No se encontró el cliente especificado', 'Advertencia', {
-            timeOut: 2000,
-            progressBar: true,
-            progressAnimation: 'increasing',
-            positionClass: 'toast-top-right'
-          });
-        }
-      },
-      error => {
-        console.error('Error al buscar cliente:', error);
-        this.loading = false; // Manejar el error y establecer loading en false
-
-        this.toastr.error(error.msg, 'Cliente no encontrado', {
+      
+      // Filtrar los clientes por tipo
+      
+      // Verificar si no se encontraron clientes después de la búsqueda
+      if (this.clientes.length === 0) {
+        this.toastr.warning('No se encontró el cliente especificado', 'Advertencia', {
           timeOut: 2000,
           progressBar: true,
           progressAnimation: 'increasing',
           positionClass: 'toast-top-right'
         });
       }
-    );
-  }
+    },
+    error => {
+      console.error('Error al buscar cliente:', error);
+      this.loading = false; // Manejar el error y establecer loading en false
 
-
-
-  async onImprimirFila(index: number) {
-    const comprobantev = this.listComprobantes[index];
-    const idventa = comprobantev.idventa;
-
-    try {
-      // Obtener el comprobante de venta
-      const comprobante = await this._comprobanteventasService.getComprobanteventabyVentaID(idventa).toPromise();
-
-      // Obtener los detalles de venta
-      const detallesVenta: DetalleVenta[] = await this._detaventasService.getDetaventabyIdVenta(idventa).toPromise();
-
-      if (this.tipocomprobante === 1) {
-        this.imprimirFila(comprobante, detallesVenta);
-      } else if (this.tipocomprobante === 2) {
-        this.imprimirFilaF(comprobante, detallesVenta);
-
-      }
-    } catch (error) {
-      console.error('Error al obtener los datos:', error);
+      this.toastr.error(error.msg, 'Cliente no encontrado', {
+        timeOut: 2000,
+        progressBar: true,
+        progressAnimation: 'increasing',
+        positionClass: 'toast-top-right'
+      });
     }
+  );
+}
+
+
+
+async onImprimirFila(index: number) {
+  const comprobantev = this.listComprobantes[index];
+  const idventa = comprobantev.idventa;
+
+  try {
+    // Obtener el comprobante de venta
+    const comprobante = await this._comprobanteventasService.getComprobanteventabyVentaID(idventa).toPromise();
+
+    // Obtener los detalles de venta
+    const detallesVenta: DetalleVenta[] = await this._detaventasService.getDetaventabyIdVenta(idventa).toPromise();
+
+   if ( this.tipocomprobante === 1 ){
+    this.imprimirFila(comprobante, detallesVenta);
+   }else if  ( this.tipocomprobante === 2 ){
+    this.imprimirFilaF(comprobante, detallesVenta);
+
+   }
+  } catch (error) {
+    console.error('Error al obtener los datos:', error);
   }
+}
 
-  private imprimirFila(comprobante: Comprobante_venta, detallesVenta: DetalleVenta[]) {
-    const empleadoNombre = comprobante.Venta?.Empleado?.nombre || '';
-    const empleadoApellidos = comprobante.Venta?.Empleado?.apellidos || '';
-    const clienteNombre = comprobante.Venta?.Cliente?.nombre || '';
-    const clienteApellido = comprobante.Venta?.Cliente?.apellido || '';
-    const clienteDNI = comprobante.Venta?.Cliente?.dni || '';
+private imprimirFila(comprobante: Comprobante_venta, detallesVenta: DetalleVenta[]) {
+  const empleadoNombre = comprobante.Venta?.Empleado?.nombre || '';
+  const empleadoApellidos = comprobante.Venta?.Empleado?.apellidos || '';
+  const clienteNombre = comprobante.Venta?.Cliente?.nombre || '';
+  const clienteApellido = comprobante.Venta?.Cliente?.apellido || '';
+  const clienteDNI = comprobante.Venta?.Cliente?.dni || '';
 
-    const detalleventa = detallesVenta.map(detalle => {
-      let descripcion = 'No hay descripción disponible';
-      let marca = 'No hay marca disponible';
-      let modelo = 'No hay modelo disponible';
-      let cantidad = 0;
-      let precio_unitario = 0;
-      let subtotal = 0;
+  const detalleventa = detallesVenta.map(detalle => {
+    let descripcion = 'No hay descripción disponible';
+    let marca = 'No hay marca disponible';
+    let modelo = 'No hay modelo disponible';
+    let cantidad = 0;
+    let precio_unitario = 0;
+    let subtotal = 0;
 
-      if (detalle.Articulo) {
+    if (detalle.Articulo) {
+      
 
-
-        if (detalle.Articulo.Vehiculo) {
-          cantidad = detalle.cantidad;
-          precio_unitario = detalle.precio_unitario;
-          subtotal = detalle.subtotal;
-          descripcion = detalle.Articulo.Vehiculo.descripcion || '';
-          marca = detalle.Articulo.Vehiculo.marca || '';
-          modelo = detalle.Articulo.Vehiculo.modelo || '';
-        } else if (detalle.Articulo.Electrodomestico) {
-          descripcion = detalle.Articulo.Electrodomestico.descripcion || '';
-          marca = detalle.Articulo.Electrodomestico.marca || '';
-          modelo = detalle.Articulo.Electrodomestico.modelo || '';
-          cantidad = detalle.cantidad;
-          precio_unitario = detalle.precio_unitario;
-          subtotal = detalle.subtotal;
-        }
+      if (detalle.Articulo.Vehiculo) {
+        cantidad = detalle.cantidad;
+      precio_unitario = detalle.precio_unitario;
+      subtotal = detalle.subtotal;
+        descripcion = detalle.Articulo.Vehiculo.descripcion || '';
+        marca = detalle.Articulo.Vehiculo.marca || '';
+        modelo = detalle.Articulo.Vehiculo.modelo || '';
+      } else if (detalle.Articulo.Electrodomestico) {
+        descripcion = detalle.Articulo.Electrodomestico.descripcion || '';
+        marca = detalle.Articulo.Electrodomestico.marca || '';
+        modelo = detalle.Articulo.Electrodomestico.modelo || '';
+        cantidad = detalle.cantidad;
+        precio_unitario = detalle.precio_unitario;
+        subtotal = detalle.subtotal;
       }
+    }
 
-      return {
-        cantidad,
-        precio_unitario,
-        subtotal,
-        descripcion,
-        marca,
-        modelo
-      };
-    });
+    return {
+      cantidad,
+      precio_unitario,
+      subtotal,
+      descripcion,
+      marca,
+      modelo
+    };
+  });
 
-    this.impresionService.imprimirFilaVentas('Ventas', {
-      empleado: `${empleadoNombre} ${empleadoApellidos}`,
-      cliente: `${clienteNombre} ${clienteApellido}`,
-      detalleventa,
-      dni: clienteDNI,
-      fecha_venta: comprobante.Venta?.fecha_venta || '',
-      tipo_pago: comprobante.Venta?.tipo_pago || '',
-      total: comprobante.Venta?.total || '',
-      igv: comprobante.igv || 0,
-      descuento: comprobante.descuento || 0,
-      tipo_comprobante: comprobante.TipoComprobante?.nombre || '',
-      serie: comprobante.num_serie || ''
-    });
-  }
-
-
-  private imprimirFilaF(comprobante: Comprobante_venta, detallesVenta: DetalleVenta[]) {
-    const empleadoNombre = comprobante.Venta?.Empleado?.nombre || '';
-    const empleadoApellidos = comprobante.Venta?.Empleado?.apellidos || '';
-    const clienteNombre = comprobante.Venta?.Cliente?.nombre || '';
-    const clienteApellido = comprobante.Venta?.Cliente?.apellido || '';
-    const clienteDNI = comprobante.Venta?.Cliente?.dni || '';
-
-    const detalleventa = detallesVenta.map(detalle => {
-      let descripcion = 'No hay descripción disponible';
-      let marca = 'No hay marca disponible';
-      let modelo = 'No hay modelo disponible';
-      let cantidad = 0;
-      let precio_unitario = 0;
-      let subtotal = 0;
-
-      if (detalle.Articulo) {
+  this.impresionService.imprimirFilaVentas('Ventas', {
+    empleado: `${empleadoNombre} ${empleadoApellidos}`,
+    cliente: `${clienteNombre} ${clienteApellido}`,
+    detalleventa,
+    dni: clienteDNI,
+    fecha_venta: comprobante.Venta?.fecha_venta || '',
+    tipo_pago: comprobante.Venta?.tipo_pago || '',
+    total: comprobante.Venta?.total || '',
+    igv: comprobante.igv || 0,
+    descuento: comprobante.descuento || 0,
+    tipo_comprobante: comprobante.TipoComprobante?.nombre || '',
+    serie: comprobante.num_serie || ''
+  });
+}
 
 
-        if (detalle.Articulo.Vehiculo) {
-          cantidad = detalle.cantidad;
-          precio_unitario = detalle.precio_unitario;
-          subtotal = detalle.subtotal;
-          descripcion = detalle.Articulo.Vehiculo.descripcion || '';
-          marca = detalle.Articulo.Vehiculo.marca || '';
-          modelo = detalle.Articulo.Vehiculo.modelo || '';
-        } else if (detalle.Articulo.Electrodomestico) {
-          descripcion = detalle.Articulo.Electrodomestico.descripcion || '';
-          marca = detalle.Articulo.Electrodomestico.marca || '';
-          modelo = detalle.Articulo.Electrodomestico.modelo || '';
-          cantidad = detalle.cantidad;
-          precio_unitario = detalle.precio_unitario;
-          subtotal = detalle.subtotal;
-        }
+private imprimirFilaF(comprobante: Comprobante_venta, detallesVenta: DetalleVenta[]) {
+  const empleadoNombre = comprobante.Venta?.Empleado?.nombre || '';
+  const empleadoApellidos = comprobante.Venta?.Empleado?.apellidos || '';
+  const clienteNombre = comprobante.Venta?.Cliente?.nombre || '';
+  const clienteApellido = comprobante.Venta?.Cliente?.apellido || '';
+  const clienteDNI = comprobante.Venta?.Cliente?.dni || '';
+
+  const detalleventa = detallesVenta.map(detalle => {
+    let descripcion = 'No hay descripción disponible';
+    let marca = 'No hay marca disponible';
+    let modelo = 'No hay modelo disponible';
+    let cantidad = 0;
+    let precio_unitario = 0;
+    let subtotal = 0;
+
+    if (detalle.Articulo) {
+      
+
+      if (detalle.Articulo.Vehiculo) {
+        cantidad = detalle.cantidad;
+      precio_unitario = detalle.precio_unitario;
+      subtotal = detalle.subtotal;
+        descripcion = detalle.Articulo.Vehiculo.descripcion || '';
+        marca = detalle.Articulo.Vehiculo.marca || '';
+        modelo = detalle.Articulo.Vehiculo.modelo || '';
+      } else if (detalle.Articulo.Electrodomestico) {
+        descripcion = detalle.Articulo.Electrodomestico.descripcion || '';
+        marca = detalle.Articulo.Electrodomestico.marca || '';
+        modelo = detalle.Articulo.Electrodomestico.modelo || '';
+        cantidad = detalle.cantidad;
+        precio_unitario = detalle.precio_unitario;
+        subtotal = detalle.subtotal;
       }
+    }
 
-      return {
-        cantidad,
-        precio_unitario,
-        subtotal,
-        descripcion,
-        marca,
-        modelo
-      };
-    });
+    return {
+      cantidad,
+      precio_unitario,
+      subtotal,
+      descripcion,
+      marca,
+      modelo
+    };
+  });
 
-    this.impresionService.imprimirFilaVentasF('Ventas', {
-      empleado: `${empleadoNombre} ${empleadoApellidos}`,
-      razon_social: comprobante.Venta?.Cliente.razon_social || '',
-      detalleventa,
-      ruc: comprobante.Venta?.Cliente.ruc || '',
-      fecha_venta: comprobante.Venta?.fecha_venta || '',
-      tipo_pago: comprobante.Venta?.tipo_pago || '',
-      total: comprobante.Venta?.total || '',
-      igv: comprobante.igv || 0,
-      descuento: comprobante.descuento || 0,
-      tipo_comprobante: comprobante.TipoComprobante?.nombre || '',
-      serie: comprobante.num_serie || ''
-    });
-  }
+  this.impresionService.imprimirFilaVentasF('Ventas', {
+    empleado: `${empleadoNombre} ${empleadoApellidos}`,
+    razon_social:  comprobante.Venta?.Cliente.razon_social || '',
+    detalleventa,
+    ruc:  comprobante.Venta?.Cliente.ruc || '',
+    fecha_venta: comprobante.Venta?.fecha_venta || '',
+    tipo_pago: comprobante.Venta?.tipo_pago || '',
+    total: comprobante.Venta?.total || '',
+    igv: comprobante.igv || 0,
+    descuento: comprobante.descuento || 0,
+    tipo_comprobante: comprobante.TipoComprobante?.nombre || '',
+    serie: comprobante.num_serie || ''
+  });
+}
 
-  getDetalleVentaByIdVenta(idventa: number) {
-    this._detaventasService.getDetaventabyIdVenta(idventa).subscribe(
-      (detallesVenta: DetalleVenta[]) => { // Cambiado a detallesVenta en plural
-        this.listDetalleVenta = detallesVenta; // Asignar los detalles de venta obtenidos directamente
-        console.log('Detalles de venta por ID de venta:', detallesVenta);
-        // Llamar a la función para imprimir la fila una vez que los detalles de la venta estén disponibles
-        const comprobante = this.listComprobantes.find(comprobante => comprobante.idventa === idventa);
-        if (comprobante) {
-          this.imprimirFila(comprobante, this.listDetalleVenta); // Pasar listdetalleVentas que ahora contiene todos los detalles de venta
-        }
-      },
-      (error) => {
-        console.error('Error al obtener los detalles de la venta:', error);
+getDetalleVentaByIdVenta(idventa: number) {
+  this._detaventasService.getDetaventabyIdVenta(idventa).subscribe(
+    (detallesVenta: DetalleVenta[]) => { // Cambiado a detallesVenta en plural
+      this.listDetalleVenta = detallesVenta; // Asignar los detalles de venta obtenidos directamente
+      console.log('Detalles de venta por ID de venta:', detallesVenta);
+      // Llamar a la función para imprimir la fila una vez que los detalles de la venta estén disponibles
+      const comprobante = this.listComprobantes.find(comprobante => comprobante.idventa === idventa);
+      if (comprobante) {
+        this.imprimirFila(comprobante, this.listDetalleVenta); // Pasar listdetalleVentas que ahora contiene todos los detalles de venta
       }
-    );
-  }
+    },
+    (error) => {
+      console.error('Error al obtener los detalles de la venta:', error);
+    }
+  );
+}
 
 
-  // getDetalleVentaByIdVenta(idventa: number) {
-  //   this._detaventasService.getDetaventabyIdVenta(idventa).subscribe(
-  //     (detallesVenta: DetalleVenta[]) => {
-  //       detallesVenta.forEach(detalleVenta => {
-  //         this.listDetalleVenta.push(detalleVenta);
-  //         console.log('Detalle de venta por ID de venta:', detalleVenta);
-  //         const comprobante = this.listComprobantes.find(comprobante => comprobante.idventa === idventa);
-  //         if (comprobante) {
-  //           this.imprimirFila(comprobante, detalleVenta);
-  //         }
-  //       });
-  //     },
-  //     (error) => {
-  //       console.error('Error al obtener los detalles de la venta:', error);
-  //     }
-  //   );
-  // }
+// getDetalleVentaByIdVenta(idventa: number) {
+//   this._detaventasService.getDetaventabyIdVenta(idventa).subscribe(
+//     (detallesVenta: DetalleVenta[]) => {
+//       detallesVenta.forEach(detalleVenta => {
+//         this.listDetalleVenta.push(detalleVenta);
+//         console.log('Detalle de venta por ID de venta:', detalleVenta);
+//         const comprobante = this.listComprobantes.find(comprobante => comprobante.idventa === idventa);
+//         if (comprobante) {
+//           this.imprimirFila(comprobante, detalleVenta);
+//         }
+//       });
+//     },
+//     (error) => {
+//       console.error('Error al obtener los detalles de la venta:', error);
+//     }
+//   );
+// }
 
 }

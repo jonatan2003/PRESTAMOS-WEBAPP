@@ -7,7 +7,7 @@ import { UsuarioService } from 'src/app/services/usuario.service';
 import { Empleado } from 'src/app/interfaces/empleado.interface';
 import { EmpleadoService } from 'src/app/services/empleado.service';
 import { SearchService } from 'src/app/services/search.service';
-
+import { ApiDniService } from 'src/app/services/apidni.service';
 
 @Component({
   selector: 'app-user-new',
@@ -40,6 +40,7 @@ formempleado: FormGroup;
     private _empleadosService: EmpleadoService,
     private searchService: SearchService,
     private router: Router,
+    private apiDniService: ApiDniService, 
     private toastr: ToastrService,
     private aRouter: ActivatedRoute) {
     this.form = this.fb.group({
@@ -87,6 +88,27 @@ formempleado: FormGroup;
       this.listEmpleados = data;
       this.loading = false;
     })
+  }
+
+  onDniChange() {
+    const dni = this.formempleado.get('dni').value;
+    if (dni.length === 8) {
+      this.toastr.info('Buscando DNI...', 'Información');
+      this.apiDniService.getClienteByDni(dni).subscribe(data => {
+        this.toastr.info('DNI ENCONTRADO', 'Información');
+        const responseData = data; // Acceder al objeto 'body'
+        this.formempleado.patchValue({
+          nombre: responseData.nombres, // Acceder a las propiedades dentro de 'body'
+          apellidos: responseData.apellidoPaterno + " " + responseData.apellidoMaterno,
+          dni: responseData.numeroDocumento,
+          direccion:responseData.direccion
+       
+        });
+      }, error => {
+        this.toastr.error('DNI DESCONOCIDO', 'NO ENCONTRADO');
+        console.error(error);
+      });
+    }
   }
 
 

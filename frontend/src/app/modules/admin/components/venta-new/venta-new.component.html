@@ -247,19 +247,8 @@
                                         <span id="total">{{ total | currency:"S/ "  }}</span>
                                       </div>
                                     </div>
-                                  
-                                
-
-
-
-
-              
-
                               </div>
                           </div>
-
-
-
                           <div class="col-12 col-md-4">
                               <div class="form-group">
                                   <label for="fecha_venta">Fecha Venta</label>
@@ -445,17 +434,17 @@
 					<legend><i class="fas fa-user"></i> &nbsp; Información básica </legend>
 					<div class="container-fluid">
                         <div class="row">
-                          <div class="col-12 col-md-6">
+                          <!-- <div class="col-12 col-md-6">
                             <div class="form-group">
                               <label for="tipoClienteB">Tipo de Cliente</label>
                               <select id="tipoClienteB" formControlName="tipoClienteB" class="form-control mt-2" (change)="onTipoClienteChangeB()">
                                 <option value="dni">DNI</option>
                               </select>
                             </div>
-                          </div>
+                          </div> -->
                           
                           <!-- DNI Section -->
-                          <div class="col-12" *ngIf="formcliente.controls['tipoClienteB'].value === 'dni'">
+                          <!-- <div class="col-12" *ngIf="formcliente.controls['tipoClienteB'].value === 'dni'"> -->
                             <div class="row">
                               <div class="col-12 col-md-6">
                                 <div class="form-group">
@@ -509,16 +498,9 @@
                                     </div>
                                 </div>
                               </div>
-
-
-
                             </div>
                             
-                          </div>
-                          
-                         
- 
-
+                          <!-- </div> -->
                         </div>
                       </div>
 				</fieldset>
@@ -557,18 +539,20 @@
 					<legend><i class="fas fa-user"></i> &nbsp; Información básica </legend>
 					<div class="container-fluid">
                         <div class="row">
-                          <div class="col-12 col-md-6">
+
+                          <!-- <div class="col-12 col-md-6">
                             <div class="form-group">
                               <label for="tipoClienteF">Tipo de Cliente</label>
                               <select id="tipoClienteF" formControlName="tipoClienteF" class="form-control mt-2" (change)="onTipoClienteChangeF()">          
                                 <option  value="ruc">RUC</option>
                               </select>
                             </div>
-                          </div>
+                          </div> -->
                         
                           
                           <!-- RUC Section -->
-                          <div class="col-12" *ngIf="formclienteRUC.controls['tipoClienteF'].value === 'ruc'">
+                          <!-- <div class="col-12" *ngIf="formclienteRUC.controls['tipoClienteF'].value === 'ruc'"> -->
+
                             <div class="row">
                               <div class="col-12 col-md-6">
                                 <div class="form-group">
@@ -626,14 +610,8 @@
                                     </div>
                                 </div>
                               </div>
-                          </div>
 
-
-                              
-
-                      
-                          
- 
+                          <!-- </div> -->
 
                         </div>
                       </div>

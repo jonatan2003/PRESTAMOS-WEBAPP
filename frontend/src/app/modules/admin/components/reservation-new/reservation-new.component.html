@@ -1,7 +1,7 @@
 <!-- Page header -->
 
 
-  <div class="container-fluid">
+<div class="container-fluid">
     <ul class="full-box list-unstyled page-nav-tabs">
         <li>
             <a class="active" routerLink="/admin/reservation-new"><i class="fas fa-plus fa-fw"></i> &nbsp; NUEVO PRÉSTAMO</a>
@@ -86,8 +86,6 @@
 					</table>  
 					
 
-				
-
 					<div class="col-12 col-md-4">
 						<div class="form-group">
 							<label for="fecha_devolucion" >Fecha Devolucion</label>
@@ -140,11 +138,6 @@
   </div>
   
 
-
-
-
-
-  
  <!-- modal-cliente -->
 <div class="modal fade" id="ModalCliente" tabindex="-1" role="dialog" aria-labelledby="ModalCliente" aria-hidden="true">
 	<div class="modal-dialog" role="document">
@@ -163,16 +156,17 @@
 					<legend><i class="fas fa-user"></i> &nbsp; Información básica </legend>
 					<div class="container-fluid">
 						<div class="row">
-							<div class="col-12 col-md-6">
+							<!-- <div class="col-12 col-md-6">
 								<div class="form-group">
 									<label for="tipoCliente">Tipo de Cliente</label>
 									<select id="tipoCliente" formControlName="tipoCliente" class="form-control mt-2" (change)="onTipoClienteChange()">
 										<option selected value="dni">DNI</option>
-									<!-- //	<option value="ruc">RUC</option> -->
+									//	<option value="ruc">RUC</option>
 									</select>
 								</div>
-							</div>
-							<div class="col-12 col-md-6" *ngIf="formcliente.controls['tipoCliente'].value === 'dni'">
+							</div> -->
+							<div class="col-12 col-md-6" >
+								<!-- <div class="col-12 col-md-6" *ngIf="formcliente.controls['tipoCliente'].value === 'dni'"></div> -->
 								<div class="form-group">
 									<label for="dni">DNI</label>
 									<input type="text" id="dni" formControlName="dni" class="form-control mt-2" (change)="onDniChange()" [maxLength]="8">
@@ -186,7 +180,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="col-12 col-md-6" *ngIf="formcliente.controls['tipoCliente'].value === 'ruc'">
+							<!-- <div class="col-12 col-md-6" *ngIf="formcliente.controls['tipoCliente'].value === 'ruc'">
 								<div class="form-group">
 									<label for="ruc">RUC</label>
 									<input type="text" id="ruc" formControlName="ruc" class="form-control mt-2" (change)="onRucChange()" [maxLength]="11">
@@ -199,7 +193,7 @@
 										<span *ngIf="formcliente.get('ruc').errors?.['pattern']" class="text-danger">El RUC solo puede contener números</span>
 									</div>
 								</div>
-							</div>
+							</div> -->
 							<div class="col-12 col-md-6">
 								<div class="form-group">
 								  <label for="nombre" >Nombres</label>
@@ -250,7 +244,7 @@
 				  </div>
 				</fieldset>
 				<p class="text-center" style="margin-top: 40px;">
-				  <button type="reset" class="btn btn-raised btn-secondary btn-sm"><i class="fas fa-paint-roller"></i> &nbsp; LIMPIAR</button>
+				  <button type="reset" class="btn btn-raised btn-secondary btn-sm" ><i class="fas fa-paint-roller"></i> &nbsp; LIMPIAR</button>
 				  &nbsp; &nbsp;
 				  <button [disabled]="formcliente.invalid" type="submit" class="btn btn-raised btn-info btn-sm"><i class="far fa-save"></i> &nbsp; GUARDAR</button>
 				</p>

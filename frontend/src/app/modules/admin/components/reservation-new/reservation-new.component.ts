@@ -357,6 +357,10 @@ addCliente() {
       //this.idClienteSeleccionado = cliente.id;
       this.nombreClienteSeleccionado = this.formcliente.value.nombre + " " +  this.formcliente.value.apellido  ;
       this.guardarCliente();
+        // Restablecer el formulario después de guardar
+        // this.formcliente.reset({
+        //   tipoCliente: 'dni'
+        // });
     },
     (error) => {
       this.loading = false;
@@ -401,6 +405,7 @@ saveArticulo() {
     idvehiculo = null;
     observaciones = this.formElectrodomestico.value.observaciones;
     idelectrodomestico = this.electrodomesticoId;
+
   } else {
     // Manejar el caso si la categoría no está seleccionada correctamente
     return;
@@ -442,9 +447,6 @@ saveArticulo() {
 }
 
 
-
-
-
 onCategoriaSelected(event: any) {
   const selectedCategoryId = Number(event.target.value);
   this.categoriaSeleccionada = selectedCategoryId;
@@ -473,6 +475,7 @@ addVehiculo() {
 
       // Llamar a la función saveArticulo() después de obtener los IDs
       this.saveArticulo();
+
     },
     (error: any) => {
       console.error('Error al guardar el vehículo:', error);
@@ -508,6 +511,7 @@ addElectrodomestico() {
 
       // Llamar a la función saveArticulo() después de obtener los IDs
       this.saveArticulo();
+
     },
     (error: any) => {
       console.error('Error al guardar el electrodoméstico:', error);
@@ -522,40 +526,10 @@ addElectrodomestico() {
 
 
 
-limpiarFormulario() {
-  this.formcliente.reset(); // Resetea el formulario a su estado inicial
-}
-
-
-
-  // // Método para realizar la búsqueda de clientes
-  // buscarClientes() {
-  //   this.searchService.searchClientes(this.terminoBusqueda)
-  //     .subscribe(
-  //       clientes => {
-  //         this.clientes = clientes; // Asignar los resultados de la búsqueda a la propiedad clientes
-  //       },
-  //       error => {
-  //         console.error('Error al buscar clientes:', error);
-  //         // Maneja el error aquí
-  //       }
-  //     );
-  // }
-
-
-  // buscarArticulos() {
-  //   this.searchService.searchArticulos(this.terminoBusqueda)
-  //     .subscribe(
-  //       articulos => {
-  //         this.articulos = articulos; // Asignar los resultados de la búsqueda a la propiedad clientes
-  //       },
-  //       error => {
-  //         console.error('Error al buscar articulos:', error);
-  //         // Maneja el error aquí
-  //       }
-  //     );
-  // }
-
+// limpiarFormulario() {
+//   this.formcliente.reset({
+//     tipoCliente: 'dni'}); // Resetea el formulario a su estado inicial
+// }
 
 
 
@@ -565,15 +539,6 @@ limpiarFormulario() {
     // Lógica para eliminar la búsqueda, si es necesario
     this.clientes = []; // Limpiar la lista de clientes
   }
-
-
-//   seleccionarCliente(cliente: Cliente) {
-//     this.clienteSeleccionado = cliente;
-//     this.form.controls['idcliente'].setValue(cliente.id);
-//     // this.clienteSeleccionado = cliente.nombre;
-//     //  this.form.controls['cliente'].setValue(cliente.nombre); // Actualiza el nombre del cliente en el formulario
-// }
-
 
   seleccionarArticulo(articulo: Articulo) {
 
@@ -639,11 +604,17 @@ limpiarFormulario() {
       }
     }
     guardarCliente() {
+     
       // Aquí iría tu lógica para guardar el formulario
 
       // Luego, cierra el modal
       const modal = document.getElementById('ModalCliente');
       if (modal) {
+
+        this.formcliente.reset({
+          tipoCliente: 'dni'
+        });
+
         // Eliminar todas las clases de Bootstrap que controlan la visualización del modal
         modal.classList.remove('show');
         modal.classList.remove('fade');
@@ -664,7 +635,9 @@ limpiarFormulario() {
         if (backdrop) {
           backdrop.parentNode.removeChild(backdrop);
         }
+       
       }
+      
     }
 
     guardarArticulo() {
@@ -673,6 +646,9 @@ limpiarFormulario() {
       // Luego, cierra el modal
       const modal = document.getElementById('ModalArticulo');
       if (modal) {
+
+        this.formVehiculo.reset();
+        this.formElectrodomestico.reset();
         // Eliminar todas las clases de Bootstrap que controlan la visualización del modal
         modal.classList.remove('show');
         modal.classList.remove('fade');
@@ -762,9 +738,6 @@ seleccionarClientes(cliente: Cliente) {
       );
     }
     
-
-
-
     
   getCronogramaPagos(idPrestamo: number, callback: (cronograma: CronogramaPago[]) => void) {
     this.loading = true;
@@ -776,9 +749,6 @@ seleccionarClientes(cliente: Cliente) {
       callback(cronograma); // Llamar al callback con los datos del cronograma
     });
   }
-  
-
-   
   
 onImprimir() {
   const entidad = 'Prestamos'; // Nombre de la entidad (para el nombre del archivo PDF)

@@ -211,7 +211,7 @@
 									<div class="col-12 col-md-4">
 										<div class="form-group">
 											<label for="dni" class="bmd-label-floating">DNI</label>
-											<input formControlName="dni" type="text" class="form-control" maxlength="8"
+											<input formControlName="dni" type="text" class="form-control"  (change)="onDniChange()" maxlength="8"
 												minlength="8">
 											<div class="alert alert-danger mt-2"
 												[hidden]="formempleado.get('dni').valid || formempleado.get('dni').pristine">
