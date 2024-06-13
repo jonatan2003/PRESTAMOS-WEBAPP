@@ -15,6 +15,7 @@ export class SesionComponent {
   loginForm: FormGroup;
   private token: string | null = null; // Propiedad para almacenar el token
 
+  hidePassword: boolean = true;
 
 
   constructor(private authService: AuthService,
@@ -71,5 +72,9 @@ export class SesionComponent {
     }
   }
 
+
+  togglePasswordVisibility() {
+    this.hidePassword = !this.hidePassword;
+}
 
 }

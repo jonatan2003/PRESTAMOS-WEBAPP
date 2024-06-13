@@ -40,7 +40,7 @@
 			</div>
 
 
-			<div class="container-fluid mt-3"  *ngIf="ventas.length > 0">
+			<div class="container-fluid mt-3"  *ngIf="listcomprobanteVenta.length > 0">
 				<form (submit)="eliminarBusqueda()">
 					<input type="hidden" name="eliminar-busqueda" value="eliminar">
 					<div class="container-fluid">
@@ -62,46 +62,223 @@
 
 
 			<!-- <div class="container-fluid"> -->
-				<div class="table-responsive">
+				<div *ngIf="this.categoriaSeleccionada === 1 "  class="table-responsive">
 					<table class="table table-dark table-sm">
 						<thead>
+							
+			
+			
 							<tr class="text-center roboto-medium">
+								<th scope="col">VENTA NRO</th>
+								<th scope="col">TIPO COMPROBANTE</th>
 								<th scope="col">EMPLEADO</th>
 								<th scope="col">CLIENTE</th>
 								<th scope="col">FECHA VENTA</th>
-                <th scope="col">MONTO TOTAL</th>
 								<th scope="col">TIPO PAGO</th>
-								<th scope="col">ACTUALIZAR</th>
+								<th scope="col">TOTAL</th>
+								<th scope="col">ESTADO</th>
+								<th scope="col">IMPRIMIR</th>
+								<!-- <th scope="col">ACTUALIZAR</th> -->
 								<th scope="col">ELIMINAR</th>
-
 							</tr>
 						</thead>
 						<tbody>
-							<tr *ngFor="let ventas of ventas" class="text-center" >
-								<td>{{ ventas.Empleado?.nombre }}</td>
-								<td>{{ ventas.Cliente?.nombre }}</td>
-								<td>{{ ventas.fecha_venta }}</td>
-                <td>{{ ventas.total }}</td>
-								<td>{{ ventas.tipo_pago }}</td>
-
-								<td><button class="btn btn-primary" (click)="actualizarVentas(ventas)"><i class="fas fa-sync-alt"></i></button></td>
-						    <td><button class="btn btn-danger" (click)="deleteVenta(ventas.id!)"><i class="far fa-trash-alt"></i></button></td>
+							<tr *ngFor="let comprobante of listcomprobanteVenta  let i = index"  class="text-center"  >
+								<td>{{ comprobante.Venta?.id}}</td>
+								<td>{{ comprobante.TipoComprobante?.nombre}}</td>
+								<td>{{ comprobante.Venta?.Empleado?.nombre}}</td>
+								<td>{{comprobante.Venta?.Cliente?.nombre ||comprobante.Venta?.Cliente?.razon_social  }}</td>
+								<td>{{ comprobante.Venta?.fecha_venta }}</td>
+								<td>{{ comprobante.Venta?.tipo_pago }}</td>
+								<td>{{ comprobante.Venta?.total }}</td>
+								<td>{{ comprobante.estado}}</td>
+			
+								<td>
+									<button type="button" class="btn btn-danger" (click)="onImprimirFila(i)">
+										<i class="fas fa-file-pdf"></i>
+									</button>
+								</td>
+								<!-- <td>
+									<a routerLink="/venta-update/{{ detalleventas.id }}"class="btn btn-success">
+										  <i class="fas fa-sync-alt"></i>
+									</a>
+								</td> -->
+								<td>
+									<button (click)="setSelectedComprobante(comprobante!)"  type="button" class="btn btn-warning"  [disabled]="shouldDisableButton(comprobante!)">
+										  ANULAR
+									</button>
+							</td>
 							</tr>
 						</tbody>
 					</table>
+			
+					<nav aria-label="Page navigation example">
+						<ul class="pagination justify-content-center">
+						  <li class="page-item" [class.disabled]="currentPage === 1">
+							<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage - 1)" tabindex="-1">Atras</a>
+						  </li>
+						  <li class="page-item" *ngFor="let page of getPages()">
+							<a class="page-link" href="javascript:void(0)" (click)="pageChanged(page)">{{ page }}</a>
+						  </li>
+						  <li class="page-item" [class.disabled]="currentPage === totalPages">
+							<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
+						  </li>
+						  <li class="page-item" >
+							<button type="button" class="btn btn-danger" (click)="onImprimir()">
+								<i class="fas fa-file-pdf"></i>
+							</button>
+						  </li>
+						</ul>
+					  </nav>
+			
 				</div>
-				<nav aria-label="Page navigation example">
-					<ul class="pagination justify-content-center">
-						<li class="page-item disabled">
-							<a class="page-link" href="#" tabindex="-1">Previous</a>
-						</li>
-						<li class="page-item"><a class="page-link" href="#">1</a></li>
-						<li class="page-item"><a class="page-link" href="#">2</a></li>
-						<li class="page-item"><a class="page-link" href="#">3</a></li>
-						<li class="page-item">
-							<a class="page-link" href="#">Next</a>
-						</li>
-					</ul>
-				</nav>
+			
+			
+			
+				<div *ngIf=" this.categoriaSeleccionada === 2 "  class="table-responsive">
+					<table class="table table-dark table-sm">
+						<thead>
+							
+			
+			
+							<tr class="text-center roboto-medium">
+								<th scope="col">VENTA NRO</th>
+								<th scope="col">TIPO COMPROBANTE</th>
+								<th scope="col">EMPLEADO</th>
+								<th scope="col">CLIENTE</th>
+								<th scope="col">FECHA VENTA</th>
+								<th scope="col">TIPO PAGO</th>
+								<th scope="col">TOTAL</th>
+								<th scope="col">ESTADO</th>
+								<th scope="col">IMPRIMIR</th>
+								<!-- <th scope="col">ACTUALIZAR</th> -->
+								<th scope="col">ELIMINAR</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr *ngFor="let comprobante of listcomprobanteVenta  let i = index"  class="text-center"  >
+								<td>{{ comprobante.Venta?.id}}</td>
+								<td>{{ comprobante.TipoComprobante?.nombre}}</td>
+								<td>{{ comprobante.Venta?.Empleado?.nombre}}</td>
+								<td>{{comprobante.Venta?.Cliente?.razon_social }}</td>
+								<td>{{ comprobante.Venta?.fecha_venta }}</td>
+								<td>{{ comprobante.Venta?.tipo_pago }}</td>
+								<td>{{ comprobante.Venta?.total }}</td>
+								<td>{{ comprobante.estado}}</td>
+			
+								<td>
+									<button type="button" class="btn btn-danger" (click)="onImprimirFila(i)">
+										<i class="fas fa-file-pdf"></i>
+									</button>
+								</td>
+								<!-- <td>
+									<a routerLink="/venta-update/{{ detalleventas.id }}"class="btn btn-success">
+										  <i class="fas fa-sync-alt"></i>
+									</a>
+								</td> -->
+								<td>
+									<button (click)="setSelectedComprobante(comprobante!)"  type="button" class="btn btn-warning"  [disabled]="shouldDisableButton(comprobante!)">
+										  ANULAR
+									</button>
+							</td>
+							</tr>
+						</tbody>
+					</table>
+			
+					<nav aria-label="Page navigation example">
+						<ul class="pagination justify-content-center">
+						  <li class="page-item" [class.disabled]="currentPage === 1">
+							<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage - 1)" tabindex="-1">Atras</a>
+						  </li>
+						  <li class="page-item" *ngFor="let page of getPages()">
+							<a class="page-link" href="javascript:void(0)" (click)="pageChanged(page)">{{ page }}</a>
+						  </li>
+						  <li class="page-item" [class.disabled]="currentPage === totalPages">
+							<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
+						  </li>
+						  <li class="page-item" >
+							<button type="button" class="btn btn-danger" (click)="onImprimir()">
+								<i class="fas fa-file-pdf"></i>
+							</button>
+						  </li>
+						</ul>
+					  </nav>
+			
+				</div>
+			
+			
+				
+				<div *ngIf="this.categoriaSeleccionada === 3"  class="table-responsive">
+					<table class="table table-dark table-sm">
+						<thead>
+							
+			
+			
+							<tr class="text-center roboto-medium">
+								<th scope="col">VENTA NRO</th>
+								<th scope="col">TIPO COMPROBANTE</th>
+								<th scope="col">EMPLEADO</th>
+								<th scope="col">CLIENTE</th>
+								<th scope="col">FECHA VENTA</th>
+								<th scope="col">RAZON</th>
+								<th scope="col">TIPO NOTA CREDITO</th>
+								<th scope="col">ESTADO</th>
+								<!-- <th scope="col">IMPRIMIR</th> -->
+								<!-- <th scope="col">ACTUALIZAR</th> -->
+								<!-- <th scope="col">ELIMINAR</th> -->
+							</tr>
+						</thead>
+						<tbody>
+							<tr *ngFor="let comprobante of listcomprobanteVenta  let i = index"  class="text-center"  >
+								<td>{{ comprobante.Venta?.id}}</td>
+								<td>{{ comprobante.TipoComprobante?.nombre}}</td>
+								<td>{{ comprobante.Venta?.Empleado?.nombre}}</td>
+								<td>{{comprobante.Venta?.Cliente?.nombre ||comprobante.Venta?.Cliente?.razon_social  }}</td>
+								<td>{{ comprobante.Venta?.fecha_venta }}</td>
+								<td>{{ comprobante.razon_anulacion }}</td>
+								<td>{{ comprobante.NotaCredito?.descripcion }}</td>
+								<td>{{ comprobante.estado}}</td>
+			
+								<!-- <td>
+									<button type="button" class="btn btn-danger" (click)="onImprimirFila(i)">
+										<i class="fas fa-file-pdf"></i>
+									</button>
+								</td> -->
+								<!-- <td>
+									<a routerLink="/venta-update/{{ detalleventas.id }}"class="btn btn-success">
+										  <i class="fas fa-sync-alt"></i>
+									</a>
+								</td> -->
+								<!-- <td>
+									<button (click)="setSelectedComprobante(comprobante!)"  type="button" class="btn btn-warning"  [disabled]="shouldDisableButton(comprobante!)">
+										ANULAR
+								  </button>
+								</td> -->
+							</tr>
+						</tbody>
+					</table>
+			
+					<nav aria-label="Page navigation example">
+						<ul class="pagination justify-content-center">
+						  <li class="page-item" [class.disabled]="currentPage === 1">
+							<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage - 1)" tabindex="-1">Atras</a>
+						  </li>
+						  <li class="page-item" *ngFor="let page of getPages()">
+							<a class="page-link" href="javascript:void(0)" (click)="pageChanged(page)">{{ page }}</a>
+						  </li>
+						  <li class="page-item" [class.disabled]="currentPage === totalPages">
+							<a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
+						  </li>
+						  <li class="page-item" >
+							<button type="button" class="btn btn-danger" (click)="onImprimir()">
+								<i class="fas fa-file-pdf"></i>
+							</button>
+						  </li>
+						</ul>
+					  </nav>
+			
+				</div>
+			
+			
+				
 			</div>
-

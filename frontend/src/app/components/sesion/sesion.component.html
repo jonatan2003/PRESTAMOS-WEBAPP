@@ -36,7 +36,7 @@
             <mat-card-title  class="mat-card-title" ><img src="../../../assets/img/login/Login.png" alt="Login" class="login"></mat-card-title>
           </mat-card-header>
 
-          <mat-card-content class="mat-card-content">
+          <!-- <mat-card-content class="mat-card-content">
 
             <mat-form-field appearance="fill" class="form-group">
               <mat-label class="labels">Ingrese su usuario</mat-label>
@@ -44,25 +44,82 @@
 
             </mat-form-field>
 
-          </mat-card-content>
+          </mat-card-content> -->
 
-            <mat-card-content class="mat-card-content">
+            <!-- <mat-card-content class="mat-card-content">
 
             <mat-form-field appearance="fill" class="form-group">
               <mat-label>Ingrese la contraseña</mat-label>
               <input matInput type="password" formControlName="password" >
             </mat-form-field>
 
-          </mat-card-content>
+          </mat-card-content> -->
+
+        <!-- <mat-form-field appearance="fill" class="form-group">
+          <mat-label>Contraseña 
+          </mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" class="password-input">
+          <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()" style="cursor: pointer;">
+            <ng-container *ngIf="hidePassword; else showIcon">
+                <i class="fas fa-eye-slash"></i>
+            </ng-container>
+            <ng-template #showIcon>
+                <i class="fas fa-eye"></i>
+            </ng-template>
+        </button>
+      </mat-form-field> -->
+
+
+
+      <!-- <mat-card-content class="mat-card-content">
+      <mat-form-field appearance="fill" class="form-group">
+        <mat-label>Contraseña</mat-label>
+        <button mat-icon-button matPrefix type="button" (click)="togglePasswordVisibility()" style="cursor: pointer;">
+          <ng-container *ngIf="hidePassword; else showIcon">
+            <i class="fas fa-eye-slash"></i>
+          </ng-container>
+          <ng-template #showIcon>
+            <i class="fas fa-eye"></i>
+          </ng-template>
+        </button>
+        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" class="password-input">
+      </mat-form-field>
+    </mat-card-content>
+       -->
+
+      <!-- ------------------------------------------------------------------------------------------------ -->
+
+      <mat-card-content class="mat-card-content">
+        <mat-form-field appearance="fill" class="form-group">
+          <mat-label>Ingrese su usuario</mat-label>
+          <input matInput formControlName="usuario" class="inputs">
+        </mat-form-field>
+      </mat-card-content>
+      
+      <mat-card-content class="mat-card-content">
+        <mat-form-field appearance="fill" class="form-group" style="width: inherit;">
+          <mat-label>Contraseña</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" class="password-input">
+          <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()" style="cursor: pointer;">
+            <ng-container *ngIf="hidePassword; else showIcon">
+              <i class="fas fa-eye-slash" style="font-size: 12px;"></i>
+            </ng-container>
+            <ng-template #showIcon>
+              <i class="fas fa-eye" style="font-size: 12px;"></i>
+            </ng-template>
+          </button>
+        </mat-form-field>
+      </mat-card-content>
+      
+     
+      
+      
 
           <mat-card-actions class="mat-card-actions">
             <button  type="submit" class="button">Iniciar Sesión</button>
           </mat-card-actions>
         </mat-card>
       </form>
-
-
-
 
   </div>
 

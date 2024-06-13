@@ -1,6 +1,76 @@
+/* Modal Dialog */
+.modal-dialog {
+    max-width: 60%; /* Adjust according to your needs */
+    margin: 1.75rem auto; /* Center the modal horizontally */
+}
 
-    /* Establece el ancho máximo del modal */
-    .modal-dialog {
-        max-width: 60%; /* Puedes ajustar este valor según tus necesidades */
-        margin: 1.75rem auto; /* Esto centrará el modal horizontalmente */
-    }
+/* Notification */
+.notification {
+    background-color: #2d3e4e; /* Light red background color */
+    border: 1px solid #003003; /* Red border */
+    color: #fffefe; /* Dark red text color */
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+}
+
+/* List Group */
+.list-group {
+    margin-top: 10px;
+}
+
+.list-item {
+    margin-bottom: 10px;
+}
+
+/* Table */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 4px 8px; /* Reduce padding to decrease row height */
+    border-bottom: 1px solid #040b13; /* Light gray border */
+}
+
+.table th {
+    background-color: #22262b; /* Dark gray background */
+    color: #f9fcf7; /* White text */
+    text-align: center;
+}
+
+.table-row {
+    background-color: #fbfdff; /* Light gray background */
+    color: #030303; /* Dark text color */
+    border-radius: 10px;
+}
+
+/* Scrollable Table Container */
+.table-container {
+    max-height: 200px; /* Adjust this height based on your requirements */
+    overflow-y: auto;
+    margin-bottom: 20px; /* Add space below the table */
+    border-radius: 10px;
+}
+
+.table-container table {
+    width: 100%;
+}
+
+.table-container th,
+.table-container td {
+    height: 30px; /* Set a fixed height for table rows */
+    line-height: 30px; /* Set line height to match the row height for vertical alignment */
+}
+
+.table-container th {
+    background-color: #343a40; /* Dark background for table header */
+    color: white; /* White text for table header */
+}
+
+.table-container td {
+    background-color: #f4f8fc; /* Lighter background for table cells */
+    color: rgb(0, 0, 0); /* Dark text color for table cells */
+}

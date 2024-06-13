@@ -59,7 +59,7 @@
 			</thead>
 			<tbody>
 				<tr *ngFor="let comprobante of listcomprobanteVenta  let i = index"  class="text-center"  >
-					<td>{{ comprobante.Venta?.id}}</td>
+					<td>{{ comprobante.num_serie}}</td>
 					<td>{{ comprobante.TipoComprobante?.nombre}}</td>
 					<td>{{ comprobante.Venta?.Empleado?.nombre}}</td>
 					<td>{{comprobante.Venta?.Cliente?.nombre ||comprobante.Venta?.Cliente?.razon_social  }}</td>
@@ -132,7 +132,7 @@
 			</thead>
 			<tbody>
 				<tr *ngFor="let comprobante of listcomprobanteVenta  let i = index"  class="text-center"  >
-					<td>{{ comprobante.Venta?.id}}</td>
+					<td>{{ comprobante.num_serie}}</td>
 					<td>{{ comprobante.TipoComprobante?.nombre}}</td>
 					<td>{{ comprobante.Venta?.Empleado?.nombre}}</td>
 					<td>{{comprobante.Venta?.Cliente?.razon_social }}</td>

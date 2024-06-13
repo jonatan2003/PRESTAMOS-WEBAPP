@@ -28,6 +28,7 @@ export class VentaListComponent implements OnInit {
   listFactura:  Comprobante_venta[] = [];
   listNotaCredito:  Comprobante_venta[] = [];
   selectedComprobante: Comprobante_venta | null = null;
+  
   loading: boolean = false;
   currentPage: number = 1;
   pageSize: number = 10;
