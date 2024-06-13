@@ -572,40 +572,78 @@ estado : string ;
   }
 
 
+ 
   onImprimir() {
-    const entidad = 'Prestamos'; // Nombre de la entidad (para el nombre del archivo PDF)
-    const encabezado = this.getEncabezado(); // Obtener el encabezado de la tabla
-    const cuerpo = this.getCuerpo(); // Obtener el cuerpo de la tabla
-    const titulo = 'Lista de Prestamos'; // Título del informe
-    this.impresionService.imprimir(entidad, encabezado, cuerpo, titulo, true); // Llama al servicio de impresión
+    const entidad = 'Prestamos';
+    const encabezado = this.getEncabezado();
+    const cuerpo = this.getCuerpo();
+    const titulo = 'Lista de Prestamos Vencidos';
+    const cuerpoUnico = this.eliminarFilasDuplicadas(cuerpo);
+    this.impresionService.imprimir(entidad, encabezado, cuerpoUnico, titulo, true);
   }
 
+  
+// Método para eliminar filas duplicadas del cuerpo de la tabla
+eliminarFilasDuplicadas(cuerpo: Array<any>): Array<any> {
+  const cuerpoUnico: Array<any> = [];
+  const filasVistas = new Set();
+  cuerpo.forEach((fila) => {
+    const filaString = JSON.stringify(fila);
+    if (!filasVistas.has(filaString)) {
+      cuerpoUnico.push(fila);
+      filasVistas.add(filaString);
+    }
+  });
+  return cuerpoUnico;
+}
 
-  getEncabezado(): string[] {
-    const encabezado: string[] = [];
-    document.querySelectorAll('table thead th').forEach((th: HTMLTableHeaderCellElement) => {
-      const texto = th.textContent.trim();
-      if (texto !== 'ACTUALIZAR' && texto !== 'ELIMINAR' && texto !== 'IMPRIMIR' && texto !== 'PAGOS' ) {
-        encabezado.push(texto);
-      }
-    });
-    return encabezado;
-  }
+getEncabezado(): string[] {
+  return [
+    'CLIENTE',
+    'EMPLEADO',
+    'ARTICULO',
+    'FECHA PRESTMO',
+    'FECHA DEVOLUCION ',
+    'MONTO PRESTAMO',
+    'MONTO PAGO',
+    'OBSERVACION',
+    'ESTADO'
+  ];
+}
 
-  getCuerpo(): string[][] {
-    const cuerpo: string[][] = [];
-    document.querySelectorAll('table tbody tr').forEach((tr: HTMLTableRowElement) => {
-      const fila: string[] = [];
-      tr.querySelectorAll('td').forEach((td: HTMLTableCellElement) => {
-        const texto = td.textContent.trim();
-        if (texto !== 'Actualizar' && texto !== 'Eliminar' && texto !== 'Imprimir'&& texto !== 'Pagos') {
-          fila.push(texto);
-        }
-      });
+getCuerpo(): any[][] {
+  const cuerpo: any[][] = [];
+  const filasVistas = new Set();
+  this.listTickets.forEach((ticket) => {
+    const fila: any[] = [
+    
+      ticket.Prestamo?.Cliente?.nombre,
+      ticket.Empleado?.nombre + ' ' + ticket.Empleado?.apellidos,
+      ticket.Prestamo?.Articulo ?
+        (ticket.Prestamo?.Articulo.Vehiculo ?
+          ticket.Prestamo?.Articulo.Vehiculo.descripcion :
+          (ticket.Prestamo?.Articulo.Electrodomestico ?
+            ticket.Prestamo?.Articulo.Electrodomestico.descripcion :
+            'No hay descripción disponible')) :
+        'No hay descripción disponible',
+        ticket.Prestamo?.fecha_prestamo,
+        ticket.Prestamo?.fecha_devolucion,
+        ticket.Prestamo?.monto_prestamo,
+        ticket.Prestamo?.monto_pago,
+        ticket.Prestamo?.Articulo?.observaciones,
+        ticket.Prestamo?.estado
+    ];
+    const filaString = fila.join('|');
+    if (!filasVistas.has(filaString)) {
       cuerpo.push(fila);
-    });
-    return cuerpo;
-  }
+      filasVistas.add(filaString);
+    }
+  });
+  return cuerpo;
+}
+
+
+
 
 
   onImprimirFila(index: number) {

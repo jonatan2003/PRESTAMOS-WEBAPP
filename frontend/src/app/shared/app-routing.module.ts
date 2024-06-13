@@ -55,20 +55,21 @@ import { PagosNewComponent } from '../modules/admin/components/pagos-new/pagos-n
 import { InventarioListComponent } from '../modules/admin/components/inventario-list/inventario-list.component';
 import { InventarioSearchComponent } from '../modules/admin/components/inventario-search/inventario-search.component';
 import { VentasNew2Component } from '../modules/empleado/components/ventas-new2/ventas-new2.component';
+import { AuthGuard } from '../services/auth.guard';
 
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: SesionComponent },
-
   // { path: 'forgot-password', component: ForgotPasswordComponent },
+
   {
     path: 'admin',
     component: MainComponent,
-    canActivate: [AdminGuard,],
+    canActivate: [AdminGuard],
     children: [
-      { path: '', component: InicioComponent},
-      { path: 'client-list', component: ClientListComponent},
+      { path: '', component: InicioComponent },
+      { path: 'client-list', component: ClientListComponent },
       { path: 'client-new', component: ClientNewComponent },
       { path: 'client-search', component: ClientSearchComponent },
       { path: 'company', component: CompanyComponent },
@@ -77,11 +78,11 @@ const routes: Routes = [
       { path: 'item-search', component: ItemSearchComponent },
       { path: 'inventario-list', component: InventarioListComponent },
       { path: 'inventario-search', component: InventarioSearchComponent },
-      { path: 'pagos-new', component: PagosNewComponent},
-      { path: 'pagos-list', component: PagosListComponent},
-      { path: 'pagos-search', component: PagosSearchComponent},
+      { path: 'pagos-new', component: PagosNewComponent },
+      { path: 'pagos-list', component: PagosListComponent },
+      { path: 'pagos-search', component: PagosSearchComponent },
       { path: 'reservation-list', component: ReservationListComponent },
-      { path: 'reservation-new', component: ReservationNewComponent},
+      { path: 'reservation-new', component: ReservationNewComponent },
       { path: 'reservation-pending', component: ReservationPendingComponent },
       { path: 'reservation-search', component: ReservationSearchComponent },
       { path: 'reservation-finished', component: ReservationFinishedComponent },
@@ -99,10 +100,8 @@ const routes: Routes = [
       { path: 'venta-list', component: VentaListComponent },
       { path: 'venta-search', component: VentaSearchComponent },
       { path: 'venta-pending', component: VentaPendingComponent },
-      { path: '', component: MainComponent},
+      { path: '', component: MainComponent },
       { path: '**', component: MainComponent },
-
-
       // Otras rutas secundarias
     ]
   },
@@ -111,33 +110,25 @@ const routes: Routes = [
     component: Main2Component,
     canActivate: [EmpleadoGuard],
     children: [
-      { path: '', component: HomeComponent},
-      { path: 'empresa', component: EmpresaComponent},
+      { path: '', component: HomeComponent },
+      { path: 'empresa', component: EmpresaComponent },
       { path: 'pagos-list', component: PagosComponent },
       { path: 'pagos-new', component: Pagos2SearchComponent },
       { path: 'prestamos-list', component: PrestamosListComponent },
-      { path: 'prestamos-new', component: PrestamosNewComponent},
+      { path: 'prestamos-new', component: PrestamosNewComponent },
       { path: 'prestamos-pending', component: PrestamosPendingComponent },
       { path: 'prestamos-search', component: PrestamosSearchComponent },
       { path: 'prestamos-finished', component: PrestamosFinishedComponent },
       { path: 'ventas-list', component: VentasList2Component },
-      { path: 'ventas-new', component: VentasNew2Component},
-
+      { path: 'ventas-new', component: VentasNew2Component },
       { path: 'user-update', component: User2UpdateComponent },
-
-      { path: '', component: Main2Component},
+      { path: '', component: Main2Component },
       { path: '**', component: Main2Component },
-
-
       // Otras rutas secundarias
     ]
   },
-
-
-
-  { path: '**',  redirectTo: '/login',  pathMatch: 'full' },
+  { path: '**', redirectTo: '/login', pathMatch: 'full' },
 ];
-
 
 
 

@@ -3,27 +3,26 @@ import { CanActivate, Router } from '@angular/router';
 import { AuthService } from './auth.service';
 import { ToastrService } from 'ngx-toastr';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AdminGuard implements CanActivate {
-  permiso: string;
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private toastr: ToastrService
-  ) {
-    this.permiso = localStorage.getItem('permiso');
-  }
+  ) {}
 
   canActivate(): boolean {
     const token = this.authService.getToken();
-    console.log('AdminGuard: Verificando token..');
+    console.log('AdminGuard: Verificando token...');
 
     if (token && this.isTokenValid(token)) {
       console.log('AdminGuard: Usuario autenticado.');
 
-      // Verificar el tipo de permiso
-      if (this.permiso === 'admin') {
+      const permiso = this.authService.getUserRole();
+      if (permiso === 'admin') {
         console.log('AdminGuard: Permisos de administrador.');
         return true; // Permitir acceso a las partes para administradores
       } else {

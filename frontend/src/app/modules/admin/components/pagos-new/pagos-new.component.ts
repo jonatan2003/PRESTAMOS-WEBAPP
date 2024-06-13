@@ -637,7 +637,7 @@ fecha_pago : Date ;
     this.loading = true;
     
     this._CronogramaPagos.getCronogramaPagosByIdPrestamo(idPrestamo).subscribe((response: CronogramaPago[]) => {
-      const cronograma = response.slice(0, 2); // Obtener solo los dos primeros registros
+      const cronograma = response.slice(0, 3); // Obtener solo los dos primeros registros
       this.loading = false;
       console.log(cronograma);
       callback(cronograma); // Llamar al callback con los datos del cronograma

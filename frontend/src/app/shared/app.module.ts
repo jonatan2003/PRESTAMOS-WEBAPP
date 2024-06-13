@@ -69,6 +69,7 @@ import { PagosNewComponent } from '../modules/admin/components/pagos-new/pagos-n
 import { InventarioListComponent } from '../modules/admin/components/inventario-list/inventario-list.component';
 import { InventarioSearchComponent } from '../modules/admin/components/inventario-search/inventario-search.component';
 import { VentasNew2Component } from '../modules/empleado/components/ventas-new2/ventas-new2.component';
+import { AuthGuard } from '../services/auth.guard';
 
 
 
@@ -143,7 +144,7 @@ import { VentasNew2Component } from '../modules/empleado/components/ventas-new2/
       positionClass: 'toast-bottom-right'
     }), // ToastrModule added
   ],
-  providers: [AdminGuard,EmpleadoGuard,ToastrModule,WebSocketService],
+  providers: [AdminGuard,AuthGuard,EmpleadoGuard,ToastrModule,WebSocketService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

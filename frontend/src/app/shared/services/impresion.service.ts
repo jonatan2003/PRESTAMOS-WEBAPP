@@ -63,10 +63,10 @@ async imprimirFilaPrestamos(entidad: string, datos: any) {
 
   // Datos de la empresa
   const empresa = '                 CASA DE EMPEÑOS DON GATO';
-  const direccion = `   Teléfono: 987654233`;
+  
 
   const prestamo = `          TICKET DE PRESTAMO ELECTRONICA`;
-  const ruc = `                          R.U.C: 10785645876`;
+  const ruc = `                          R.U.C: 10336717201`;
 
   // Datos del préstamo
   const cliente = `Cliente:${datos.cliente}`;
@@ -87,8 +87,8 @@ async imprimirFilaPrestamos(entidad: string, datos: any) {
 
   // Contenido del cuerpo
   const cuerpo = [
-    ['                       Calle: Principal 123, Ciudad '],
-    ['                           Teléfono: 987-654-233'],
+    ['                       Jr ruperto perez MZ.A LT.11 '],
+    ['                           Teléfono: 958-412-203'],
     [''],
     [prestamo],
     [ruc],
@@ -302,16 +302,7 @@ function generateRandomNumber() {
   return Math.floor(10000 + Math.random() * 90000); // Genera un número aleatorio entre 1000 y 9999
 }
 
-// Función para generar una cadena aleatoria de 5 caracteres
-function generateRandomString(length) {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
-  const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
+
 
 // Generar el código QR único
 const qrData = `Datos del préstamo: ${JSON.stringify(datos)}`;
@@ -326,8 +317,7 @@ const nro_serie = `                            ${datos.num_serie}`;
 
   // Datos de la empresa
   const empresa = '               CASA DE EMPEÑOS DON GATO';
-  const direccion = `Calle: Principal 123, Ciudad    Teléfono: 987654233`;
-  const ruc =`                          R.U.C: 10785645876`;
+  const ruc =`                          R.U.C: 10336717201`;
   const pago = `              TICKET DE PAGO ELECTRONICO`
   // Datos del préstamo
   const cliente =`Cliente:${datos.cliente}`;
@@ -348,8 +338,8 @@ const estado = `Interes                   Pagado                     Restante`;
 
   // Contenido del cuerpo
   const cuerpo = [
-       ['                       Calle: Principal 123, Ciudad '],
-       ['                           Teléfono: 987-654-233'],
+    ['                       Jr ruperto perez MZ.A LT.11 '],
+    ['                           Teléfono: 958-412-203'],
        [''],
       [pago],
       [ruc],
@@ -529,7 +519,7 @@ async imprimirFilaVentas(entidad: string, datos: any) {
 
   // Datos de la empresa
   const empresa = '               CASA DE EMPEÑOS DON GATO';
-  const ruc = `                      R.U.C: 10785645876`;
+  const ruc = `                      R.U.C: 10336717201`;
 
   // Datos del préstamo
   const cliente = `Cliente: ${datos.cliente}`;
@@ -550,8 +540,8 @@ async imprimirFilaVentas(entidad: string, datos: any) {
 
   // Contenido del cuerpo
   const cuerpo = [
-    ['                       Calle: Principal 123, Ciudad '],
-    ['                           Teléfono: 987-654-233'],
+    ['                       Jr ruperto perez MZ.A LT.11 '],
+    ['                           Teléfono: 958-412-203'],
     [''],
     [boleta_factura],
     [ruc],
@@ -674,7 +664,7 @@ async imprimirFilaVentasF(entidad: string, datos: any) {
   // Datos de la empresa
   const empresa = '               CASA DE EMPEÑOS DON GATO';
   
-  const ruc = `                      R.U.C: 10785645876`;
+  const ruc = `                      R.U.C: 10336717201`;
 
   // Datos del préstamo
   const cliente = `Cliente: ${datos.razon_social}`;
@@ -695,8 +685,8 @@ async imprimirFilaVentasF(entidad: string, datos: any) {
 
   // Contenido del cuerpo
   const cuerpo = [
-    ['                       Calle: Principal 123, Ciudad '],
-    ['                           Teléfono: 987-654-233'],
+    ['                       Jr ruperto perez MZ.A LT.11 '],
+    ['                           Teléfono: 958-412-203'],
     [''],
     [boleta_factura],
     [ruc],
@@ -816,7 +806,7 @@ async imprimirFilaVentasNC(entidad: string, datos: any) {
   // Datos de la empresa
   const empresa = '               CASA DE EMPEÑOS DON GATO';
   
-  const ruc = `                      R.U.C: 10785645876`;
+  const ruc = `                      R.U.C: 10336717201`;
 
   // Datos del préstamo
   const cliente = `Cliente: ${datos.razon_social}`;
@@ -837,8 +827,8 @@ async imprimirFilaVentasNC(entidad: string, datos: any) {
 
   // Contenido del cuerpo
   const cuerpo = [
-    ['                       Calle: Principal 123, Ciudad '],
-    ['                           Teléfono: 987-654-233'],
+    ['                       Jr ruperto perez MZ.A LT.11 '],
+    ['                           Teléfono: 958-412-203'],
     [''],
     [boleta_factura],
     [ruc],
