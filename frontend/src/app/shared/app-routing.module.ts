@@ -1,8 +1,9 @@
-import { Component, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-
 import { AdminGuard } from '../services/admin.guard';
+import { EmpleadoGuard } from '../services/empleado.guard';
+import { AuthGuard } from '../services/auth.guard';
 
 import { SesionComponent } from '../components/sesion/sesion.component';
 import { MainComponent } from '../components/main/main.component';
@@ -19,6 +20,7 @@ import { ReservationListComponent } from '../modules/admin/components/reservatio
 import { ReservationNewComponent } from '../modules/admin/components/reservation-new/reservation-new.component';
 import { ReservationPendingComponent } from '../modules/admin/components/reservation-pending/reservation-pending.component';
 import { ReservationSearchComponent } from '../modules/admin/components/reservation-search/reservation-search.component';
+import { ReservationFinishedComponent } from '../modules/admin/components/reservation-finished/reservation-finished.component';
 import { UserListComponent } from '../modules/admin/components/user-list/user-list.component';
 import { UserNewComponent } from '../modules/admin/components/user-new/user-new.component';
 import { UserSearchComponent } from '../modules/admin/components/user-search/user-search.component';
@@ -33,10 +35,10 @@ import { VentaNewComponent } from '../modules/admin/components/venta-new/venta-n
 import { VentaListComponent } from '../modules/admin/components/venta-list/venta-list.component';
 import { VentaSearchComponent } from '../modules/admin/components/venta-search/venta-search.component';
 import { VentaPendingComponent } from '../modules/admin/components/venta-pending/venta-pending.component';
-import { ReservationFinishedComponent } from '../modules/admin/components/reservation-finished/reservation-finished.component';
-
-
-import { AuthService } from '../services/auth.service';
+import { InventarioListComponent } from '../modules/admin/components/inventario-list/inventario-list.component';
+import { InventarioSearchComponent } from '../modules/admin/components/inventario-search/inventario-search.component';
+import { PagosSearchComponent } from '../modules/admin/components/pagos-search/pagos-search.component';
+import { PagosNewComponent } from '../modules/admin/components/pagos-new/pagos-new.component';
 import { HomeComponent } from '../modules/empleado/components/home/home.component';
 import { PagosComponent } from '../modules/empleado/components/pagos2-new/pagos2-new.component';
 import { PrestamosListComponent } from '../modules/empleado/components/prestamos-list/prestamos-list.component';
@@ -45,24 +47,26 @@ import { PrestamosPendingComponent } from '../modules/empleado/components/presta
 import { PrestamosSearchComponent } from '../modules/empleado/components/prestamos-search/prestamos-search.component';
 import { PrestamosFinishedComponent } from '../modules/empleado/components/prestamos-finished/prestamos-finished.component';
 import { Main2Component } from '../components/empleado/main2/main2.component';
-import { EmpleadoGuard } from '../services/empleado.guard';
 import { EmpresaComponent } from '../modules/empleado/components/empresa/empresa.component';
 import { User2UpdateComponent } from '../modules/empleado/components/user-update2/user2-update.component';
-import { PagosSearchComponent } from '../modules/admin/components/pagos-search/pagos-search.component';
 import { Pagos2SearchComponent } from '../modules/empleado/components/pagos2-list/pagos2-list.component';
 import { VentasList2Component } from '../modules/empleado/components/ventas-list2/ventas-list2.component';
-import { PagosNewComponent } from '../modules/admin/components/pagos-new/pagos-new.component';
-import { InventarioListComponent } from '../modules/admin/components/inventario-list/inventario-list.component';
-import { InventarioSearchComponent } from '../modules/admin/components/inventario-search/inventario-search.component';
 import { VentasNew2Component } from '../modules/empleado/components/ventas-new2/ventas-new2.component';
-import { AuthGuard } from '../services/auth.guard';
-
 
 const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  {
+    path: '',
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: '',
+        redirectTo: 'login',
+        pathMatch: 'full'
+      }
+    ]
+  },
   { path: 'login', component: SesionComponent },
   // { path: 'forgot-password', component: ForgotPasswordComponent },
-
   {
     path: 'admin',
     component: MainComponent,
@@ -130,10 +134,8 @@ const routes: Routes = [
   { path: '**', redirectTo: '/login', pathMatch: 'full' },
 ];
 
-
-
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

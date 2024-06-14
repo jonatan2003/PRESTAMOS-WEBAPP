@@ -24,9 +24,8 @@ export class EmpleadoGuard implements CanActivate {
     if (token && this.isTokenValid(token)) {
       console.log('AuthGuard: User está autenticado.');
 
-      // Verificar si el empleado tiene el permiso adecuado
-      const permiso = localStorage.getItem('permiso');
-      if (permiso === 'empleado') {
+      const role = this.authService.getUserRole();
+      if (role === 'empleado') {
         console.log('AuthGuard: Usuario tiene permiso de empleado.');
         return true;
       } else {
