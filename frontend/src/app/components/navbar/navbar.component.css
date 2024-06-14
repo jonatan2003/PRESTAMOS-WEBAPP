@@ -3,74 +3,65 @@
     max-width: 60%; /* Adjust according to your needs */
     margin: 1.75rem auto; /* Center the modal horizontally */
 }
-
 /* Notification */
-.notification {
-    background-color: #2d3e4e; /* Light red background color */
-    border: 1px solid #003003; /* Red border */
-    color: #fffefe; /* Dark red text color */
+.notifications-container {
+    max-height: 300px;
+    overflow-y: auto; /* Asegura que se muestre la barra de desplazamiento vertical cuando sea necesario */
     padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    display: flex; /* Asegura que el contenedor de notificaciones sea un elemento flexible */
+    flex-direction: column; /* Establece la dirección del flujo como columna para permitir el crecimiento vertical */
 }
-
-/* List Group */
-.list-group {
+  
+  .notification-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+  }
+  
+  .notification-item:last-child {
+    border-bottom: none;
+  }
+  
+  .notification-title {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .notification-description {
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .notification-time {
+    font-size: 12px;
+    color: #999;
+    margin-top: 5px;
+  }
+  
+  .notification-icon {
+    margin-right: 10px;
+  }
+  
+  .pagination {
     margin-top: 10px;
-}
-
-.list-item {
-    margin-bottom: 10px;
-}
-
-/* Table */
-.table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.table th,
-.table td {
-    padding: 4px 8px; /* Reduce padding to decrease row height */
-    border-bottom: 1px solid #040b13; /* Light gray border */
-}
-
-.table th {
-    background-color: #22262b; /* Dark gray background */
-    color: #f9fcf7; /* White text */
-    text-align: center;
-}
-
-.table-row {
-    background-color: #fbfdff; /* Light gray background */
-    color: #030303; /* Dark text color */
-    border-radius: 10px;
-}
-
-/* Scrollable Table Container */
-.table-container {
-    max-height: 200px; /* Adjust this height based on your requirements */
-    overflow-y: auto;
-    margin-bottom: 20px; /* Add space below the table */
-    border-radius: 10px;
-}
-
-.table-container table {
-    width: 100%;
-}
-
-.table-container th,
-.table-container td {
-    height: 30px; /* Set a fixed height for table rows */
-    line-height: 30px; /* Set line height to match the row height for vertical alignment */
-}
-
-.table-container th {
-    background-color: #343a40; /* Dark background for table header */
-    color: white; /* White text for table header */
-}
-
-.table-container td {
-    background-color: #f4f8fc; /* Lighter background for table cells */
-    color: rgb(0, 0, 0); /* Dark text color for table cells */
-}
+    justify-content: center;
+  }
+  
+  .page-item {
+    margin-right: 10px;
+  }
+  
+  .page-link {
+    color: #337ab7;
+    text-decoration: none;
+  }
+  
+  .page-link:hover {
+    color: #23527c;
+    text-decoration: underline;
+  }

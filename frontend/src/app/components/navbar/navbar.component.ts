@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, Injectable } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, Injectable ,  ElementRef, HostListener, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { Subscription } from 'rxjs';
@@ -21,6 +21,8 @@ import { Ticket } from 'src/app/interfaces/ticket.interface';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit, OnDestroy {
+
+
   nombreUsuario: string | null;
   message: string = '';
   eventSubscription: Subscription;
@@ -59,6 +61,7 @@ listTickets: Ticket[] = [];
       console.log('Evento recibido:', data); // Verificar que el evento se recibe
       this.handlePrestamoActualizado(data);
     });
+
   }
 
   getListPrestamos() {
@@ -131,4 +134,13 @@ listTickets: Ticket[] = [];
   toggleNotifications(): void {
     this.showNotifications = !this.showNotifications;
   }
+  
+  handleClick(event: MouseEvent): void {
+    if (event.type === 'click') {
+      this.showNotifications = !this.showNotifications;
+    }
+  }
+  
+
+
 }

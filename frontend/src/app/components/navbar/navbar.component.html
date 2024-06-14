@@ -3,43 +3,53 @@
     <i class="fas fa-exchange-alt"></i>
   </a>
 
-  <button class="btn btn-primary" type="button" (click)="toggleNotifications()" data-toggle="dropdown"
-    [class.active]="showNotifications">
-    <i class="fas fa-bell"></i> {{ listTickets.length }}
-  </button>
 
-  <div class="notification dropdown-menu" [class.show]="showNotifications">
-    <h3>{{ listTickets.length }} Notificaciones de Prestamos Vencidos</h3>
-    <ul class="list-group">
-      <li class="list-item">
-        <!-- Scrollable Table Container -->
-        <div class="table-container">
-          <table *ngIf="listTickets.length > 0" class="table table-dark table-sm">
-            <tbody>
-              <tr *ngFor="let ticket of listTickets" class="table-row text-center">
-                <td>{{ ticket.Prestamo?.Cliente?.nombre }}</td>
-                <td>
-                  <span>
-                    {{ ticket.Prestamo?.Articulo ?
-                    (ticket.Prestamo.Articulo.Vehiculo ?
-                    ticket.Prestamo.Articulo.Vehiculo.descripcion :
-                    (ticket.Prestamo.Articulo.Electrodomestico ?
-                    ticket.Prestamo.Articulo.Electrodomestico.descripcion :
-                    'No hay descripción disponible')) :
-                    'No hay descripción disponible' }}
-                  </span>
-                </td>
-                <td>{{ ticket.Prestamo?.fecha_devolucion }}</td>
-                <td>
-                  <a routerLink="reservation-finished"><i class="fas fa-user-cog"></i></a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </li>
-    </ul>
+
+<button  class="btn btn-primary " mat-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+  <i class="fas fa-bell">  {{ listTickets.length }}</i>
+ </button>
+
+
+ <mat-menu #menu="matMenu">
+  <div class="notifications-container" >
+    <h3 class="notification-title">{{ listTickets.length }}-Prestamos Vencidos</h3>
+    <table *ngIf="listTickets.length > 0" class="table table-dark table-sm">
+      <tbody>
+        <tr *ngFor="let ticket of listTickets" class="notification-item">
+          <td class="notification-title">{{ ticket.Prestamo?.Cliente?.nombre }}</td>
+          <td class="notification-description">
+            <span>
+              {{ ticket.Prestamo?.Articulo?
+              (ticket.Prestamo.Articulo.Vehiculo?
+              ticket.Prestamo.Articulo.Vehiculo.descripcion :
+              (ticket.Prestamo.Articulo.Electrodomestico?
+              ticket.Prestamo.Articulo.Electrodomestico.descripcion :
+              'No hay descripción disponible')) :
+              'No hay descripción disponible' }}
+            </span>
+          </td>
+          <td class="notification-time">{{ ticket.Prestamo?.fecha_devolucion }}</td>
+          <td>
+            <a routerLink="reservation-finished"><i class="fas fa-user-cog notification-icon"></i></a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage - 1)" tabindex="-1">Atras</a>
+      </li>
+      <li class="page-item" *ngFor="let page of getPages()">
+        <a class="page-link" href="javascript:void(0)" (click)="pageChanged(page)">{{ page }}</a>
+      </li>
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
+      </li>  
+    </ul>
+  </nav>
+</mat-menu>
 
   <a routerLink="user-update">
     <i class="fas fa-user-cog"></i>
