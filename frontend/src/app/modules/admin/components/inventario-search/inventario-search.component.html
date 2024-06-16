@@ -124,6 +124,7 @@
               <th scope="col">PRECIO PRESTAMO</th>
               <th scope="col">ESTADO</th>
               <th scope="col">ACTUALIZAR</th>
+
               <!-- <th scope="col">ELIMINAR</th> -->
               </tr>
             </thead>
@@ -137,7 +138,54 @@
               <td>{{ inventario.Articulo.observaciones }}</td>
               <td>{{ inventario.valor_venta }}</td>
               <td>{{ inventario.valor_precio }}</td>
-              <td>{{ inventario.Articulo.estado }}</td>
+              <td>{{ inventario.estado_articulo }}</td>
+              <td>
+                <button type="button" (click)="setSelectedInventario(inventario!)" class="btn btn-primary">
+                <i class="fas fa-sync-alt"></i>
+                </button>
+              </td>
+              <td>
+                <form action="">
+                <!-- <button (click)="deleteArticulo(articulo.id!)" type="button" class="btn btn-warning">
+                  <i class="far fa-trash-alt"></i>
+                </button> -->
+                </form>
+              </td>
+              </tr>
+            </tbody>
+            </table>
+          </div>
+
+
+          <div *ngIf="categoriaSeleccionada === 3" class="table-responsive">
+            <table  class="table table-dark table-sm">
+            <thead>
+              <tr class="text-center roboto-medium">
+              <th scope="col">DESCRIPCION</th>
+              <th scope="col">MARCA</th>
+              <th scope="col">MODELO</th>
+              <th scope="col">COLOR</th>
+              <th scope="col">NUMERO SERIE</th>
+              <th scope="col">OBSERVACION</th>
+              <th scope="col">PRECIO VENTA</th>
+              <th scope="col">PRECIO PRESTAMO</th>
+              <th scope="col">ESTADO</th>
+              <th scope="col">ACTUALIZAR</th>
+
+              <!-- <th scope="col">ELIMINAR</th> -->
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let inventario of listInventario" class="text-center" >
+              <td>{{ inventario.Articulo.Electrodomestico?.descripcion ||  inventario.Articulo.Vehiculo?.descripcion}}</td>
+              <td>{{ inventario.Articulo.Electrodomestico?.marca  || inventario.Articulo.Vehiculo?.marca}}</td>
+              <td>{{ inventario.Articulo.Electrodomestico?.modelo || inventario.Articulo.Vehiculo?.modelo }}</td>
+              <td>{{ inventario.Articulo.Electrodomestico?.color  || inventario.Articulo.Vehiculo?.color}}</td>
+              <td>{{ inventario.Articulo.Electrodomestico?.numero_serie || inventario.Articulo.Vehiculo?.numero_serie }}</td>
+              <td>{{ inventario.Articulo.observaciones }}</td>
+              <td>{{ inventario.valor_venta }}</td>
+              <td>{{ inventario.valor_precio }}</td>
+              <td>{{ inventario.estado_articulo }}</td>
               <td>
                 <button type="button" (click)="setSelectedInventario(inventario!)" class="btn btn-primary">
                 <i class="fas fa-sync-alt"></i>
@@ -166,6 +214,11 @@
           <li class="page-item" [class.disabled]="currentPage === totalPages">
           <a class="page-link" href="javascript:void(0)" (click)="pageChanged(currentPage + 1)">Siguiente</a>
           </li>
+          <li class="page-item" >
+						<button type="button" class="btn btn-danger" (click)="onImprimir()">
+							<i class="fas fa-file-pdf"></i>
+						</button>
+					  </li>
         </ul>
         </nav>
     </div>

@@ -110,7 +110,7 @@ export class InventarioSearchComponent {
 
   buscarArticulos() {
     this.loading = true;
-
+  
     if (!this.terminoBusqueda) {
       this.toastr.warning('INGRESAR DATOS DEL ARTÍCULO PARA BUSCAR', 'Advertencia', {
         timeOut: 2000,
@@ -121,7 +121,7 @@ export class InventarioSearchComponent {
       this.loading = false;
       return;
     }
-
+  
     this.searchService.searchInventario(this.currentPage, this.pageSize, this.terminoBusqueda).subscribe(
       (response: any) => {
         this.listInventario = [];
@@ -129,77 +129,28 @@ export class InventarioSearchComponent {
         this.totalPages = response.totalPages;
         this.totalItems = response.totalItems;
         this.loading = false;
-
-        const mappedInventario: Inventario[] = response.data.map((inventario: any) => {
+  
+        this.listInventario = response.data.map((inventario: any) => {
           const articulo = inventario.Articulo;
           let mappedArticulo: Inventario | null = null;
-
+  
           if (articulo) {
-            if (articulo.idcategoria === 1) {
+            if (articulo.idvehiculo !== null && articulo.idelectrodomestico === null) {
               this.categoriaSeleccionada = 1;
-              mappedArticulo = {
-                id: inventario.id,
-                idarticulo: inventario.idarticulo,
-                stock: inventario.stock,
-                estado_articulo: inventario.estado_articulo,
-                valor_venta: inventario.valor_venta,
-                valor_precio: inventario.valor_precio,
-                Articulo: {
-                  id: articulo.id,
-                  estado: articulo.estado,
-                  observaciones: articulo.observaciones,
-                  idcategoria: articulo.idcategoria,
-                  idelectrodomestico: undefined,
-                  idvehiculo: articulo.idvehiculo,
-                  Vehiculo: {
-                    id: articulo.idvehiculo,
-                    carroceria: articulo.Vehiculo?.carroceria || '',
-                    marca: articulo.Vehiculo?.marca || '',
-                    modelo: articulo.Vehiculo?.modelo || '',
-                    color: articulo.Vehiculo?.color || '',
-                    numero_serie: articulo.Vehiculo?.numero_serie || '',
-                    numero_motor: articulo.Vehiculo?.numero_motor || '',
-                    placa: articulo.Vehiculo?.placa || '',
-                    descripcion: articulo.Vehiculo?.descripcion || ''
-                  },
-                  Electrodomestico: undefined
-                }
-              };
-            } else if (articulo.idcategoria === 2) {
-              this.categoriaSeleccionada = 2;
-              mappedArticulo = {
-                id: inventario.id,
-                idarticulo: inventario.idarticulo,
-                stock: inventario.stock,
-                estado_articulo: inventario.estado_articulo,
-                valor_venta: inventario.valor_venta,
-                valor_precio: inventario.valor_precio,
-                Articulo: {
-                  id: articulo.id,
-                  estado: articulo.estado,
-                  observaciones: articulo.observaciones,
-                  idcategoria: articulo.idcategoria,
-                  idelectrodomestico: articulo.idelectrodomestico,
-                  idvehiculo: undefined,
-                  Vehiculo: undefined,
-                  Electrodomestico: {
-                    id: articulo.idelectrodomestico,
-                    descripcion: articulo.Electrodomestico?.descripcion || '',
-                    marca: articulo.Electrodomestico?.marca || '',
-                    modelo: articulo.Electrodomestico?.modelo || '',
-                    color: articulo.Electrodomestico?.color || '',
-                    numero_serie: articulo.Electrodomestico?.numero_serie || ''
-                  }
-                }
-              };
+              mappedArticulo = this.mapArticulo(inventario, articulo, 'vehiculo');
+            }else if (inventario.estado_articulo === "disponible") {
+              this.categoriaSeleccionada = 3;
+              mappedArticulo = this.mapArticulo(inventario, articulo, 'disponible');
             }
+            else if (articulo.idelectrodomestico !== null && articulo.idvehiculo === null) {
+              this.categoriaSeleccionada = 2;
+              mappedArticulo = this.mapArticulo(inventario, articulo, 'electrodomestico');
+            } 
           }
-
+  
           return mappedArticulo!;
-        }).filter((item: Inventario | null) => item !== null); // Filter out null values
-
-        this.listInventario = mappedInventario;
-
+        }).filter((item: Inventario | null) => item !== null); // Filtrar valores nulos
+  
         if (this.listInventario.length === 0) {
           this.toastr.warning('No se encontró el artículo especificado', 'Advertencia', {
             timeOut: 2000,
@@ -212,7 +163,7 @@ export class InventarioSearchComponent {
       error => {
         console.error('Error al buscar artículos:', error);
         this.loading = false;
-
+  
         this.toastr.error('Artículo no encontrado', 'Error', {
           timeOut: 2000,
           progressBar: true,
@@ -222,7 +173,103 @@ export class InventarioSearchComponent {
       }
     );
   }
-
+  
+  
+  private mapArticulo(inventario: any, articulo: any, tipo: string): Inventario {
+    if (tipo === 'vehiculo') {
+      return {
+        id: inventario.id,
+        idarticulo: inventario.idarticulo,
+        stock: inventario.stock,
+        estado_articulo: inventario.estado_articulo,
+        valor_venta: inventario.valor_venta,
+        valor_precio: inventario.valor_precio,
+        Articulo: {
+          id: articulo.id,
+          estado: articulo.estado,
+          observaciones: articulo.observaciones,
+          idcategoria: articulo.idcategoria,
+          idelectrodomestico: undefined,
+          idvehiculo: articulo.idvehiculo,
+          Vehiculo: {
+            id: articulo.idvehiculo,
+            carroceria: articulo.Vehiculo?.carroceria || '',
+            marca: articulo.Vehiculo?.marca || '',
+            modelo: articulo.Vehiculo?.modelo || '',
+            color: articulo.Vehiculo?.color || '',
+            numero_serie: articulo.Vehiculo?.numero_serie || '',
+            numero_motor: articulo.Vehiculo?.numero_motor || '',
+            placa: articulo.Vehiculo?.placa || '',
+            descripcion: articulo.Vehiculo?.descripcion || ''
+          },
+          Electrodomestico: undefined
+        }
+      };
+    } else if (tipo === 'electrodomestico') {
+      return {
+        id: inventario.id,
+        idarticulo: inventario.idarticulo,
+        stock: inventario.stock,
+        estado_articulo: inventario.estado_articulo,
+        valor_venta: inventario.valor_venta,
+        valor_precio: inventario.valor_precio,
+        Articulo: {
+          id: articulo.id,
+          estado: articulo.estado,
+          observaciones: articulo.observaciones,
+          idcategoria: articulo.idcategoria,
+          idelectrodomestico: articulo.idelectrodomestico,
+          idvehiculo: undefined,
+          Vehiculo: undefined,
+          Electrodomestico: {
+            id: articulo.idelectrodomestico,
+            descripcion: articulo.Electrodomestico?.descripcion || '',
+            marca: articulo.Electrodomestico?.marca || '',
+            modelo: articulo.Electrodomestico?.modelo || '',
+            color: articulo.Electrodomestico?.color || '',
+            numero_serie: articulo.Electrodomestico?.numero_serie || ''
+          }
+        }
+      };
+    } else if (tipo === 'disponible') {
+      return {
+        id: inventario.id,
+        idarticulo: inventario.idarticulo,
+        stock: inventario.stock,
+        estado_articulo: inventario.estado_articulo,
+        valor_venta: inventario.valor_venta,
+        valor_precio: inventario.valor_precio,
+        Articulo: {
+          id: articulo.id,
+          estado: articulo.estado,
+          observaciones: articulo.observaciones,
+          idcategoria: articulo.idcategoria,
+          idelectrodomestico: articulo.idelectrodomestico,
+          idvehiculo: articulo.idvehiculo,
+          Vehiculo: {
+            id: articulo.idvehiculo,
+            carroceria: articulo.Vehiculo?.carroceria || '',
+            marca: articulo.Vehiculo?.marca || '',
+            modelo: articulo.Vehiculo?.modelo || '',
+            color: articulo.Vehiculo?.color || '',
+            numero_serie: articulo.Vehiculo?.numero_serie || '',
+            numero_motor: articulo.Vehiculo?.numero_motor || '',
+            placa: articulo.Vehiculo?.placa || '',
+            descripcion: articulo.Vehiculo?.descripcion || ''
+          },
+          Electrodomestico: {
+            id: articulo.idelectrodomestico,
+            descripcion: articulo.Electrodomestico?.descripcion || '',
+            marca: articulo.Electrodomestico?.marca || '',
+            modelo: articulo.Electrodomestico?.modelo || '',
+            color: articulo.Electrodomestico?.color || '',
+            numero_serie: articulo.Electrodomestico?.numero_serie || ''
+          }
+        }
+      };
+    }
+    return null;
+  }
 
   
   // Método para cambiar de página
@@ -393,132 +440,45 @@ export class InventarioSearchComponent {
     
     
     
-    // constructor(private impresionService: ImpresionService) { }
-    onImprimir() {
-      const entidad = 'Inventario ';
-      const encabezado = this.getEncabezado();
-      const cuerpo = this.getCuerpo();
-      const titulo = 'Lista del Inventario';
-      const cuerpoUnico = this.eliminarFilasDuplicadas(cuerpo);
-      this.impresionService.imprimir(entidad, encabezado, cuerpoUnico, titulo, true);
-    }
-    
-    
-    eliminarFilasDuplicadas(cuerpo: Array<any>): Array<any> {
-      const cuerpoUnico: Array<any> = [];
-      const filasVistas = new Set();
-      cuerpo.forEach((fila) => {
-        const filaString = JSON.stringify(fila);
-        if (!filasVistas.has(filaString)) {
-          cuerpoUnico.push(fila);
-          filasVistas.add(filaString);
+   
+  
+  onImprimir() {
+    const entidad = 'Inventario'; // Nombre de la entidad (para el nombre del archivo PDF)
+    const encabezado = this.getEncabezado(); // Obtener el encabezado de la tabla
+    const cuerpo = this.getCuerpo(); // Obtener el cuerpo de la tabla
+    const titulo = 'Lista de Inventario'; // Título del informe
+    this.impresionService.imprimir(entidad, encabezado, cuerpo, titulo, true); // Llama al servicio de impresión
+  }
+
+  // Método para obtener el encabezado de la tabla
+  getEncabezado(): string[] {
+    const encabezado: string[] = [];
+    document.querySelectorAll('table thead th').forEach((th: HTMLTableHeaderCellElement) => {
+      const texto = th.textContent.trim();
+      if (texto !== 'ACTUALIZAR' && texto !== 'ELIMINAR' && texto !== 'IMPRIMIR') {
+        encabezado.push(texto);
+      }
+    });
+    return encabezado;
+  }
+
+  // Método para obtener el cuerpo de la tabla
+  getCuerpo(): string[][] {
+    const cuerpo: string[][] = [];
+    document.querySelectorAll('table tbody tr').forEach((tr: HTMLTableRowElement) => {
+      const fila: string[] = [];
+      tr.querySelectorAll('td').forEach((td: HTMLTableCellElement) => {
+        const texto = td.textContent.trim();
+        if (texto !== 'Actualizar' && texto !== 'Eliminar' && texto !== 'Imprimir') {
+          fila.push(texto);
         }
       });
-      return cuerpoUnico;
-    }
-    
-    
-    
-    getEncabezado(): string[] { 
-    if (this.categoriaSeleccionada === 1) {
-      return [
-        'DESCRIPCION',
-        'CARROCERIA',
-        'MARCA',
-        'MODELO',
-        'COLOR',
-        'NUMERO SERIE',
-        'NUMERO MOTOR',
-        'PLACA',
-        'OBSERVACION',
-        'PRECIO VENTA',
-        'PRECIO PRESTAMO',
-        'ESTADO'
-      ];
-    } else {
-      return [
-        'DESCRIPCION',
-        'MARCA',
-        'MODELO',
-        'COLOR',
-        'OBSERVACION',
-        'PRECIO VENTA',
-        'PRECIO PRESTAMO',
-        'ESTADO',
-      ];
-    }
-    
-     
-    }
-    
-    getCuerpo(): any[][] {
-      const cuerpo: any[][] = [];
-      const filasVistas = new Set();
-    
-        if (this.categoriaSeleccionada === 1) {
-          
-      this.listInventarioArticulosVehiculos.forEach((inventario) => {
-    
-         const fila: any[] = [
-    
-    
-        inventario.Articulo?.Vehiculo?.descripcion ,
-        inventario.Articulo?.Vehiculo?.carroceria ,
-        inventario.Articulo?.Vehiculo?.marca ,
-        inventario.Articulo?.Vehiculo?.modelo ,
-        inventario.Articulo?.Vehiculo?.color ,
-        inventario.Articulo?.Vehiculo?.numero_serie ,
-        inventario.Articulo?.Vehiculo?.numero_motor ,
-        inventario.Articulo?.Vehiculo?.placa ,
-        inventario.Articulo?.observaciones,
-        inventario.valor_venta,
-        inventario.valor_precio,
-        inventario.estado_articulo 
-    
-      
-      ];
-    
-      const filaString = fila.join('|');
-      if (!filasVistas.has(filaString)) {
-        cuerpo.push(fila);
-        filasVistas.add(filaString);
-      }
-    
-    
+      cuerpo.push(fila);
     });
-    } else{
-    
-           
-      this.listInventarioArticulosElectrodomesticos.forEach((inventario) => {
-    
-        const fila: any[] = [
-    
-    
-       inventario.Articulo?.Electrodomestico?.descripcion,
-       inventario.Articulo.Electrodomestico?.marca ,
-       inventario.Articulo.Electrodomestico?.modelo,
-       inventario.Articulo.Electrodomestico?.color,
-       inventario.Articulo.Electrodomestico?.numero_serie,
-       inventario.Articulo.observaciones ,
-       inventario.valor_venta,
-       inventario.valor_precio,
-       inventario.Articulo.estado
-      
-     ];
-    
-     const filaString = fila.join('|');
-     if (!filasVistas.has(filaString)) {
-       cuerpo.push(fila);
-       filasVistas.add(filaString);
-     }
-    
-    
-    });
-    }
-      return cuerpo;
-    }
-    
-    
+    return cuerpo;
+  }
+
+
     
     }
     

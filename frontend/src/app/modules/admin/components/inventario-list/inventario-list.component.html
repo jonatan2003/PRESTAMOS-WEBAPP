@@ -100,7 +100,7 @@
 					</thead>
 					<tbody>
 					  <tr *ngFor="let inventario of listInventarioArticulosElectrodomesticos" class="text-center" >
-						<td>{{ inventario.Articulo.Electrodomestico?.descripcion }}</td>
+						<td>{{ inventario.Articulo.Electrodomestico?.descripcion ||  inventario.Articulo.Vehiculo?.descripcion  }}</td>
 						<td>{{ inventario.Articulo.Electrodomestico?.marca }}</td>
 						<td>{{ inventario.Articulo.Electrodomestico?.modelo }}</td>
 						<td>{{ inventario.Articulo.Electrodomestico?.color }}</td>
