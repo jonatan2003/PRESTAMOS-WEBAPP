@@ -64,7 +64,9 @@ class Server {
   private middlewares() {
     this.app.use(express.json());
     this.app.use(cors({
+      // origin: 'http://161.132.49.58:5200',
       origin: 'http://localhost:4200',
+      
       credentials: true // Habilita el intercambio de cookies o encabezados de autenticación
     }));
   }

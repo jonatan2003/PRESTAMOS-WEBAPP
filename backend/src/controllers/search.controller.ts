@@ -206,8 +206,7 @@ export const searchInventario = async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).json({ msg: 'Error al realizar la búsqueda de artículos en inventario' });
   }
-};
-export const searchTicketsPrestamos = async (req: Request, res: Response) => {
+};export const searchTicketsPrestamos = async (req: Request, res: Response) => {
   const { searchTerm } = req.query;
   const page = parseInt(req.query.page as string, 10) || 1;
   const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
@@ -234,7 +233,6 @@ export const searchTicketsPrestamos = async (req: Request, res: Response) => {
       where: {
         [Op.or]: [
           { id: { [Op.like]: `%${searchTerm}%` } },
-        
           { '$Empleado.nombre$': { [Op.like]: `%${searchTerm}%` } },
           { '$Empleado.apellidos$': { [Op.like]: `%${searchTerm}%` } },
           { '$Prestamo.estado$': { [Op.like]: `%${searchTerm}%` } },
@@ -255,7 +253,8 @@ export const searchTicketsPrestamos = async (req: Request, res: Response) => {
           { '$Prestamo.Articulo.Electrodomestico.marca$': { [Op.like]: `%${searchTerm}%` } },
           { '$Prestamo.Articulo.Electrodomestico.modelo$': { [Op.like]: `%${searchTerm}%` } },
         ],
-        '$Prestamo.id$': { [Op.ne]: null } // Asegura que solo se incluyan tickets con préstamos
+        '$Prestamo.id$': { [Op.ne]: null }, // Asegura que solo se incluyan tickets con préstamos
+        idpago: { [Op.is]: null } // Asegura que solo se incluyan tickets donde idPago es null
       },
       limit: pageSize,
       offset: offset,
