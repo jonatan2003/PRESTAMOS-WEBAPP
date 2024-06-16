@@ -53,10 +53,14 @@ import { Pagos2SearchComponent } from '../modules/empleado/components/pagos2-lis
 import { VentasList2Component } from '../modules/empleado/components/ventas-list2/ventas-list2.component';
 import { VentasNew2Component } from '../modules/empleado/components/ventas-new2/ventas-new2.component';
 
+
+
+
 const routes: Routes = [
+  { path: 'login', component: SesionComponent },
   {
     path: '',
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard], // Autentica aquí para redirigir según el rol
     children: [
       {
         path: '',
@@ -65,8 +69,6 @@ const routes: Routes = [
       }
     ]
   },
-  { path: 'login', component: SesionComponent },
-  // { path: 'forgot-password', component: ForgotPasswordComponent },
   {
     path: 'admin',
     component: MainComponent,
@@ -104,7 +106,6 @@ const routes: Routes = [
       { path: 'venta-list', component: VentaListComponent },
       { path: 'venta-search', component: VentaSearchComponent },
       { path: 'venta-pending', component: VentaPendingComponent },
-      { path: '', component: MainComponent },
       { path: '**', component: MainComponent },
       // Otras rutas secundarias
     ]
@@ -126,12 +127,11 @@ const routes: Routes = [
       { path: 'ventas-list', component: VentasList2Component },
       { path: 'ventas-new', component: VentasNew2Component },
       { path: 'user-update', component: User2UpdateComponent },
-      { path: '', component: Main2Component },
       { path: '**', component: Main2Component },
       // Otras rutas secundarias
     ]
   },
-  { path: '**', redirectTo: '/login', pathMatch: 'full' },
+  { path: '**', redirectTo: 'login', pathMatch: 'full' },
 ];
 
 @NgModule({
